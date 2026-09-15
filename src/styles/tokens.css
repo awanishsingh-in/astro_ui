@@ -1,0 +1,452 @@
+/* ============================================================================
+   CYKLOS — Design tokens
+   The single source of truth for colour, type, space, radius, shadow, motion.
+   Everything in the app must read from here. Never hardcode a hex or a px
+   value that belongs to the system.
+
+   Tailwind v4 reads this @theme block and generates the utilities:
+     --color-navy      -> bg-navy   text-navy   border-navy
+     --radius-control  -> rounded-control
+     --text-title      -> text-title
+   ========================================================================= */
+
+@theme {
+  /* ---------------------------------------------------------------------
+     COLOUR — brand
+     Soft lavender for interactive chrome; muted gold is the only accent.
+     --------------------------------------------------------------------- */
+  --color-navy: #8e82d8;
+  --color-navy-hover: #a399e4;
+  --color-navy-active: #7468c4;
+  --color-navy-soft: #1e1b38;
+
+  /* ---------------------------------------------------------------------
+     COLOUR — celestial
+     Near-black cosmic field; panels lift just above the void.
+     --------------------------------------------------------------------- */
+  --color-midnight: #080711;
+  --color-indigo-deep: #111022;
+  --color-indigo-royal: #181633;
+
+  /* Text and lines that sit ON a celestial surface. */
+  --color-on-celestial: #f5f2ff;
+  --color-on-celestial-muted: #b6b1ce;
+  --color-on-celestial-faint: #77728f;
+  --color-celestial-line: #2e2a4a;
+
+  --color-gold: #c9a96e;
+  --color-gold-soft-line: #d4b87a;
+  --color-gold-deep: #c9a96e;
+  --color-gold-soft: #2a2414;
+  --color-gold-border: #5c4c2e;
+
+  /* ---------------------------------------------------------------------
+     COLOUR — text (on lifted dark canvas)
+     --------------------------------------------------------------------- */
+  --color-ink: #f5f2ff;
+  --color-purple: #b6b1ce;
+  --color-muted: #77728f;
+  --color-faint: #5c5774;
+
+  /* ---------------------------------------------------------------------
+     COLOUR — surfaces and lines
+     --------------------------------------------------------------------- */
+  --color-canvas: #080711;
+  --color-surface: #14132a;
+  --color-surface-sunken: #111022;
+  --color-border: #2e2a4a;
+  --color-border-strong: #3f3a5e;
+
+  /* ---------------------------------------------------------------------
+     COLOUR — semantic status
+     --------------------------------------------------------------------- */
+  --color-positive: #7ecfa0;
+  --color-positive-soft: #142820;
+  --color-caution: #c9a96e;
+  --color-caution-soft: #2a2414;
+  --color-critical: #e89a9a;
+  --color-critical-soft: #3a1e1e;
+  --color-info: #8e82d8;
+  --color-info-soft: #1e1b38;
+
+  /* ---------------------------------------------------------------------
+     COLOUR — astrology semantics
+     --------------------------------------------------------------------- */
+  --color-dignity-own: #c9a96e;
+  --color-dignity-exalted: #7ecfa0;
+  --color-dignity-debilitated: #e89a9a;
+  --color-dignity-neutral: #77728f;
+  --color-retrograde: #e89a9a;
+  --color-benefic: #c9a96e;
+  --color-malefic: #b6b1ce;
+  --color-node: #77728f;
+
+  /* Same roles on an even deeper celestial panel. */
+  --color-benefic-dark: #d4b87a;
+  --color-malefic-dark: #b6b1ce;
+  --color-node-dark: #8a84a8;
+  --color-retrograde-dark: #e89a9a;
+
+  /* Chart geometry */
+  --color-chart-line: #b6b1ce;
+  --color-chart-rim: #c9a96e;
+  --color-chart-highlight: #2a2414;
+  --color-chart-field: #181633;
+
+  /* Deeper celestial chart panels. */
+  --color-chart-line-dark: #3f3a5e;
+  --color-chart-rim-dark: #c9a96e;
+  --color-chart-highlight-dark: #181633;
+
+  /* ---------------------------------------------------------------------
+     TYPEFACES
+     Manrope            — all UI text
+     IBM Plex Mono      — degrees, dates, labels, tabular chart data
+     Cormorant Garamond — display headings and editorial titles
+     --------------------------------------------------------------------- */
+  --font-sans: 'Manrope', 'Noto Sans Devanagari', ui-sans-serif, system-ui, -apple-system,
+    'Segoe UI', sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  --font-serif: 'Cormorant Garamond', ui-serif, Georgia, 'Times New Roman', serif;
+
+  /* ---------------------------------------------------------------------
+     TYPE SCALE — each pairs a size with its intended line-height
+     --------------------------------------------------------------------- */
+  --text-display: 2.125rem; /* 34px — landing headline, mobile */
+  --text-display--line-height: 1.18;
+  --text-display--letter-spacing: -0.02em;
+
+  --text-display-lg: 3rem; /* 48px — landing headline, desktop */
+  --text-display-lg--line-height: 1.12;
+  --text-display-lg--letter-spacing: -0.022em;
+
+  --text-title: 1.375rem; /* 22px — screen title */
+  --text-title--line-height: 1.25;
+  --text-title--letter-spacing: -0.012em;
+
+  --text-title-lg: 1.75rem; /* 28px — desktop section title */
+  --text-title-lg--line-height: 1.22;
+  --text-title-lg--letter-spacing: -0.016em;
+
+  --text-heading: 1.0625rem; /* 17px — card heading */
+  --text-heading--line-height: 1.35;
+
+  --text-body: 0.96875rem; /* 15.5px — prose */
+  --text-body--line-height: 1.55;
+
+  --text-sub: 0.90625rem; /* 14.5px — secondary prose */
+  --text-sub--line-height: 1.5;
+
+  --text-sm: 0.8125rem; /* 13px */
+  --text-sm--line-height: 1.5;
+
+  --text-xs: 0.71875rem; /* 11.5px — helper text */
+  --text-xs--line-height: 1.45;
+
+  /* Mono label — uppercase, wide tracking. The product's signature detail. */
+  --text-label: 0.65625rem; /* 10.5px */
+  --text-label--line-height: 1.4;
+  --text-label--letter-spacing: 0.14em;
+
+  --text-data: 0.78125rem; /* 12.5px — mono chart data */
+  --text-data--line-height: 1.6;
+
+  --text-data-lg: 0.9375rem; /* 15px — mono, emphasised figures */
+  --text-data-lg--line-height: 1.5;
+
+  /* ---------------------------------------------------------------------
+     RADIUS — rounded, but restrained
+     --------------------------------------------------------------------- */
+  --radius-xs: 4px;
+  --radius-control: 6px; /* buttons, inputs, chips */
+  --radius-card: 8px;
+  --radius-panel: 10px;
+  --radius-sheet: 16px; /* bottom sheets, large modals */
+
+  /* ---------------------------------------------------------------------
+     CONTROL HEIGHTS — large touch targets, mobile first
+     --------------------------------------------------------------------- */
+  --spacing-control-sm: 40px;
+  --spacing-control-md: 48px;
+  --spacing-control-lg: 56px;
+
+  /* Layout containers */
+  --spacing-reading: 760px; /* the reading column on desktop */
+  --spacing-content: 1120px; /* standard desktop content width */
+  --spacing-wide: 1320px; /* chart dashboard on large desktop */
+
+  /* Fixed chrome */
+  --spacing-topnav: 76px;
+  --spacing-mobilebar: 56px;
+  --spacing-bottomnav: 64px;
+
+  /* ---------------------------------------------------------------------
+     ELEVATION — soft lift on midnight; gold-tinted focus.
+     --------------------------------------------------------------------- */
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-raised: 0 1px 2px rgba(0, 0, 0, 0.4), 0 14px 40px -18px rgba(0, 0, 0, 0.7);
+  --shadow-overlay: 0 12px 48px -12px rgba(0, 0, 0, 0.75);
+  --shadow-sheet: 0 -10px 48px -16px rgba(0, 0, 0, 0.75);
+  --shadow-focus: 0 0 0 3px rgba(201, 169, 110, 0.28);
+
+  /* ---------------------------------------------------------------------
+     MOTION — purposeful, short, never bouncy
+     --------------------------------------------------------------------- */
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out-soft: cubic-bezier(0.65, 0, 0.35, 1);
+
+  --animate-fade-in: fade-in 180ms var(--ease-out-soft) both;
+  --animate-rise: rise 240ms var(--ease-out-soft) both;
+  --animate-sheet-up: sheet-up 280ms var(--ease-out-soft) both;
+  --animate-drawer-in: drawer-in 280ms var(--ease-out-soft) both;
+  --animate-scale-in: scale-in 180ms var(--ease-out-soft) both;
+  --animate-shimmer: shimmer 1.4s linear infinite;
+  --animate-toast-in: toast-in 260ms var(--ease-out-soft) both;
+  --animate-orbit: orbit 2.4s linear infinite;
+
+  /*
+    Celestial motion runs an order of magnitude slower than UI motion — it is
+    atmosphere, not feedback. Nothing here should ever pull the eye.
+  */
+  --animate-zodiac-turn: orbit 240s linear infinite;
+  --animate-zodiac-turn-slow: orbit 480s linear infinite;
+  --animate-twinkle: twinkle 6s ease-in-out infinite;
+  --animate-draw: draw 1200ms var(--ease-out-soft) both;
+  --animate-float: float 9s ease-in-out infinite;
+  --animate-pulse-soft: pulse-soft 4.5s ease-in-out infinite;
+  --animate-meteor: meteor 4.8s ease-in infinite;
+  --animate-rise-slow: rise-slow 700ms var(--ease-out-soft) both;
+  --animate-constellation-draw: constellation-draw 2.4s var(--ease-out-soft) both;
+
+  /* ---------------------------------------------------------------------
+     BREAKPOINTS — mobile 320-767 / tablet 768-1023 / desktop 1024-1439 / lg 1440+
+     --------------------------------------------------------------------- */
+  --breakpoint-xs: 22.5rem; /* 360px */
+  --breakpoint-sm: 30rem; /* 480px */
+  --breakpoint-md: 48rem; /* 768px  tablet */
+  --breakpoint-lg: 64rem; /* 1024px desktop */
+  --breakpoint-xl: 90rem; /* 1440px large desktop */
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes sheet-up {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: none;
+  }
+}
+
+@keyframes drawer-in {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: none;
+  }
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes shimmer {
+  from {
+    background-position: -160% 0;
+  }
+  to {
+    background-position: 160% 0;
+  }
+}
+
+@keyframes twinkle {
+  0%,
+  100% {
+    opacity: 0.18;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+@keyframes draw {
+  from {
+    stroke-dashoffset: var(--draw-length, 1000);
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes orbit {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes pulse-soft {
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.04);
+  }
+}
+
+@keyframes meteor {
+  0% {
+    transform: translate3d(0, 0, 0) rotate(-32deg);
+    opacity: 0;
+  }
+  8% {
+    opacity: 1;
+  }
+  28% {
+    transform: translate3d(-42vw, 48vh, 0) rotate(-32deg);
+    opacity: 0;
+  }
+  100% {
+    transform: translate3d(-42vw, 48vh, 0) rotate(-32deg);
+    opacity: 0;
+  }
+}
+
+@keyframes rise-slow {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes constellation-draw {
+  from {
+    stroke-dashoffset: 220;
+    opacity: 0.15;
+  }
+  to {
+    stroke-dashoffset: 0;
+    opacity: 0.55;
+  }
+}
+
+/* =========================================================================
+   THEME — default is dark (values above). Light overrides semantic colours.
+   Celestial / midnight panels keep their night tokens.
+   ========================================================================= */
+
+:root {
+  color-scheme: dark;
+}
+
+html[data-theme='light'] {
+  color-scheme: light;
+
+  --color-navy: #6b62b8;
+  --color-navy-hover: #5a52a6;
+  --color-navy-active: #4a4394;
+  --color-navy-soft: #efeaf8;
+
+  --color-ink: #14122a;
+  --color-purple: #4a4568;
+  --color-muted: #6b6688;
+  --color-faint: #9a95b0;
+
+  --color-canvas: #f6f4fa;
+  --color-surface: #ffffff;
+  --color-surface-sunken: #efeaf8;
+  --color-border: #ddd8ea;
+  --color-border-strong: #b8b2cc;
+
+  --color-gold: #c9a96e;
+  --color-gold-soft-line: #b8924a;
+  --color-gold-deep: #8f7438;
+  --color-gold-soft: #f6efd8;
+  --color-gold-border: #e2cf8a;
+
+  --color-positive: #2f8f5b;
+  --color-positive-soft: #e3f4ea;
+  --color-caution: #8f7438;
+  --color-caution-soft: #f6efd8;
+  --color-critical: #c44a4a;
+  --color-critical-soft: #f8e4e4;
+  --color-info: #6b62b8;
+  --color-info-soft: #efeaf8;
+
+  --color-dignity-own: #8f7438;
+  --color-dignity-exalted: #2f8f5b;
+  --color-dignity-debilitated: #c44a4a;
+  --color-dignity-neutral: #6b6688;
+  --color-retrograde: #c44a4a;
+  --color-benefic: #8f7438;
+  --color-malefic: #4a4568;
+  --color-node: #6b6688;
+
+  --color-chart-line: #4a4568;
+  --color-chart-rim: #c9a96e;
+  --color-chart-highlight: #f6efd8;
+  --color-chart-field: #efeaf8;
+
+  --shadow-card: 0 1px 2px rgba(20, 18, 42, 0.06);
+  --shadow-raised: 0 1px 2px rgba(20, 18, 42, 0.06), 0 14px 40px -18px rgba(20, 18, 42, 0.16);
+  --shadow-overlay: 0 12px 48px -12px rgba(20, 18, 42, 0.24);
+  --shadow-sheet: 0 -10px 48px -16px rgba(20, 18, 42, 0.18);
+  --shadow-focus: 0 0 0 3px rgba(201, 169, 110, 0.35);
+}

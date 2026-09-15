@@ -1,0 +1,496 @@
+/**
+ * Living orrery behind Ask — GPU transforms only, muted Cyklos palette.
+ */
+
+.celestial-scene {
+  --orbit-tempo: 1;
+  --orbit-line: rgba(255, 255, 255, 0.07);
+  --orbit-line-gold: rgba(229, 200, 117, 0.09);
+  --scene-bright: 1;
+  --squash: 1;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.celestial-scene[data-attentive='true'] {
+  --orbit-tempo: 1.35;
+  --orbit-line: rgba(255, 255, 255, 0.1);
+  --orbit-line-gold: rgba(229, 200, 117, 0.14);
+  --scene-bright: 1.08;
+}
+
+.celestial-parallax {
+  position: absolute;
+  inset: 0;
+  transition: transform 0.45s ease-out;
+  will-change: transform;
+}
+
+.celestial-system {
+  position: absolute;
+  top: 42%;
+  left: 68%;
+  width: min(920px, 118vw);
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  filter: brightness(var(--scene-bright));
+  transition: filter 0.6s ease;
+}
+
+.celestial-system.is-compact {
+  top: 26%;
+  left: 52%;
+  width: min(620px, 155vw);
+  opacity: 0.82;
+}
+
+/* ── Orbit mechanics ───────────────────────────────────────────────
+   Anchor centres the ring WITHOUT transform (so animation can't break it).
+   Spinner rotates; planet slot sits at 12 o'clock on the ring edge.
+   ───────────────────────────────────────────────────────────────── */
+
+.orbit-anchor {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: var(--orbit-size);
+  height: var(--orbit-size);
+  margin-top: calc(var(--orbit-size) / -2);
+  margin-left: calc(var(--orbit-size) / -2);
+  pointer-events: none;
+}
+
+.orbit-spinner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-origin: center center;
+  animation: orbit-spin calc(var(--period) * var(--orbit-tempo)) linear infinite;
+  animation-delay: calc(var(--period) * var(--start) / -360 * 1s);
+  will-change: transform;
+}
+
+.orbit-spinner[data-direction='ccw'] {
+  animation-name: orbit-spin-ccw;
+}
+
+.orbit-spinner[data-ellipse='true'] {
+  animation-name: orbit-spin-ellipse;
+}
+
+.orbit-spinner[data-ellipse='true'][data-direction='ccw'] {
+  animation-name: orbit-spin-ellipse-ccw;
+}
+
+.orbit-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 1px solid var(--orbit-line);
+  pointer-events: none;
+}
+
+.orbit-ring[data-tone='gold'] {
+  border-color: var(--orbit-line-gold);
+}
+
+.orbit-planet-slot {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.orbit-planet-counter {
+  transform-origin: center center;
+  animation: orbit-counter calc(var(--period) * var(--orbit-tempo)) linear infinite;
+  animation-delay: calc(var(--period) * var(--start) / -360 * 1s);
+  will-change: transform;
+}
+
+.orbit-spinner[data-direction='ccw'] .orbit-planet-counter {
+  animation-name: orbit-counter-ccw;
+}
+
+.orbit-spinner[data-ellipse='true'] .orbit-planet-counter {
+  animation-name: orbit-counter-ellipse;
+}
+
+.orbit-spinner[data-ellipse='true'][data-direction='ccw'] .orbit-planet-counter {
+  animation-name: orbit-counter-ellipse-ccw;
+}
+
+/* ── Planets — muted spheres with rim light + terminator ─────────── */
+
+.planet-hit {
+  position: relative;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: default;
+  pointer-events: auto;
+  transform: scale(var(--depth-scale, 1));
+  opacity: var(--depth-opacity, 0.88);
+}
+
+.planet-body {
+  position: relative;
+  border-radius: 50%;
+  overflow: hidden;
+  filter: saturate(0.82) contrast(1.04);
+  box-shadow:
+    inset -3px -4px 8px rgba(0, 0, 0, 0.55),
+    inset 2px 2px 5px rgba(255, 255, 255, 0.08),
+    0 0 14px var(--glow, transparent);
+  animation: planet-spin calc(var(--spin, 36s) * var(--orbit-tempo)) linear infinite;
+  will-change: transform;
+}
+
+/* Specular highlight */
+.planet-body::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 30% 26%,
+    rgba(255, 255, 255, 0.28) 0%,
+    rgba(255, 255, 255, 0.06) 28%,
+    transparent 52%
+  );
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Terminator shadow — light from system centre (bottom-right) */
+.planet-body::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 68% 68%,
+    rgba(0, 0, 0, 0.55) 0%,
+    rgba(0, 0, 0, 0.2) 38%,
+    transparent 62%
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+.planet-sun {
+  filter: saturate(0.9) contrast(1.02);
+  background: radial-gradient(
+    circle at 38% 32%,
+    #fff8e8 0%,
+    #e5c875 22%,
+    #c99a32 52%,
+    #6a4818 100%
+  );
+  box-shadow:
+    0 0 20px rgba(201, 154, 50, 0.35),
+    0 0 48px rgba(201, 154, 50, 0.12),
+    inset -3px -4px 10px rgba(80, 50, 10, 0.4);
+  animation: none;
+}
+
+.planet-sun::before {
+  background: radial-gradient(
+    circle at 32% 28%,
+    rgba(255, 255, 240, 0.5) 0%,
+    transparent 45%
+  );
+}
+
+.planet-mercury {
+  background: radial-gradient(
+    circle at 36% 30%,
+    #b8b0a0 0%,
+    #7a7268 42%,
+    #3a3530 78%,
+    #252220 100%
+  );
+  --glow: rgba(140, 130, 115, 0.15);
+}
+
+.planet-venus {
+  background: radial-gradient(
+    circle at 36% 30%,
+    #e8dcc0 0%,
+    #c4a870 40%,
+    #8a7048 72%,
+    #4a3828 100%
+  );
+  --glow: rgba(196, 168, 112, 0.18);
+}
+
+.planet-earth {
+  background:
+    radial-gradient(ellipse 45% 35% at 28% 32%, rgba(200, 230, 245, 0.7) 0%, transparent 100%),
+    radial-gradient(ellipse 35% 28% at 58% 62%, rgba(50, 100, 65, 0.65) 0%, transparent 100%),
+    radial-gradient(circle at 38% 32%, #5a8aa8 0%, #2a5070 48%, #142840 100%);
+  --glow: rgba(70, 120, 160, 0.16);
+}
+
+.planet-moon {
+  background: radial-gradient(
+    circle at 38% 32%,
+    #e8e4dc 0%,
+    #a8a49c 38%,
+    #686460 68%,
+    #3a3834 100%
+  );
+  --glow: rgba(200, 195, 185, 0.12);
+}
+
+.planet-mars {
+  background: radial-gradient(
+    circle at 36% 30%,
+    #c87858 0%,
+    #9a4838 38%,
+    #5a2820 72%,
+    #301810 100%
+  );
+  --glow: rgba(154, 72, 56, 0.2);
+}
+
+.planet-jupiter {
+  background:
+    radial-gradient(ellipse 130% 22% at 48% 28%, rgba(210, 185, 150, 0.85) 0%, transparent 100%),
+    radial-gradient(ellipse 110% 18% at 35% 48%, rgba(120, 85, 55, 0.75) 0%, transparent 100%),
+    radial-gradient(ellipse 100% 16% at 62% 58%, rgba(180, 150, 110, 0.7) 0%, transparent 100%),
+    radial-gradient(ellipse 90% 14% at 42% 72%, rgba(100, 70, 45, 0.65) 0%, transparent 100%),
+    radial-gradient(circle at 36% 30%, #c4a078 0%, #8a6040 45%, #3a2818 100%);
+  --glow: rgba(160, 130, 90, 0.2);
+  --spin: 48s;
+}
+
+.planet-jupiter::after {
+  background:
+    radial-gradient(circle at 58% 54%, rgba(140, 55, 40, 0.55) 0%, transparent 22%),
+    radial-gradient(circle at 68% 68%, rgba(0, 0, 0, 0.5) 0%, transparent 55%);
+}
+
+.planet-saturn-wrap {
+  position: relative;
+  display: grid;
+  place-items: center;
+}
+
+.planet-saturn {
+  background: radial-gradient(
+    circle at 36% 30%,
+    #e0d0a0 0%,
+    #b89858 42%,
+    #786840 72%,
+    #403820 100%
+  );
+  --glow: rgba(180, 150, 90, 0.18);
+  --spin: 56s;
+  z-index: 1;
+}
+
+.planet-saturn-rings {
+  position: absolute;
+  width: 220%;
+  height: 38%;
+  border-radius: 50%;
+  background: transparent;
+  border: none;
+  box-shadow:
+    inset 0 0 0 1px rgba(200, 170, 110, 0.22),
+    inset 0 0 0 4px rgba(160, 130, 80, 0.1),
+    0 0 0 1px rgba(200, 170, 110, 0.18);
+  transform: rotateX(72deg) rotateZ(-14deg);
+  pointer-events: none;
+  opacity: 0.75;
+}
+
+.planet-uranus {
+  background: radial-gradient(
+    circle at 36% 30%,
+    #c8e4e8 0%,
+    #6898a4 45%,
+    #385868 78%,
+    #243840 100%
+  );
+  --glow: rgba(104, 152, 164, 0.15);
+}
+
+.planet-neptune {
+  background: radial-gradient(
+    circle at 36% 30%,
+    #6898c8 0%,
+    #385880 45%,
+    #203050 78%,
+    #101828 100%
+  );
+  --glow: rgba(56, 88, 128, 0.2);
+}
+
+.planet-glyph {
+  position: absolute;
+  top: calc(100% + 5px);
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 9px;
+  line-height: 1;
+  color: rgba(229, 200, 117, 0.42);
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.planet-tip {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 50%;
+  z-index: 5;
+  min-width: 7.5rem;
+  transform: translateX(-50%);
+  padding: 0.45rem 0.6rem;
+  border-radius: 0.4rem;
+  border: 1px solid rgba(229, 200, 117, 0.22);
+  background: rgba(21, 19, 63, 0.92);
+  color: #faf8f1;
+  text-align: center;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  pointer-events: none;
+}
+
+.planet-tip-name {
+  display: block;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(229, 200, 117, 0.9);
+}
+
+.planet-tip-deg {
+  display: block;
+  margin-top: 2px;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.planet-tip-rashi {
+  display: block;
+  margin-top: 1px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(250, 248, 241, 0.55);
+}
+
+.sun-core {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+}
+
+/* ── Keyframes ───────────────────────────────────────────────────── */
+
+@keyframes orbit-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes orbit-spin-ccw {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(-360deg);
+  }
+}
+
+@keyframes orbit-spin-ellipse {
+  from {
+    transform: scaleY(var(--squash, 0.78)) rotate(0deg);
+  }
+  to {
+    transform: scaleY(var(--squash, 0.78)) rotate(360deg);
+  }
+}
+
+@keyframes orbit-spin-ellipse-ccw {
+  from {
+    transform: scaleY(var(--squash, 0.78)) rotate(0deg);
+  }
+  to {
+    transform: scaleY(var(--squash, 0.78)) rotate(-360deg);
+  }
+}
+
+@keyframes orbit-counter {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(-360deg);
+  }
+}
+
+@keyframes orbit-counter-ccw {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes orbit-counter-ellipse {
+  from {
+    transform: scaleY(calc(1 / var(--squash, 1))) rotate(0deg);
+  }
+  to {
+    transform: scaleY(calc(1 / var(--squash, 1))) rotate(-360deg);
+  }
+}
+
+@keyframes orbit-counter-ellipse-ccw {
+  from {
+    transform: scaleY(calc(1 / var(--squash, 1))) rotate(0deg);
+  }
+  to {
+    transform: scaleY(calc(1 / var(--squash, 1))) rotate(360deg);
+  }
+}
+
+@keyframes planet-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 1023px) {
+  .planet-desktop-only {
+    display: none;
+  }
+
+  .planet-glyph {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .orbit-spinner,
+  .orbit-planet-counter,
+  .planet-body {
+    animation: none !important;
+  }
+}

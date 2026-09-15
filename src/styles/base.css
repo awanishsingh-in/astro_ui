@@ -1,0 +1,235 @@
+/* ============================================================================
+   CYKLOS — base layer
+   Global element defaults, focus behaviour and a small set of primitives that
+   are genuinely global (focus ring, scrollbars, reduced motion).
+   ========================================================================= */
+
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100dvh;
+    background-color: var(--color-canvas);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-size: var(--text-body);
+    line-height: var(--text-body--line-height);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    /* Numerals line up in tables of degrees and dates. */
+    font-variant-numeric: tabular-nums;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  p,
+  figure {
+    margin: 0;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-weight: 600;
+    letter-spacing: -0.012em;
+  }
+
+  button,
+  input,
+  select,
+  textarea {
+    font: inherit;
+    color: inherit;
+  }
+
+  button {
+    background: none;
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+  }
+
+  button:disabled {
+    cursor: not-allowed;
+  }
+
+  a {
+    color: var(--color-navy);
+    text-decoration: none;
+  }
+
+  ul,
+  ol {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  img,
+  svg,
+  video {
+    display: block;
+    max-width: 100%;
+  }
+
+  table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+
+  /* --------------------------------------------------------------------
+     Focus — one visible ring for every interactive element, keyboard only.
+     Accessibility is a default here, not a per-component decision.
+     -------------------------------------------------------------------- */
+  :focus-visible {
+    outline: 2px solid var(--color-gold);
+    outline-offset: 2px;
+    border-radius: var(--radius-xs);
+  }
+
+  /* Elements that paint their own ring opt out of the outline. */
+  [data-focus-ring='self']:focus-visible {
+    outline: none;
+    box-shadow: var(--shadow-focus);
+    border-color: var(--color-navy);
+  }
+
+  /*
+     Toast viewport inset. The toast sits at the page foot; when the mobile
+     bottom navigation is mounted it has to clear it. `:has()` keeps this a
+     CSS concern rather than threading a prop through the layout.
+  */
+  :root {
+    --toast-inset: 1rem;
+  }
+
+  body:has([data-bottom-nav]) {
+    --toast-inset: calc(var(--spacing-bottomnav) + 1rem);
+  }
+
+  ::selection {
+    background: var(--color-navy-soft);
+    color: var(--color-ink);
+  }
+
+  ::placeholder {
+    color: var(--color-faint);
+  }
+
+  /* Thin, quiet scrollbars — never a glowing rod on dark canvas. */
+  @media (pointer: fine) {
+    * {
+      scrollbar-width: thin;
+      scrollbar-color: color-mix(in srgb, var(--color-border-strong) 45%, transparent) transparent;
+    }
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: color-mix(in srgb, var(--color-border-strong) 45%, transparent);
+      border: none;
+      border-radius: 999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: color-mix(in srgb, var(--color-border-strong) 70%, transparent);
+    }
+  }
+
+  /* --------------------------------------------------------------------
+     Respect the user's motion preference everywhere, once.
+     -------------------------------------------------------------------- */
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@layer utilities {
+  /* Horizontal chip rails: scroll, but never show a bar. */
+  .no-scrollbar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Safe-area padding for sticky mobile chrome on notched devices. */
+  .pb-safe {
+    padding-bottom: max(env(safe-area-inset-bottom), 0px);
+  }
+  .pt-safe {
+    padding-top: max(env(safe-area-inset-top), 0px);
+  }
+
+  /* Edge-to-edge scroll rails inside a padded container. */
+  .rail-bleed {
+    margin-inline: calc(var(--rail-bleed, 20px) * -1);
+    padding-inline: var(--rail-bleed, 20px);
+  }
+
+  /*
+     Expand a control's touch target to 44px without changing how big it looks.
+
+     Small icon buttons and inline links are visually correct at 32–36px but
+     are hard to hit on a phone. The pseudo-element is transparent and part of
+     the control, so pointer events still land on it — the design stays tight
+     while the target meets the 44px guidance.
+
+     Only for controls with clear space around them; adjacent controls get real
+     padding instead, so their targets do not overlap.
+  */
+  .hit-44 {
+    position: relative;
+  }
+
+  .hit-44::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: max(100%, 44px);
+    height: max(100%, 44px);
+    transform: translate(-50%, -50%);
+  }
+
+  .shimmer {
+    background-image: linear-gradient(
+      90deg,
+      var(--color-surface-sunken) 0%,
+      var(--color-border) 40%,
+      var(--color-surface-sunken) 80%
+    );
+    background-size: 220% 100%;
+    animation: var(--animate-shimmer);
+  }
+}
