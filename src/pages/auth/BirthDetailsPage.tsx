@@ -1,7 +1,8 @@
-import { Lock } from 'lucide-react'
+import { Lock, MoonStar, Sparkles, Sun } from 'lucide-react'
 import { useState, type FormEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Button } from '@/components/common/Button'
+import { AstroDivider } from '@/components/celestial/AstroDivider'
 import { useToast } from '@/components/feedback/toast-context'
 import { Field } from '@/components/forms/Field'
 import { Input } from '@/components/forms/Input'
@@ -101,134 +102,185 @@ export default function BirthDetailsPage() {
       <form
         onSubmit={handleSubmit}
         noValidate
-        className="mx-auto flex w-full max-w-xl flex-col gap-4 lg:gap-3.5"
+        className="mx-auto flex w-full max-w-xl flex-col gap-5 lg:gap-4"
       >
-        <header className="space-y-1">
-          <h1 className="text-title font-semibold text-ink text-balance">
-            Your birth details
-          </h1>
-          <p className="text-sm text-muted text-pretty">
-            Entered once, editable later from your account.
+        <header className="animate-rise space-y-3">
+          <p className="inline-flex items-center gap-1.5 font-mono text-label uppercase text-gold">
+            <Sparkles aria-hidden className="size-3.5" />
+            Chart foundation
           </p>
+          <div className="space-y-1.5">
+            <h1 className="font-serif text-[1.75rem] font-semibold leading-tight tracking-[-0.02em] text-ink text-balance lg:text-[2rem]">
+              Your birth details
+            </h1>
+            <p className="text-sm text-muted text-pretty">
+              Entered once, editable later from your account.
+            </p>
+          </div>
+          <AstroDivider />
         </header>
 
-        <div className="flex flex-col gap-3.5">
-          <Field label="Full name" error={errors.fullName}>
-            <Input
-              autoComplete="name"
-              autoFocus
-              placeholder="As written on your birth record"
-              value={fullName}
-              onChange={(event) => {
-                setFullName(event.target.value)
-                clearError('fullName')
-              }}
-            />
-          </Field>
+        <div className="relative overflow-visible rounded-panel border border-celestial-line/70 bg-indigo-royal/40 p-4 shadow-raised sm:p-5">
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-0 overflow-hidden rounded-panel"
+          >
+            <div className="absolute -right-16 -top-20 size-48 rounded-full bg-navy/20 blur-3xl" />
+            <div className="absolute -bottom-24 -left-10 size-40 rounded-full bg-gold/10 blur-3xl" />
+          </div>
 
-          <Field label="Gender" error={errors.gender}>
-            <div
-              className="grid gap-2 sm:grid-cols-3"
-              role="radiogroup"
-              aria-label="Gender"
-            >
-              {GENDER_OPTIONS.map((option) => {
-                const active = gender === option
-                return (
-                  <button
-                    key={option}
-                    type="button"
-                    role="radio"
-                    aria-checked={active}
-                    onClick={() => {
-                      setGender(option)
-                      clearError('gender')
-                    }}
-                    className={cn(
-                      'rounded-control border px-3 py-2.5 text-left text-sm transition-colors',
-                      active
-                        ? 'border-gold bg-gold-soft/50 text-ink'
-                        : 'border-border-strong bg-surface text-purple hover:border-navy hover:bg-navy-soft',
-                    )}
-                  >
-                    {GENDER_LABEL[option]}
-                  </button>
-                )
-              })}
-            </div>
-          </Field>
-
-          <div className="grid gap-3.5 sm:grid-cols-2">
-            <Field label="Date of birth" error={errors.date}>
+          <div className="relative flex flex-col gap-4">
+            <Field appearance="plain" label="Full name" error={errors.fullName}>
               <Input
-                type="date"
-                mono
-                max={new Date().toISOString().slice(0, 10)}
-                value={date}
+                tone="celestial"
+                autoComplete="name"
+                autoFocus
+                placeholder="As written on your birth record"
+                value={fullName}
                 onChange={(event) => {
-                  setDate(event.target.value)
-                  clearError('date')
+                  setFullName(event.target.value)
+                  clearError('fullName')
                 }}
               />
             </Field>
 
-            <Field
-              label="Time of birth"
-              error={errors.time}
-              help={
-                timeUnknown
-                  ? 'Noon is used instead. You can add an exact time later.'
-                  : undefined
-              }
-            >
-              <div className="space-y-2">
-                <Input
-                  type="time"
-                  mono
-                  value={time}
-                  disabled={timeUnknown}
-                  onChange={(event) => {
-                    setTime(event.target.value)
-                    clearError('time')
-                  }}
-                />
-                <label className="flex w-fit cursor-pointer items-center gap-2 text-sm text-purple">
-                  <input
-                    type="checkbox"
-                    checked={timeUnknown}
-                    onChange={(event) => {
-                      setTimeUnknown(event.target.checked)
-                      clearError('time')
-                    }}
-                    className="size-4 accent-[var(--color-navy)]"
-                  />
-                  I don’t know my time
-                </label>
+            <Field appearance="plain" label="Gender" error={errors.gender}>
+              <div
+                className="grid gap-2 sm:grid-cols-3"
+                role="radiogroup"
+                aria-label="Gender"
+              >
+                {GENDER_OPTIONS.map((option) => {
+                  const active = gender === option
+                  return (
+                    <button
+                      key={option}
+                      type="button"
+                      role="radio"
+                      aria-checked={active}
+                      onClick={() => {
+                        setGender(option)
+                        clearError('gender')
+                      }}
+                      className={cn(
+                        'rounded-card border px-3 py-3 text-center text-sm font-medium transition-all duration-200 ease-out-soft',
+                        'active:scale-[0.98]',
+                        active
+                          ? 'border-gold/60 bg-gold-soft text-gold-deep shadow-[0_0_0_1px_rgba(220,132,79,0.25)]'
+                          : 'border-celestial-line/80 bg-indigo-deep/70 text-purple hover:border-navy hover:bg-navy-soft hover:text-ink',
+                      )}
+                    >
+                      {GENDER_LABEL[option]}
+                    </button>
+                  )
+                })}
               </div>
             </Field>
-          </div>
 
-          <Field
-            label="Birth place"
-            error={errors.place}
-            help={
-              place
-                ? `${formatCoordinates(place.latitude, place.longitude)} · geocoded from ${place.label}`
-                : 'Start typing a town — pick the nearest listed one.'
-            }
-          >
-            <PlaceField
-              value={place}
-              onChange={(next) => {
-                setPlace(next)
-                if (next) clearError('place')
-              }}
-              invalid={Boolean(errors.place)}
-            />
-          </Field>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <Field appearance="plain" label="Date of birth" error={errors.date}>
+                <Input
+                  tone="celestial"
+                  type="date"
+                  mono
+                  icon={<Sun strokeWidth={1.75} />}
+                  max={new Date().toISOString().slice(0, 10)}
+                  value={date}
+                  onChange={(event) => {
+                    setDate(event.target.value)
+                    clearError('date')
+                  }}
+                />
+              </Field>
+
+              <Field
+                appearance="plain"
+                label="Time of birth"
+                error={errors.time}
+                help={
+                  timeUnknown
+                    ? 'Noon is used instead. You can add an exact time later.'
+                    : undefined
+                }
+              >
+                <div className="space-y-2.5">
+                  <Input
+                    tone="celestial"
+                    type="time"
+                    mono
+                    icon={<MoonStar strokeWidth={1.75} />}
+                    value={time}
+                    disabled={timeUnknown}
+                    onChange={(event) => {
+                      setTime(event.target.value)
+                      clearError('time')
+                    }}
+                  />
+                  <button
+                    type="button"
+                    aria-pressed={timeUnknown}
+                    onClick={() => {
+                      setTimeUnknown((prev) => !prev)
+                      clearError('time')
+                    }}
+                    className={cn(
+                      'inline-flex w-fit items-center gap-2 rounded-control border px-3 py-1.5 text-sm transition-colors duration-150 ease-out-soft',
+                      timeUnknown
+                        ? 'border-gold/45 bg-gold-soft/60 text-gold-deep'
+                        : 'border-celestial-line bg-transparent text-purple hover:border-border-strong hover:text-ink',
+                    )}
+                  >
+                    <span
+                      aria-hidden
+                      className={cn(
+                        'flex size-4 items-center justify-center rounded-xs border',
+                        timeUnknown
+                          ? 'border-gold bg-gold text-midnight'
+                          : 'border-border-strong',
+                      )}
+                    >
+                      {timeUnknown && (
+                        <svg viewBox="0 0 12 12" className="size-2.5" fill="none">
+                          <path
+                            d="M2.5 6.2 4.8 8.5 9.5 3.5"
+                            stroke="currentColor"
+                            strokeWidth="1.6"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                      )}
+                    </span>
+                    I don’t know my time
+                  </button>
+                </div>
+              </Field>
+            </div>
+
+            <Field
+              appearance="plain"
+              label="Birth place"
+              error={errors.place}
+              help={
+                place
+                  ? `${formatCoordinates(place.latitude, place.longitude)} · geocoded from ${place.label}`
+                  : 'Start typing a town — pick the nearest listed one.'
+              }
+            >
+              <PlaceField
+                tone="celestial"
+                value={place}
+                onChange={(next) => {
+                  setPlace(next)
+                  if (next) clearError('place')
+                }}
+                invalid={Boolean(errors.place)}
+              />
+            </Field>
+          </div>
         </div>
 
-        <div className="space-y-2.5 pt-1">
+        <div className="space-y-2.5 pt-0.5">
           <Button type="submit" fullWidth loading={isSubmitting}>
             {isSubmitting ? 'Calculating' : 'Calculate my chart'}
           </Button>

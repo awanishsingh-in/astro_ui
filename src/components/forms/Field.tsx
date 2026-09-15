@@ -23,6 +23,11 @@ export interface FieldProps {
   required?: boolean
   /** Hide the visible label but keep it for screen readers. */
   labelHidden?: boolean
+  /**
+   * `mono` — uppercase tracked label (chart / instrument chrome).
+   * `plain` — sentence-case Manrope for conversational auth forms.
+   */
+  appearance?: 'mono' | 'plain'
   children: ReactNode
   className?: string
 }
@@ -37,6 +42,7 @@ export function Field({
   error,
   required,
   labelHidden,
+  appearance = 'mono',
   children,
   className,
 }: FieldProps) {
@@ -54,7 +60,10 @@ export function Field({
         <label
           htmlFor={inputId}
           className={cn(
-            'mb-2 font-mono text-label uppercase text-muted',
+            'mb-2',
+            appearance === 'plain'
+              ? 'text-sm font-medium tracking-wide text-purple'
+              : 'font-mono text-label uppercase text-muted',
             labelHidden && 'sr-only',
           )}
         >

@@ -12,7 +12,7 @@ export interface TopNavProps {
 }
 
 /**
- * Desktop chrome, and deliberately minimal: the wordmark anchors the left, the
+ * Desktop chrome, and deliberately minimal: the mark anchors the left, the
  * destinations sit to its right, and the avatar is the only account control.
  *
  * `hidden lg:block` keeps it off mobile entirely; the bottom bar takes over.

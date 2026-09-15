@@ -1,7 +1,18 @@
+import { useCallback, useState } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
 import { BottomNav } from '@/components/navigation/BottomNav'
 import { SideNav } from '@/components/navigation/SideNav'
 import { useAuth } from '@/auth/auth-context'
+
+const SIDEBAR_KEY = 'cyklos_sidenav_collapsed'
+
+function readCollapsed(): boolean {
+  try {
+    return window.localStorage.getItem(SIDEBAR_KEY) === '1'
+  } catch {
+    return false
+  }
+}
 
 /**
  * The signed-in shell.
@@ -12,11 +23,25 @@ import { useAuth } from '@/auth/auth-context'
 export function AppLayout() {
   const { user } = useAuth()
   const location = useLocation()
+  const [collapsed, setCollapsed] = useState(readCollapsed)
+
+  const toggleCollapse = useCallback(() => {
+    setCollapsed((prev) => {
+      const next = !prev
+      try {
+        window.localStorage.setItem(SIDEBAR_KEY, next ? '1' : '0')
+      } catch {
+        // Storage unavailable — preference lasts for this session only.
+      }
+      return next
+    })
+  }, [])
+
   if (!user) return null
 
   return (
     <div className="flex min-h-dvh bg-canvas lg:h-dvh lg:max-h-dvh lg:overflow-hidden">
-      <SideNav user={user} />
+      <SideNav user={user} collapsed={collapsed} onToggleCollapse={toggleCollapse} />
 
       <div className="flex min-h-0 min-w-0 flex-1 flex-col">
         {/*

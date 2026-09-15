@@ -9,7 +9,9 @@ import type { BirthPlace } from '@/types/user'
 export const places: BirthPlace[] = [
   { label: 'Bilaspur, Chhattisgarh', latitude: 22.0797, longitude: 82.1409, timeZone: 'Asia/Kolkata' },
   { label: 'Mumbai, Maharashtra', latitude: 19.076, longitude: 72.8777, timeZone: 'Asia/Kolkata' },
-  { label: 'Delhi, Delhi', latitude: 28.6139, longitude: 77.209, timeZone: 'Asia/Kolkata' },
+  { label: 'New Delhi, Delhi NCR', latitude: 28.6139, longitude: 77.209, timeZone: 'Asia/Kolkata' },
+  { label: 'Gurugram, Haryana', latitude: 28.4595, longitude: 77.0266, timeZone: 'Asia/Kolkata' },
+  { label: 'Noida, Uttar Pradesh', latitude: 28.5355, longitude: 77.391, timeZone: 'Asia/Kolkata' },
   { label: 'Bengaluru, Karnataka', latitude: 12.9716, longitude: 77.5946, timeZone: 'Asia/Kolkata' },
   { label: 'Chennai, Tamil Nadu', latitude: 13.0827, longitude: 80.2707, timeZone: 'Asia/Kolkata' },
   { label: 'Kolkata, West Bengal', latitude: 22.5726, longitude: 88.3639, timeZone: 'Asia/Kolkata' },
@@ -29,6 +31,16 @@ export const places: BirthPlace[] = [
   { label: 'Varanasi, Uttar Pradesh', latitude: 25.3176, longitude: 82.9739, timeZone: 'Asia/Kolkata' },
 ]
 
+/** Split "City, Region" for list rows. */
+export function splitPlaceLabel(label: string): { city: string; region: string | null } {
+  const comma = label.indexOf(',')
+  if (comma === -1) return { city: label, region: null }
+  return {
+    city: label.slice(0, comma).trim(),
+    region: label.slice(comma + 1).trim() || null,
+  }
+}
+
 /** Case-insensitive prefix-and-substring match, nearest listed town first. */
 export function searchPlaces(query: string, limit = 6): BirthPlace[] {
   const q = query.trim().toLowerCase()
@@ -39,8 +51,10 @@ export function searchPlaces(query: string, limit = 6): BirthPlace[] {
 
   for (const place of places) {
     const label = place.label.toLowerCase()
-    if (label.startsWith(q)) starts.push(place)
-    else if (label.includes(q)) contains.push(place)
+    const { city } = splitPlaceLabel(place.label)
+    const cityLower = city.toLowerCase()
+    if (label.startsWith(q) || cityLower.startsWith(q)) starts.push(place)
+    else if (label.includes(q) || cityLower.includes(q)) contains.push(place)
   }
 
   return [...starts, ...contains].slice(0, limit)

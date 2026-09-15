@@ -138,7 +138,7 @@ export default function FoundationPage() {
         {/* ── Colour ─────────────────────────────────────────────── */}
         <Section
           title="Colour"
-          note="Midnight through royal indigo carry the celestial surfaces; ivory and warm white carry everything read at length. Gold marks selection, chart geometry and small emphases — it is never the dominant colour on a screen."
+          note="Astrovate system: deep space through muted plum for surfaces; copper for accents and selection; warm white and pale rose for text. Copper marks emphasis — it is never the only colour on a screen."
         >
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
             {SWATCHES.map((swatch) => (
@@ -857,41 +857,35 @@ const GRAHA_COLUMNS = [
 ]
 
 const SWATCHES = [
-  // Celestial — whole sections, not accents.
-  { token: 'midnight', label: 'Midnight', className: 'bg-midnight', hex: '#080711' },
-  { token: 'indigo-deep', label: 'Indigo deep', className: 'bg-indigo-deep', hex: '#111022' },
-  { token: 'navy', label: 'Soft lavender', className: 'bg-navy', hex: '#8E82D8' },
-  { token: 'indigo-royal', label: 'Royal indigo', className: 'bg-indigo-royal', hex: '#181633' },
-  // Gold — highlights, active states, chart geometry. Never dominant.
-  { token: 'gold', label: 'Astro gold', className: 'bg-gold', hex: '#C9A96E' },
-  { token: 'gold-soft-line', label: 'Soft gold', className: 'bg-gold-soft-line', hex: '#D4B87A' },
-  { token: 'gold-deep', label: 'Gold deep', className: 'bg-gold-deep', hex: '#C9A96E' },
-  {
-    token: 'gold-soft',
-    label: 'Gold soft',
-    className: 'bg-gold-soft border border-gold-border',
-    hex: '#2A2414',
-  },
-  // Text, on midnight.
-  { token: 'ink', label: 'Ink', className: 'bg-ink', hex: '#F5F2FF' },
-  { token: 'purple', label: 'Lavender', className: 'bg-purple', hex: '#B6B1CE' },
-  { token: 'muted', label: 'Muted', className: 'bg-muted', hex: '#77728F' },
-  { token: 'faint', label: 'Faint', className: 'bg-faint', hex: '#5C5774' },
-  // Night paper.
-  { token: 'canvas', label: 'Canvas', className: 'bg-canvas border border-border', hex: '#080711' },
+  // Astrovate primary — deep space → muted plum
+  { token: 'deep-space', label: 'Deep Space', className: 'bg-deep-space', hex: '#0F0B19' },
+  { token: 'dark-purple', label: 'Dark Purple', className: 'bg-dark-purple', hex: '#1B101D' },
+  { token: 'deep-burgundy', label: 'Deep Burgundy', className: 'bg-deep-burgundy', hex: '#2E1623' },
+  { token: 'nebula-plum', label: 'Nebula Plum', className: 'bg-nebula-plum', hex: '#36232E' },
+  { token: 'dark-mauve', label: 'Dark Mauve', className: 'bg-dark-mauve', hex: '#44333C' },
+  { token: 'muted-plum', label: 'Muted Plum', className: 'bg-muted-plum', hex: '#5C4750' },
+  // Copper & metallic — primary accent
+  { token: 'copper-shadow', label: 'Copper Shadow', className: 'bg-copper-shadow', hex: '#7D4835' },
+  { token: 'copper', label: 'Copper', className: 'bg-copper', hex: '#DC844F' },
+  { token: 'light-copper', label: 'Light Copper', className: 'bg-light-copper', hex: '#E3B08A' },
+  { token: 'pale-copper', label: 'Pale Copper', className: 'bg-pale-copper', hex: '#F2D7C7' },
+  // Text & light accents
+  { token: 'warm-white', label: 'Warm White', className: 'bg-warm-white', hex: '#FDF8F4' },
+  { token: 'pale-rose', label: 'Pale Rose', className: 'bg-pale-rose', hex: '#D2C1C4' },
+  { token: 'lavender-gray', label: 'Lavender Gray', className: 'bg-lavender-gray', hex: '#A097A7' },
+  { token: 'gray-purple', label: 'Gray Purple', className: 'bg-gray-purple', hex: '#7A6E74' },
+  // Semantic aliases used across the app
+  { token: 'navy', label: 'Navy → Copper', className: 'bg-navy', hex: '#DC844F' },
+  { token: 'gold', label: 'Gold → Copper', className: 'bg-gold', hex: '#DC844F' },
+  { token: 'ink', label: 'Ink', className: 'bg-ink', hex: '#FDF8F4' },
+  { token: 'canvas', label: 'Canvas', className: 'bg-canvas border border-border', hex: '#0F0B19' },
   {
     token: 'surface',
     label: 'Surface',
     className: 'bg-surface border border-border',
-    hex: '#14132A',
+    hex: '#1B101D',
   },
-  {
-    token: 'navy-soft',
-    label: 'Navy soft',
-    className: 'bg-navy-soft border border-border',
-    hex: '#1E1B38',
-  },
-  { token: 'border', label: 'Border', className: 'bg-border', hex: '#2E2A4A' },
+  { token: 'border', label: 'Border', className: 'bg-border', hex: '#44333C' },
 ]
 
 function Swatch({ label, className, hex }: { label: string; className: string; hex: string }) {

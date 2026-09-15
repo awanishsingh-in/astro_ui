@@ -1,5 +1,5 @@
-import { Eye, History, MessageCircle, MessageCirclePlus, Trash2 } from 'lucide-react'
-import { useMemo } from 'react'
+import { Eye, History, MessageCircle, Search, Trash2 } from 'lucide-react'
+import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   deleteChatSession,
@@ -8,6 +8,7 @@ import {
 } from '@/ask/chat-store'
 import { Button } from '@/components/common/Button'
 import { EmptyState } from '@/components/common/EmptyState'
+import { Input } from '@/components/forms/Input'
 import { MobileHeader } from '@/components/navigation/MobileHeader'
 import { useAuth } from '@/auth/auth-context'
 import { PageContainer } from '@/layouts/PageContainer'
@@ -27,13 +28,23 @@ function toSummary(session: ChatSession) {
 }
 
 /**
- * Chat history — mobile-first cards with View / Continue.
+ * Chat history — searchable cards with View / Continue.
  */
 export default function ChatHistoryPage() {
   const { user } = useAuth()
   const navigate = useNavigate()
   const sessions = useChatSessions()
+  const [query, setQuery] = useState('')
+
   const items = useMemo(() => sessions.map(toSummary), [sessions])
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase()
+    if (!q) return items
+    return items.filter((item) => {
+      const haystack = [item.title, item.preview, item.meta ?? ''].join(' ').toLowerCase()
+      return haystack.includes(q)
+    })
+  }, [items, query])
 
   if (!user) return null
 
@@ -53,47 +64,39 @@ export default function ChatHistoryPage() {
 
       <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain no-scrollbar">
         <PageContainer width="reading" className="space-y-5 py-5 sm:py-6 lg:py-8">
-          <header className="space-y-2 lg:flex lg:items-end lg:justify-between lg:gap-6">
-            <div className="min-w-0">
-              <p className="font-mono text-label uppercase tracking-[0.14em] text-gold-deep">
-                Your conversations
-              </p>
-              <h1 className="mt-1 font-serif text-[1.65rem] leading-tight text-ink text-balance sm:text-title lg:text-title-lg">
-                Chat history
-              </h1>
-              <p className="mt-2 max-w-md text-sm text-purple text-pretty sm:text-body">
-                Peek at a past answer, or pick up the thread.
-              </p>
-            </div>
-            <Button
-              variant="secondary"
-              size="md"
-              iconLeft={<MessageCirclePlus className="size-4" />}
-              onClick={() => navigate(`${paths.ask}?new=1`)}
-              className="hidden shrink-0 lg:inline-flex"
-            >
-              New chat
-            </Button>
+          <header className="space-y-2">
+            <p className="font-mono text-label uppercase tracking-[0.14em] text-gold-deep">
+              Your conversations
+            </p>
+            <h1 className="mt-1 font-serif text-[1.65rem] leading-tight text-ink text-balance sm:text-title lg:text-title-lg">
+              Chat history
+            </h1>
+            <p className="mt-2 max-w-md text-sm text-purple text-pretty sm:text-body">
+              Peek at a past answer, or pick up the thread.
+            </p>
           </header>
 
-          {/* Mobile new-chat strip */}
-          <button
-            type="button"
-            onClick={() => navigate(`${paths.ask}?new=1`)}
-            className={cn(
-              'flex w-full items-center gap-3 rounded-card border border-dashed border-gold-border/70',
-              'bg-gold-soft/35 px-4 py-3.5 text-left transition-colors active:bg-gold-soft/55',
-              'lg:hidden',
+          <div className="space-y-2">
+            <label htmlFor="history-search" className="sr-only">
+              Search chat history
+            </label>
+            <Input
+              id="history-search"
+              type="search"
+              inputSize="md"
+              tone="sunken"
+              icon={<Search strokeWidth={1.75} />}
+              placeholder="Search questions, answers, or dates…"
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              autoComplete="off"
+            />
+            {query.trim() && items.length > 0 && (
+              <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-muted">
+                {filtered.length} match{filtered.length === 1 ? '' : 'es'}
+              </p>
             )}
-          >
-            <span className="inline-flex size-11 shrink-0 items-center justify-center rounded-full bg-navy text-on-celestial">
-              <MessageCirclePlus className="size-5" aria-hidden />
-            </span>
-            <span className="min-w-0 flex-1">
-              <span className="block font-serif text-lg text-ink">Start a new chat</span>
-              <span className="mt-0.5 block text-sm text-muted">Ask anything about your chart</span>
-            </span>
-          </button>
+          </div>
 
           {items.length === 0 ? (
             <EmptyState
@@ -101,19 +104,25 @@ export default function ChatHistoryPage() {
               title="No chats yet"
               description="Your first question will open a thread here."
               action={
-                <Button
-                  variant="primary"
-                  size="md"
-                  iconLeft={<MessageCirclePlus className="size-4" />}
-                  onClick={() => navigate(paths.ask)}
-                >
+                <Button variant="primary" size="md" onClick={() => navigate(paths.ask)}>
                   Ask your chart
+                </Button>
+              }
+            />
+          ) : filtered.length === 0 ? (
+            <EmptyState
+              icon={<Search className="size-6" />}
+              title="No matches"
+              description={`Nothing matched “${query.trim()}”. Try another word.`}
+              action={
+                <Button variant="secondary" size="md" onClick={() => setQuery('')}>
+                  Clear search
                 </Button>
               }
             />
           ) : (
             <ul className="space-y-3 pb-4">
-              {items.map((item, index) => (
+              {filtered.map((item, index) => (
                 <li
                   key={item.id}
                   className={cn(
@@ -177,7 +186,7 @@ export default function ChatHistoryPage() {
                       )}
                     >
                       <MessageCircle className="size-4 text-gold-deep" aria-hidden />
-                      Continue
+                      Chat
                     </button>
                   </div>
                 </li>

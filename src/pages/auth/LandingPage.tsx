@@ -79,8 +79,8 @@ export default function LandingPage() {
       className="min-h-dvh"
       style={{ minHeight: '100dvh' }}
       enabled={glowEnabled}
-      color="#E5C875"
-      secondaryColor="#7B6FD6"
+      color="#DC844F"
+      secondaryColor="#E3B08A"
       trailLength={40}
       trailWidth={8}
       trailTaper={0.8}
@@ -118,10 +118,7 @@ export default function LandingPage() {
             <div className="grid items-center gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,440px)] lg:gap-14">
               <div className="flex min-w-0 flex-col items-center text-center lg:items-start lg:text-left">
                 <Logo
-                  layout="stacked"
                   size="lg"
-                  tone="dark"
-                  withTagline
                   className="animate-rise-slow lg:hidden"
                 />
 

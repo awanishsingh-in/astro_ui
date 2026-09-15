@@ -20,6 +20,8 @@ export const paths = {
   calculating: '/calculating',
   /** One-time post-signup Past Insight preview before Ask. */
   onboardingPast: '/onboarding/past',
+  /** Saved Know Your Past selections — always available in the app shell. */
+  yourPast: '/your-past',
 
   // The app
   home: '/home',

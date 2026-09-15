@@ -5,37 +5,63 @@
  * because SVG attributes and Recharts props need literal JS values — they
  * cannot take a Tailwind class. Keep the two in step; nothing else should
  * reach for a raw hex.
+ *
+ * Palette: Astrovate (deep space + copper + warm white).
  */
 
+/** Raw Astrovate swatches — prefer semantic `color.*` aliases in UI code. */
+export const astrovate = {
+  deepSpace: '#0F0B19',
+  darkPurple: '#1B101D',
+  deepBurgundy: '#2E1623',
+  nebulaPlum: '#36232E',
+  darkMauve: '#44333C',
+  mutedPlum: '#5C4750',
+
+  copperShadow: '#7D4835',
+  copper: '#DC844F',
+  lightCopper: '#E3B08A',
+  paleCopper: '#F2D7C7',
+
+  warmWhite: '#FDF8F4',
+  paleRose: '#D2C1C4',
+  lavenderGray: '#A097A7',
+  grayPurple: '#7A6E74',
+} as const
+
 export const color = {
-  navy: '#8E82D8',
-  navyHover: '#A399E4',
-  navySoft: '#1E1B38',
+  navy: astrovate.copper,
+  navyHover: astrovate.lightCopper,
+  navySoft: astrovate.deepBurgundy,
 
-  gold: '#C9A96E',
-  goldDeep: '#C9A96E',
-  goldSoft: '#2A2414',
-  goldBorder: '#5C4C2E',
+  gold: astrovate.copper,
+  goldDeep: astrovate.copper,
+  goldSoft: astrovate.deepBurgundy,
+  goldBorder: astrovate.copperShadow,
 
-  ink: '#F5F2FF',
-  purple: '#B6B1CE',
-  muted: '#77728F',
-  faint: '#5C5774',
+  ink: astrovate.warmWhite,
+  purple: astrovate.paleRose,
+  muted: astrovate.lavenderGray,
+  faint: astrovate.grayPurple,
 
-  canvas: '#080711',
-  surface: '#14132A',
-  surfaceSunken: '#111022',
-  border: '#2E2A4A',
-  borderStrong: '#3F3A5E',
+  canvas: astrovate.deepSpace,
+  surface: astrovate.darkPurple,
+  surfaceSunken: astrovate.deepSpace,
+  border: astrovate.darkMauve,
+  borderStrong: astrovate.mutedPlum,
 
-  positive: '#7ECFA0',
-  caution: '#C9A96E',
-  critical: '#E89A9A',
+  positive: '#8FBF9A',
+  caution: astrovate.copper,
+  critical: '#D4848A',
 
-  chartLine: '#B6B1CE',
-  chartRim: '#C9A96E',
-  chartHighlight: '#2A2414',
-  chartField: '#181633',
+  chartLine: astrovate.paleRose,
+  chartRim: astrovate.copper,
+  chartHighlight: astrovate.deepBurgundy,
+  chartField: astrovate.darkPurple,
+
+  midnight: astrovate.deepSpace,
+  indigoDeep: astrovate.darkPurple,
+  indigoRoyal: astrovate.deepBurgundy,
 } as const
 
 export const font = {

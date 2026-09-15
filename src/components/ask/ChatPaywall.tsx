@@ -26,13 +26,25 @@ export interface ChatPaywallProps {
   onClose: () => void
   /** Demo unlock — no real payment. */
   onUnlock: (planId: string) => void
+  title?: string
+  description?: string
+  benefit?: string
+  unlockLabel?: string
 }
 
 /**
- * Shown when someone tries to chat without an active plan.
+ * Shown when someone tries a paid action without an active plan.
  * Demo purchase only — stores unlock in localStorage via the parent.
  */
-export function ChatPaywall({ isOpen, onClose, onUnlock }: ChatPaywallProps) {
+export function ChatPaywall({
+  isOpen,
+  onClose,
+  onUnlock,
+  title = 'Chat needs a plan',
+  description = 'Ask is included with Cyklos Plus. Choose a plan to message your chart.',
+  benefit = 'Free accounts can browse the chart. Chat with Cyklos is unlocked by a plan.',
+  unlockLabel = 'Unlock chat',
+}: ChatPaywallProps) {
   const desktop = useIsDesktop()
   const [planId, setPlanId] = useState<string>(PLANS[0].id)
   const Overlay = desktop ? Modal : BottomSheet
@@ -41,15 +53,15 @@ export function ChatPaywall({ isOpen, onClose, onUnlock }: ChatPaywallProps) {
     <Overlay
       isOpen={isOpen}
       onClose={onClose}
-      title="Chat needs a plan"
-      description="Ask is included with Cyklos Plus. Choose a plan to message your chart."
+      title={title}
+      description={description}
       footer={
         <div className="flex flex-col gap-2 sm:flex-row sm:justify-end">
           <Button variant="ghost" size="md" onClick={onClose}>
             Not now
           </Button>
           <Button variant="primary" size="md" onClick={() => onUnlock(planId)}>
-            Unlock chat
+            {unlockLabel}
           </Button>
         </div>
       }
@@ -57,9 +69,7 @@ export function ChatPaywall({ isOpen, onClose, onUnlock }: ChatPaywallProps) {
       <div className="space-y-5">
         <div className="flex items-start gap-3 rounded-card border border-gold-border/60 bg-gold-soft/40 px-4 py-3">
           <Crown className="mt-0.5 size-5 shrink-0 text-gold-deep" aria-hidden />
-          <p className="text-sm text-ink text-pretty">
-            Free accounts can browse the chart. Chat with Cyklos is unlocked by a plan.
-          </p>
+          <p className="text-sm text-ink text-pretty">{benefit}</p>
         </div>
 
         <ul className="space-y-2" role="listbox" aria-label="Plans">

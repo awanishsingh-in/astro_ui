@@ -1,4 +1,4 @@
-import { Lock } from 'lucide-react'
+import { Lock, MoonStar, Sun } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Button } from '@/components/common/Button'
 import { Field } from '@/components/forms/Field'
@@ -6,6 +6,7 @@ import { Input } from '@/components/forms/Input'
 import { PlaceField } from '@/components/forms/PlaceField'
 import { BottomSheet } from '@/components/sheets/BottomSheet'
 import type { BirthDetails, BirthPlace } from '@/types/user'
+import { cn } from '@/utils/cn'
 import { formatCoordinates } from '@/utils/format'
 
 export interface BirthDetailsSheetProps {
@@ -96,9 +97,10 @@ export function BirthDetailsSheet({
         </div>
       }
     >
-      <div className="space-y-5">
-        <Field label="Full name" error={errors.fullName}>
+      <div className="space-y-4">
+        <Field appearance="plain" label="Full name" error={errors.fullName}>
           <Input
+            tone="celestial"
             autoComplete="name"
             value={fullName}
             onChange={(event) => {
@@ -108,10 +110,12 @@ export function BirthDetailsSheet({
           />
         </Field>
 
-        <Field label="Date of birth" error={errors.date} help="Day, month, year">
+        <Field appearance="plain" label="Date of birth" error={errors.date} help="Day, month, year">
           <Input
+            tone="celestial"
             type="date"
             mono
+            icon={<Sun strokeWidth={1.75} />}
             max={new Date().toISOString().slice(0, 10)}
             value={date}
             onChange={(event) => {
@@ -122,6 +126,7 @@ export function BirthDetailsSheet({
         </Field>
 
         <Field
+          appearance="plain"
           label="Time of birth"
           error={errors.time}
           help={
@@ -132,8 +137,10 @@ export function BirthDetailsSheet({
         >
           <div className="space-y-2.5">
             <Input
+              tone="celestial"
               type="time"
               mono
+              icon={<MoonStar strokeWidth={1.75} />}
               value={time}
               disabled={timeUnknown}
               onChange={(event) => {
@@ -141,22 +148,46 @@ export function BirthDetailsSheet({
                 clear('time')
               }}
             />
-            <label className="flex w-fit cursor-pointer items-center gap-2.5 text-sm text-purple">
-              <input
-                type="checkbox"
-                checked={timeUnknown}
-                onChange={(event) => {
-                  setTimeUnknown(event.target.checked)
-                  clear('time')
-                }}
-                className="size-4 accent-[var(--color-navy)]"
-              />
+            <button
+              type="button"
+              aria-pressed={timeUnknown}
+              onClick={() => {
+                setTimeUnknown((prev) => !prev)
+                clear('time')
+              }}
+              className={cn(
+                'inline-flex w-fit items-center gap-2 rounded-control border px-3 py-1.5 text-sm transition-colors duration-150 ease-out-soft',
+                timeUnknown
+                  ? 'border-gold/45 bg-gold-soft/60 text-gold-deep'
+                  : 'border-celestial-line bg-transparent text-purple hover:border-border-strong hover:text-ink',
+              )}
+            >
+              <span
+                aria-hidden
+                className={cn(
+                  'flex size-4 items-center justify-center rounded-xs border',
+                  timeUnknown ? 'border-gold bg-gold text-midnight' : 'border-border-strong',
+                )}
+              >
+                {timeUnknown && (
+                  <svg viewBox="0 0 12 12" className="size-2.5" fill="none">
+                    <path
+                      d="M2.5 6.2 4.8 8.5 9.5 3.5"
+                      stroke="currentColor"
+                      strokeWidth="1.6"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                )}
+              </span>
               I don’t know my time
-            </label>
+            </button>
           </div>
         </Field>
 
         <Field
+          appearance="plain"
           label="Birth place"
           error={errors.place}
           help={
@@ -166,6 +197,7 @@ export function BirthDetailsSheet({
           }
         >
           <PlaceField
+            tone="celestial"
             value={place}
             onChange={(next) => {
               setPlace(next)

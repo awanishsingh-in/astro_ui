@@ -1,8 +1,8 @@
-import { MapPin } from 'lucide-react'
+import { Check, MapPin } from 'lucide-react'
 import { useId, useMemo, useRef, useState, type KeyboardEvent } from 'react'
 import { Input } from '@/components/forms/Input'
 import { useOnClickOutside } from '@/hooks/useOnClickOutside'
-import { searchPlaces } from '@/data/places'
+import { searchPlaces, splitPlaceLabel } from '@/data/places'
 import type { BirthPlace } from '@/types/user'
 import { cn } from '@/utils/cn'
 import { formatCoordinates } from '@/utils/format'
@@ -12,6 +12,8 @@ export interface PlaceFieldProps {
   onChange: (place: BirthPlace | null) => void
   invalid?: boolean
   placeholder?: string
+  /** Matches Input — birth forms use `celestial`. */
+  tone?: 'surface' | 'sunken' | 'celestial'
   className?: string
 }
 
@@ -26,6 +28,7 @@ export function PlaceField({
   onChange,
   invalid,
   placeholder = 'Start typing a town',
+  tone = 'surface',
   className,
 }: PlaceFieldProps) {
   const listId = useId()
@@ -48,7 +51,12 @@ export function PlaceField({
   const [highlight, setHighlight] = useState(0)
   const wrapperRef = useRef<HTMLDivElement>(null)
 
-  const results = useMemo(() => (isOpen ? searchPlaces(query) : []), [isOpen, query])
+  const trimmed = query.trim()
+  const searching = isOpen && trimmed.length >= 2 && !value
+  const results = useMemo(
+    () => (searching ? searchPlaces(query) : []),
+    [searching, query],
+  )
 
   useOnClickOutside(wrapperRef, () => setIsOpen(false), isOpen)
 
@@ -84,21 +92,32 @@ export function PlaceField({
     }
   }
 
+  const celestial = tone === 'celestial'
+  const showPanel = searching
+
   return (
     <div ref={wrapperRef} className={cn('relative', className)}>
       <Input
         role="combobox"
-        aria-expanded={isOpen && results.length > 0}
+        aria-expanded={showPanel}
         aria-controls={listId}
         aria-autocomplete="list"
         aria-activedescendant={
-          isOpen && results.length > 0 ? `${listId}-${highlight}` : undefined
+          showPanel && results.length > 0 ? `${listId}-${highlight}` : undefined
         }
         autoComplete="off"
         invalid={invalid}
         placeholder={placeholder}
         value={query}
-        suffix={<MapPin />}
+        tone={tone}
+        icon={<MapPin strokeWidth={1.75} />}
+        suffix={
+          value ? (
+            <span className="inline-flex size-5 items-center justify-center rounded-full bg-gold/20 text-gold">
+              <Check className="size-3" strokeWidth={2.5} />
+            </span>
+          ) : undefined
+        }
         onChange={(event) => {
           setQuery(event.target.value)
           setHighlight(0)
@@ -110,36 +129,114 @@ export function PlaceField({
         onKeyDown={onKeyDown}
       />
 
-      {isOpen && results.length > 0 && (
-        <ul
+      {showPanel && (
+        <div
           id={listId}
           role="listbox"
           aria-label="Matching places"
           className={cn(
-            'absolute inset-x-0 top-[calc(100%+0.375rem)] z-40 max-h-64 overflow-y-auto',
-            'animate-scale-in origin-top rounded-card border border-border bg-surface p-1 shadow-overlay',
+            /* Open upward — birth place sits low on the form; a drop-down was clipped. */
+            'absolute inset-x-0 bottom-[calc(100%+0.5rem)] z-50',
+            'animate-scale-in origin-bottom rounded-card border shadow-overlay',
+            celestial
+              ? 'border-gold/25 bg-indigo-deep backdrop-blur-md'
+              : 'border-border bg-surface',
           )}
         >
-          {results.map((place, index) => (
-            <li key={place.label} id={`${listId}-${index}`} role="option" aria-selected={index === highlight}>
-              <button
-                type="button"
-                tabIndex={-1}
-                onMouseEnter={() => setHighlight(index)}
-                onClick={() => pick(place)}
-                className={cn(
-                  'flex w-full flex-col items-start gap-0.5 rounded-xs px-3 py-2.5 text-left',
-                  index === highlight ? 'bg-navy-soft' : 'bg-transparent',
-                )}
-              >
-                <span className="text-sub text-ink">{place.label}</span>
-                <span className="font-mono text-label uppercase text-muted">
-                  {formatCoordinates(place.latitude, place.longitude)}
-                </span>
-              </button>
-            </li>
-          ))}
-        </ul>
+          <div
+            className={cn(
+              'flex items-center gap-2 border-b px-3.5 py-2',
+              celestial ? 'border-celestial-line/80' : 'border-border',
+            )}
+          >
+            <span
+              className={cn(
+                'font-mono text-[10px] uppercase tracking-[0.14em]',
+                celestial ? 'text-gold/80' : 'text-muted',
+              )}
+            >
+              {results.length > 0
+                ? `${results.length} match${results.length === 1 ? '' : 'es'}`
+                : 'No matches'}
+            </span>
+            <span className="text-[11px] text-muted">Pick the nearest listed town</span>
+          </div>
+
+          {results.length > 0 ? (
+            <ul className="max-h-52 overflow-y-auto overscroll-contain p-1.5">
+              {results.map((place, index) => {
+                const { city, region } = splitPlaceLabel(place.label)
+                const active = index === highlight
+                return (
+                  <li
+                    key={place.label}
+                    id={`${listId}-${index}`}
+                    role="option"
+                    aria-selected={active}
+                  >
+                    <button
+                      type="button"
+                      tabIndex={-1}
+                      onMouseEnter={() => setHighlight(index)}
+                      onClick={() => pick(place)}
+                      className={cn(
+                        'flex w-full items-start gap-3 rounded-control px-3 py-2.5 text-left',
+                        'transition-colors duration-150 ease-out-soft',
+                        active
+                          ? celestial
+                            ? 'bg-gold-soft/50'
+                            : 'bg-navy-soft'
+                          : 'bg-transparent hover:bg-navy-soft/60',
+                      )}
+                    >
+                      <span
+                        aria-hidden
+                        className={cn(
+                          'mt-0.5 inline-flex size-8 shrink-0 items-center justify-center rounded-full border',
+                          active
+                            ? 'border-gold/45 bg-gold/15 text-gold'
+                            : celestial
+                              ? 'border-celestial-line text-gold/60'
+                              : 'border-border text-muted',
+                        )}
+                      >
+                        <MapPin className="size-3.5" strokeWidth={1.75} />
+                      </span>
+                      <span className="min-w-0 flex-1">
+                        <span
+                          className={cn(
+                            'block truncate text-sub font-medium',
+                            celestial ? 'text-on-celestial' : 'text-ink',
+                          )}
+                        >
+                          {city}
+                        </span>
+                        <span
+                          className={cn(
+                            'mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs',
+                            celestial ? 'text-on-celestial-muted' : 'text-muted',
+                          )}
+                        >
+                          {region && <span>{region}</span>}
+                          <span aria-hidden className="text-faint">
+                            ·
+                          </span>
+                          <span className="font-mono text-[10px] uppercase tracking-[0.08em]">
+                            {formatCoordinates(place.latitude, place.longitude)}
+                          </span>
+                        </span>
+                      </span>
+                    </button>
+                  </li>
+                )
+              })}
+            </ul>
+          ) : (
+            <p className="px-4 py-5 text-center text-sm text-muted text-pretty">
+              No towns matched “{trimmed}”. Try another spelling or a nearby city.
+            </p>
+          )}
+        </div>
       )}
     </div>
   )

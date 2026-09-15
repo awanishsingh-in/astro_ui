@@ -1,6 +1,6 @@
-import { History, MessageCirclePlus } from 'lucide-react'
+import { MessageCirclePlus } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useRef, useState, type MouseEvent } from 'react'
-import { useNavigate, useSearchParams } from 'react-router-dom'
+import { useSearchParams } from 'react-router-dom'
 import {
   newChatSessionId,
   setChatSessions,
@@ -33,7 +33,6 @@ import { useProfiles } from '@/profiles/profiles-context'
 import { PageContainer } from '@/layouts/PageContainer'
 import { askQuestion } from '@/services/ask.service'
 import { toAppError } from '@/services/client'
-import { paths } from '@/routes/paths'
 import { bhavaRef } from '@/utils/astro'
 import { cn } from '@/utils/cn'
 import { firstNameOf, greetingFor } from '@/utils/format'
@@ -46,7 +45,6 @@ export default function AskPage() {
   const { user } = useAuth()
   const { selected } = useProfiles()
   const seed = chartSeedFor(selected)
-  const navigate = useNavigate()
   const [params, setParams] = useSearchParams()
 
   const sessions = useChatSessions()
@@ -55,6 +53,8 @@ export default function AskPage() {
   const [viewOnly, setViewOnly] = useState(false)
   const [paywallOpen, setPaywallOpen] = useState(false)
   const [planActive, setPlanActive] = useState(() => (user ? hasActivePlan(user.id) : false))
+  /** After unlocking from "Continue your chat", resume that thread. */
+  const pendingContinue = useRef(false)
 
   const requestId = useRef(0)
   const lastAsked = useRef<string | null>(null)
@@ -218,8 +218,22 @@ export default function AskPage() {
       unlockPlan(user.id)
       setPlanActive(true)
       setPaywallOpen(false)
+      if (pendingContinue.current && activeId) {
+        pendingContinue.current = false
+        setViewOnly(false)
+        const session = sessions.find((s) => s.id === activeId)
+        const firstUser = session?.messages.find((m) => m.role === 'user')
+        if (firstUser && firstUser.role === 'user') {
+          setParams(
+            { chat: activeId, mode: 'continue', q: firstUser.text },
+            { replace: true },
+          )
+        } else {
+          setParams({ chat: activeId, mode: 'continue' }, { replace: true })
+        }
+      }
     },
-    [user],
+    [user, activeId, sessions, setParams],
   )
 
   // Deep link / reload with ?q= starts a fresh chat for that question.
@@ -275,17 +289,45 @@ export default function AskPage() {
     [sessions, setParams],
   )
 
+  const continueChat = useCallback(() => {
+    if (!activeId) return
+    // No plan / tokens — payment first, then open the thread to chat.
+    if (!planActive) {
+      pendingContinue.current = true
+      setPaywallOpen(true)
+      return
+    }
+    // Optimistic — show the composer immediately.
+    setViewOnly(false)
+    const session = sessions.find((s) => s.id === activeId)
+    const firstUser = session?.messages.find((m) => m.role === 'user')
+    if (firstUser && firstUser.role === 'user') {
+      setParams(
+        { chat: activeId, mode: 'continue', q: firstUser.text },
+        { replace: true },
+      )
+    } else {
+      setParams({ chat: activeId, mode: 'continue' }, { replace: true })
+    }
+  }, [activeId, sessions, setParams, planActive])
+
   useEffect(() => {
     if (newParam === '1') {
       startNewChat()
       return
     }
     if (!chatParam) return
-    if (activeId === chatParam && (modeParam === 'view') === viewOnly) return
+    const wantView = modeParam === 'view'
+    if (activeId === chatParam) {
+      // Same thread: follow the URL mode. Do not depend on `viewOnly` or a
+      // stale `mode=view` can fight "Continue your chat" and flip back.
+      setViewOnly(wantView)
+      return
+    }
     const exists = sessions.some((s) => s.id === chatParam)
     if (!exists) return
-    selectChat(chatParam, modeParam === 'view' ? 'view' : 'continue')
-  }, [newParam, chatParam, modeParam, sessions, activeId, viewOnly, selectChat, startNewChat])
+    selectChat(chatParam, wantView ? 'view' : 'continue')
+  }, [newParam, chatParam, modeParam, sessions, activeId, selectChat, startNewChat])
 
   const retry = useCallback(
     (question: string) => {
@@ -383,28 +425,15 @@ export default function AskPage() {
                 <PageContainer width="reading" flush className="py-3 lg:py-4">
                   <div className="mx-auto max-w-reading">
                     {viewOnly ? (
-                      <div className="flex flex-col gap-2 sm:flex-row">
-                        <Button
-                          variant="secondary"
-                          size="md"
-                          fullWidth
-                          iconLeft={<History className="size-4" />}
-                          onClick={() => navigate(paths.askHistory)}
-                          className="sm:flex-1"
-                        >
-                          History
-                        </Button>
-                        <Button
-                          variant="primary"
-                          size="md"
-                          fullWidth
-                          iconLeft={<MessageCirclePlus className="size-4" />}
-                          onClick={() => activeId && selectChat(activeId, 'continue')}
-                          className="sm:flex-1"
-                        >
-                          Continue
-                        </Button>
-                      </div>
+                      <Button
+                        variant="primary"
+                        size="md"
+                        fullWidth
+                        iconLeft={<MessageCirclePlus className="size-4" />}
+                        onClick={continueChat}
+                      >
+                        Continue your chat
+                      </Button>
                     ) : (
                       <QuestionComposer
                         variant="bar"
@@ -427,7 +456,10 @@ export default function AskPage() {
 
       <ChatPaywall
         isOpen={paywallOpen}
-        onClose={() => setPaywallOpen(false)}
+        onClose={() => {
+          pendingContinue.current = false
+          setPaywallOpen(false)
+        }}
         onUnlock={confirmPlan}
       />
     </div>

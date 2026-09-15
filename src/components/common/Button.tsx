@@ -26,7 +26,7 @@ export interface ButtonProps
 
 const VARIANTS: Record<ButtonVariant, string> = {
   primary:
-    'bg-navy text-on-celestial hover:bg-navy-hover active:bg-navy-active disabled:bg-border-strong disabled:text-muted',
+    'bg-navy text-midnight hover:bg-navy-hover active:bg-navy-active active:text-warm-white disabled:bg-border-strong disabled:text-muted',
   secondary:
     'bg-surface text-ink border border-border-strong hover:bg-navy-soft hover:border-navy active:bg-navy-soft disabled:border-border disabled:text-faint',
   ghost: 'bg-transparent text-ink hover:bg-navy-soft active:bg-navy-soft disabled:text-faint',
@@ -50,8 +50,8 @@ const SIZES: Record<ButtonSize, string> = {
 }
 
 /**
- * The product's one button. Primary is navy; gold is reserved for accent
- * actions and never becomes the dominant colour on a screen.
+ * The product's one button. Primary is copper; gold/copper soft is reserved
+ * for accent actions and never becomes the dominant colour on a screen.
  */
 export function Button({
   variant = 'primary',

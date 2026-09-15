@@ -29,6 +29,7 @@ const CodePage = lazy(() => import('@/pages/auth/CodePage'))
 const BirthDetailsPage = lazy(() => import('@/pages/auth/BirthDetailsPage'))
 const CalculatingPage = lazy(() => import('@/pages/auth/CalculatingPage'))
 const PastInsightPage = lazy(() => import('@/pages/onboarding/PastInsightPage'))
+const YourPastPage = lazy(() => import('@/pages/onboarding/YourPastPage'))
 
 const AskPage = lazy(() => import('@/pages/ask/AskPage'))
 const ChatHistoryPage = lazy(() => import('@/pages/ask/ChatHistoryPage'))
@@ -133,6 +134,7 @@ const routes: RouteObject[] = [
       { path: paths.home, element: <Navigate to={paths.everything} replace /> },
       { path: paths.ask, element: page(<AskPage />) },
       { path: paths.askHistory, element: page(<ChatHistoryPage />) },
+      { path: paths.yourPast, element: page(<YourPastPage />) },
       { path: paths.chart, element: page(<ChartPage />) },
       { path: paths.readings, element: page(<ReadingsPage />) },
       { path: paths.reading(), element: page(<ReadingDetailPage />) },

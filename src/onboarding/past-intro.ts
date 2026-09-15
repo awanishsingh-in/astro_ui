@@ -5,10 +5,15 @@
  * someone else (or an earlier test) skipped it in the same browser.
  */
 
+import type { PastInsightCategory } from '@/data/past-insights'
+import { PAST_INSIGHTS } from '@/data/past-insights'
+
 const PAST_INTRO_KEY = 'cyklos_past_intro_seen'
+const PAST_SELECTIONS_KEY = 'cyklos_past_selections'
 const CHAT_UNLOCK_KEY = 'cyklos_chat_unlocked'
 
 type SeenMap = Record<string, true>
+type SelectionsMap = Record<string, PastInsightCategory[]>
 
 function readSeenMap(): SeenMap {
   try {
@@ -59,6 +64,47 @@ export function resetPastIntroForUser(userId: string): void {
   writeSeenMap(map)
 }
 
+function readSelectionsMap(): SelectionsMap {
+  try {
+    const raw = window.localStorage.getItem(PAST_SELECTIONS_KEY)
+    if (!raw) return {}
+    const parsed = JSON.parse(raw) as unknown
+    if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+      return parsed as SelectionsMap
+    }
+    return {}
+  } catch {
+    return {}
+  }
+}
+
+function writeSelectionsMap(map: SelectionsMap): void {
+  try {
+    window.localStorage.setItem(PAST_SELECTIONS_KEY, JSON.stringify(map))
+  } catch {
+    // Storage unavailable — history may not persist.
+  }
+}
+
+const VALID_IDS = new Set(PAST_INSIGHTS.map((item) => item.id))
+
+/** Persist the areas chosen on Know Your Past (sidebar history). */
+export function savePastSelections(userId: string, ids: PastInsightCategory[]): void {
+  if (!userId) return
+  const cleaned = ids.filter((id) => VALID_IDS.has(id)).slice(0, 3)
+  const map = readSelectionsMap()
+  map[userId] = cleaned
+  writeSelectionsMap(map)
+}
+
+/** Areas the user picked on Know Your Past, if any. */
+export function getPastSelections(userId: string): PastInsightCategory[] {
+  if (!userId) return []
+  const stored = readSelectionsMap()[userId]
+  if (!Array.isArray(stored)) return []
+  return stored.filter((id): id is PastInsightCategory => VALID_IDS.has(id)).slice(0, 3)
+}
+
 export function hasChatUnlocked(userId: string): boolean {
   try {
     const raw = window.localStorage.getItem(CHAT_UNLOCK_KEY)
@@ -92,4 +138,3 @@ export function unlockChat(userId: string): void {
 /** Plan unlock — same storage as chat unlock for this demo. */
 export const hasActivePlan = hasChatUnlocked
 export const unlockPlan = unlockChat
-

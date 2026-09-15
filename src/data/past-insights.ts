@@ -1,7 +1,7 @@
 import type { GrahaCode } from '@/types/astrology'
 
 /**
- * Know Your Past — six areas; the user may choose up to three.
+ * Know Your Past — six areas; the user may choose one to three.
  * Mock chart readings only; no real ephemeris engine.
  */
 
@@ -25,6 +25,9 @@ export interface PastInsight {
   source: string
 }
 
+/** At least one area is enough to continue. */
+export const MIN_PAST_SELECTIONS = 1
+/** Free tier caps how many areas can be locked in at once. */
 export const MAX_PAST_SELECTIONS = 3
 
 export const PAST_INSIGHTS: PastInsight[] = [
