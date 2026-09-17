@@ -1,9 +1,10 @@
-import { Info } from 'lucide-react'
+import { Crown, Download, Info } from 'lucide-react'
 import { useSearchParams } from 'react-router-dom'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { ErrorState } from '@/components/common/ErrorState'
 import { LoadingState } from '@/components/common/LoadingState'
 import { Skeleton } from '@/components/common/Skeleton'
+import { Button } from '@/components/common/Button'
 import { TabPanel, Tabs, useTabs } from '@/components/common/Tabs'
 import { AshtakavargaGrid } from '@/components/astrology/AshtakavargaGrid'
 import { BhavaTable } from '@/components/astrology/BhavaTable'
@@ -12,17 +13,18 @@ import { DashaTimeline } from '@/components/astrology/DashaTimeline'
 import { DrishtiPanel } from '@/components/astrology/DrishtiPanel'
 import { GrahaTable } from '@/components/astrology/GrahaTable'
 import { ReadingNotes } from '@/components/astrology/ReadingNotes'
+import { ChatPaywall } from '@/components/ask/ChatPaywall'
 import { ChartProfilePicker } from '@/components/charts/ChartProfilePicker'
-import { PremiumChartWheel } from '@/components/charts/PremiumChartWheel'
-import { CelestialCard } from '@/components/celestial/CelestialCard'
+import { ChartDiamond } from '@/components/charts/ChartDiamond'
 import { VargaSelector, vargaLabel } from '@/components/charts/VargaSelector'
-import { MobileHeader } from '@/components/navigation/MobileHeader'
+import { useToast } from '@/components/feedback/toast-context'
 import { useAuth } from '@/auth/auth-context'
 import { chartSeedFor, type ChartProfile } from '@/data/profiles'
 import { useProfiles } from '@/profiles/profiles-context'
 import { vargas } from '@/data/vargas'
 import { useAsync } from '@/hooks/useAsync'
 import { PageContainer } from '@/layouts/PageContainer'
+import { hasActivePlan, unlockPlan } from '@/onboarding/past-intro'
 import { describeBirth, getCalculationBasis, getChart, getDasha } from '@/services/chart.service'
 import type { GrahaCode, VargaCode } from '@/types/astrology'
 import { cn } from '@/utils/cn'
@@ -45,7 +47,9 @@ const SECTIONS = [
  */
 export default function ChartPage() {
   const { user } = useAuth()
+  const toast = useToast()
   const [params, setParams] = useSearchParams()
+  const chartFrameRef = useRef<HTMLDivElement>(null)
 
   // `?section=` deep-links from Everything open straight on that tab.
   const requested = params.get('section')
@@ -68,6 +72,10 @@ export default function ChartPage() {
   const [varga, setVarga] = useState<VargaCode>('D1')
   const [activeGraha, setActiveGraha] = useState<GrahaCode | null>(null)
   const [activeBhava, setActiveBhava] = useState<number | undefined>(undefined)
+  const [planUnlocked, setPlanUnlocked] = useState(() =>
+    user ? hasActivePlan(user.id) : false,
+  )
+  const [paywallOpen, setPaywallOpen] = useState(false)
 
   // Seeded on the birth details, so an edit in Account recalculates this.
   const seed = chartSeedFor(profile)
@@ -107,15 +115,41 @@ export default function ChartPage() {
     setActiveBhava(undefined)
   }, [])
 
+  const exportChartSvg = useCallback(() => {
+    const svg = chartFrameRef.current?.querySelector('svg')
+    if (!svg) {
+      toast.error('Chart not ready', { description: 'Wait for the kundli to finish drawing.' })
+      return
+    }
+
+    const clone = svg.cloneNode(true) as SVGElement
+    if (!clone.getAttribute('xmlns')) {
+      clone.setAttribute('xmlns', 'http://www.w3.org/2000/svg')
+    }
+    const payload = `<?xml version="1.0" encoding="UTF-8"?>\n${new XMLSerializer().serializeToString(clone)}`
+    const blob = new Blob([payload], { type: 'image/svg+xml;charset=utf-8' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    const safeName = profile.name.replace(/[^\w\-]+/g, '-').replace(/^-|-$/g, '') || 'chart'
+    link.href = url
+    link.download = `cyklos-${safeName}-${vargaLabel(varga)}.svg`
+    link.click()
+    URL.revokeObjectURL(url)
+    toast.success('Chart downloaded', {
+      description: `${vargaLabel(varga)} kundli saved as SVG.`,
+    })
+  }, [profile.name, toast, varga])
+
+  const downloadChart = useCallback(() => {
+    if (!planUnlocked) {
+      setPaywallOpen(true)
+      return
+    }
+    exportChartSvg()
+  }, [planUnlocked, exportChartSvg])
+
   const chart = chartState.data
   const vargaMeta = vargas.find((v) => v.code === varga)
-
-  /** The aspect trace drawn on the wheel: where the graha sits, then its targets. */
-  const aspectTrace = useMemo(() => {
-    if (!chart || !activeGraha) return undefined
-    const row = chart.drishti.find((d) => d.graha === activeGraha)
-    return row ? [row.sitsIn, ...row.aspects] : undefined
-  }, [chart, activeGraha])
 
   const occupantsByBhava = useMemo(() => {
     const map: Record<number, GrahaCode[]> = {}
@@ -129,14 +163,6 @@ export default function ChartPage() {
 
   return (
     <>
-      <MobileHeader
-        title="My Chart"
-        showBack
-        action={
-          <ChartProfilePicker profiles={profiles} selectedId={profileId} onSelect={changeProfile} />
-        }
-      />
-
       <PageContainer width="wide">
         {chartState.status === 'error' ? (
           <ErrorState
@@ -145,44 +171,44 @@ export default function ChartPage() {
             title="This chart did not load"
           />
         ) : (
-          <div className="grid gap-8 lg:grid-cols-[minmax(0,15rem)_minmax(0,1fr)] lg:gap-8 xl:grid-cols-[minmax(0,15rem)_minmax(0,1fr)_minmax(0,19rem)]">
+          <div className="grid gap-6 lg:grid-cols-[minmax(0,16.5rem)_minmax(0,1fr)] lg:gap-7 xl:grid-cols-[minmax(0,17rem)_minmax(0,1fr)_minmax(0,20rem)] xl:gap-8">
             {/* ── Left: whose chart, and which one ── */}
-            <div className="hidden lg:col-start-1 lg:block">
-              <div className="sticky top-8 space-y-6">
-                <ChartProfilePicker
-                  profiles={profiles}
-                  selectedId={profileId}
-                  onSelect={changeProfile}
-                  variant="list"
-                />
+            <div className="lg:col-start-1">
+              <div className="lg:sticky lg:top-8 lg:space-y-5">
+                <div className="mb-4 flex items-center justify-between gap-3 lg:hidden">
+                  <p className="font-mono text-label uppercase text-muted">Charts</p>
+                  <ChartProfilePicker
+                    profiles={profiles}
+                    selectedId={profileId}
+                    onSelect={changeProfile}
+                  />
+                </div>
+                <div className="hidden lg:block">
+                  <ChartProfilePicker
+                    profiles={profiles}
+                    selectedId={profileId}
+                    onSelect={changeProfile}
+                    variant="list"
+                  />
+                </div>
               </div>
             </div>
 
             {/* ── Centre: the chart and the active section ── */}
             <div className="min-w-0 lg:col-start-2">
-              {/*
-                Exactly one <h1> per breakpoint: the sticky bar carries it on
-                mobile, so this one is display:none there and leaves the
-                accessibility tree; above `lg` the bar is hidden and it takes
-                over. A profile other than your own always shows, because the
-                bar only ever says "My Chart".
-              */}
-              <header className="space-y-1.5">
-                <h1
-                  className={cn(
-                    'text-title font-semibold text-ink lg:block lg:text-title-lg',
-                    profile.id === 'self' ? 'hidden' : 'block',
-                  )}
-                >
+              <header className="space-y-2 rounded-panel border border-border/70 bg-surface/60 px-4 py-4 sm:px-5">
+                <p className="font-mono text-label uppercase tracking-[0.14em] text-gold-deep">
+                  Kundli
+                  {profile.relation !== 'self' ? ` · ${profile.relation}` : ''}
+                </p>
+                <h1 className="font-serif text-title font-normal text-ink lg:text-title-lg">
                   {profile.id === 'self' ? 'My chart' : profile.name}
                 </h1>
                 <p className="font-mono text-data text-muted">
                   {describeBirth(profile.birthDetails)}
                 </p>
-                {/* The birth nakshatra is what the dasha is entered at, so it
-                    belongs in the identity strip rather than only in a table. */}
                 {chart && (
-                  <p className="font-mono text-label uppercase text-gold-deep">
+                  <p className="font-mono text-label uppercase text-copper">
                     Lagna {chart.lagna.rashi} ·{' '}
                     {(() => {
                       const moon = chart.grahas.find((g) => g.graha === 'Mo')
@@ -196,56 +222,64 @@ export default function ChartPage() {
 
               <VargaSelector value={varga} onChange={changeVarga} className="mt-5" />
 
-              {/*
-                Below `xl` the notes sit beside the wheel; at `xl` they move to
-                the right rail, so this collapses to one column and the wheel
-                takes the width it deserves.
-              */}
-              <div className="mt-5 grid gap-6 md:grid-cols-[minmax(0,320px)_minmax(0,1fr)] md:items-start xl:grid-cols-1">
-                {/*
-                  The one dark panel on the dashboard. Everything around it is
-                  paper — tables, notes, controls — so the chart itself reads
-                  as the object being studied rather than another card.
-                */}
-                <CelestialCard
-                  motifs={['stars']}
-                  tone="midnight"
-                  seed={`${profileId}:${varga}`}
-                  padding="none"
-                  className="rounded-panel [&>div]:rounded-panel"
-                >
-                  <div className="p-4 xl:p-6">
+              <div className="mt-5 grid gap-6 md:grid-cols-[minmax(0,340px)_minmax(0,1fr)] md:items-start xl:grid-cols-1">
+                <div className="overflow-hidden rounded-panel border border-border bg-surface shadow-card">
+                  <div className="flex items-center justify-between gap-3 border-b border-border/80 bg-surface-sunken/40 px-4 py-2.5 sm:px-5">
+                    <p className="font-mono text-label uppercase tracking-[0.12em] text-gold-deep">
+                      {vargaLabel(varga)}
+                      {vargaMeta ? ` · ${vargaMeta.name}` : ''}
+                    </p>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      disabled={!chart}
+                      onClick={downloadChart}
+                      iconLeft={
+                        planUnlocked ? (
+                          <Download className="size-3.5" strokeWidth={2} />
+                        ) : (
+                          <Crown className="size-3.5" strokeWidth={2} />
+                        )
+                      }
+                      className="rounded-full"
+                    >
+                      Download
+                      {!planUnlocked && (
+                        <span className="ml-1 font-mono text-[9px] uppercase tracking-[0.12em] text-gold-deep">
+                          Plus
+                        </span>
+                      )}
+                    </Button>
+                  </div>
+                  <div ref={chartFrameRef} className="p-4 xl:p-6">
                     {chart ? (
-                      <PremiumChartWheel
+                      <ChartDiamond
                         chart={chart}
-                        tone="dark"
-                        animationKey={`${profileId}:${varga}`}
-                        activeGraha={activeGraha}
-                        onGrahaClick={selectGraha}
+                        tone="surface"
                         activeBhava={activeBhava}
                         onBhavaClick={selectBhava}
-                        aspectsFrom={aspectTrace}
-                        interactive
                         className="mx-auto max-w-[440px]"
                       />
                     ) : (
-                      <Skeleton
-                        shape="circle"
-                        className="mx-auto aspect-square w-full max-w-[440px] bg-indigo-royal/50"
-                      />
+                      <div className="space-y-3">
+                        <Skeleton
+                          shape="block"
+                          className="mx-auto aspect-square w-full max-w-[440px]"
+                        />
+                        <p className="text-center font-mono text-label uppercase text-muted">
+                          Calculating {vargaLabel(varga)}…
+                        </p>
+                      </div>
                     )}
-
-                    <p className="mt-4 border-t border-celestial-line pt-3 text-sm text-on-celestial-muted text-pretty">
-                      <span className="font-mono text-label uppercase text-gold-soft-line">
-                        {vargaLabel(varga)} {vargaMeta?.name}
-                      </span>
-                      {' — '}
-                      {vargaMeta?.signifies}.
-                    </p>
+                    {vargaMeta && (
+                      <p className="mt-4 border-t border-border pt-3 text-sm text-muted text-pretty">
+                        {vargaMeta.signifies}.
+                      </p>
+                    )}
                   </div>
-                </CelestialCard>
+                </div>
 
-                {/* Reading notes sit beside the wheel until the third column appears. */}
                 {chart && (
                   <ReadingNotes
                     chart={chart}
@@ -256,11 +290,12 @@ export default function ChartPage() {
                 )}
               </div>
 
-              {/* ── The six sections ── */}
-              <div className="mt-8">
-                <Tabs items={SECTIONS} controller={tabs} label="Chart sections" />
+              <div className="mt-8 overflow-hidden rounded-panel border border-border bg-surface/80 shadow-card">
+                <div className="border-b border-border px-3 pt-3 sm:px-4">
+                  <Tabs items={SECTIONS} controller={tabs} label="Chart sections" />
+                </div>
 
-                <div className="pt-5">
+                <div className="p-4 sm:p-5">
                   {chartState.status === 'loading' || !chart ? (
                     <LoadingState label="Reading your chart…" lines={6} />
                   ) : (
@@ -339,8 +374,14 @@ export default function ChartPage() {
             {/* ── Right: reading notes and context, from 1280px up ── */}
             {chart && (
               <div className="hidden xl:col-start-3 xl:block">
-                <div className="sticky top-8 space-y-6">
-                  <ReadingNotes chart={chart} activeGraha={activeGraha} activeBhava={activeBhava} />
+                <div className="sticky top-8 space-y-4">
+                  <div className="rounded-panel border border-border bg-surface/70 p-4 shadow-card">
+                    <ReadingNotes
+                      chart={chart}
+                      activeGraha={activeGraha}
+                      activeBhava={activeBhava}
+                    />
+                  </div>
 
                   {(activeGraha || activeBhava) && (
                     <button
@@ -350,8 +391,9 @@ export default function ChartPage() {
                         setActiveBhava(undefined)
                       }}
                       className={cn(
-                        'flex w-full items-center justify-center gap-2 rounded-control border border-border',
-                        'bg-surface px-4 py-2.5 text-sm font-medium text-navy hover:bg-navy-soft',
+                        'flex w-full items-center justify-center gap-2 rounded-control border border-copper/40',
+                        'bg-copper/10 px-4 py-2.5 text-sm font-medium text-copper',
+                        'transition-colors hover:bg-copper/15 hover:border-copper/55',
                       )}
                     >
                       <Info aria-hidden className="size-4" />
@@ -364,6 +406,25 @@ export default function ChartPage() {
           </div>
         )}
       </PageContainer>
+
+      <ChatPaywall
+        isOpen={paywallOpen}
+        onClose={() => setPaywallOpen(false)}
+        onUnlock={(_planId) => {
+          if (!user) return
+          unlockPlan(user.id)
+          setPlanUnlocked(true)
+          setPaywallOpen(false)
+          toast.success('Downloads unlocked', {
+            description: 'You can save this kundli as an SVG anytime.',
+          })
+          window.setTimeout(() => exportChartSvg(), 80)
+        }}
+        title="Download needs a plan"
+        description="Chart exports are included with Cyklos Plus. Unlock to save this kundli."
+        benefit="Plus unlocks SVG downloads of any divisional chart you are viewing."
+        unlockLabel="Unlock downloads"
+      />
     </>
   )
 }

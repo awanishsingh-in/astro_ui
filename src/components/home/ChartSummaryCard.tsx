@@ -1,6 +1,6 @@
 import { ArrowRight } from 'lucide-react'
 import { Link } from 'react-router-dom'
-import { PremiumChartWheel } from '@/components/charts/PremiumChartWheel'
+import { ChartDiamond } from '@/components/charts/ChartDiamond'
 import { CelestialBackground } from '@/components/celestial/CelestialBackground'
 import { ZodiacSymbols } from '@/components/celestial/ZodiacSymbols'
 import type { Chart } from '@/types/astrology'
@@ -27,7 +27,7 @@ export interface ChartSummaryCardProps {
  *
  * This is the densest card in the product and deliberately so: the whole
  * premise is that answers come from *this*, so it carries the identity, the
- * three placements it is recognised by, the wheel itself, and the period
+ * three placements it is recognised by, the kundli itself, and the period
  * currently running — everything needed to trust the next answer.
  *
  * The top half is night sky and the bottom half is paper: the chart is the
@@ -85,12 +85,11 @@ export function ChartSummaryCard({
             stack ? 'max-w-[280px]' : 'max-w-[200px] sm:order-1 sm:mx-0',
           )}
         >
-          <PremiumChartWheel chart={chart} tone="dark" animationKey={chart.varga} />
+          <ChartDiamond chart={chart} tone="paper" className="rounded-xs" />
 
           {/*
-            The twelve signs under the wheel, with this chart's lagna the only
-            one lit. It is the wheel's outer band restated as a legend — which
-            sign the chart actually starts from, readable at a glance.
+            The twelve signs under the kundli, with this chart's lagna the only
+            one lit — which sign the chart actually starts from.
           */}
           <ZodiacSymbols activeRashi={chart.lagna.rashi} tone="dark" className="mt-3 px-1" />
         </div>

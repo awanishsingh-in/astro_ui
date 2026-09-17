@@ -120,19 +120,18 @@ export default function BirthDetailsPage() {
           <AstroDivider />
         </header>
 
-        <div className="relative overflow-visible rounded-panel border border-celestial-line/70 bg-indigo-royal/40 p-4 shadow-raised sm:p-5">
+        <div className="relative overflow-visible rounded-panel border border-border bg-surface p-4 shadow-raised sm:p-5">
           <div
             aria-hidden
             className="pointer-events-none absolute inset-0 overflow-hidden rounded-panel"
           >
-            <div className="absolute -right-16 -top-20 size-48 rounded-full bg-navy/20 blur-3xl" />
-            <div className="absolute -bottom-24 -left-10 size-40 rounded-full bg-gold/10 blur-3xl" />
+            <div className="absolute -right-16 -top-20 size-48 rounded-full bg-pale-copper/50 blur-3xl" />
+            <div className="absolute -bottom-24 -left-10 size-40 rounded-full bg-copper/10 blur-3xl" />
           </div>
 
           <div className="relative flex flex-col gap-4">
             <Field appearance="plain" label="Full name" error={errors.fullName}>
               <Input
-                tone="celestial"
                 autoComplete="name"
                 autoFocus
                 placeholder="As written on your birth record"
@@ -166,8 +165,8 @@ export default function BirthDetailsPage() {
                         'rounded-card border px-3 py-3 text-center text-sm font-medium transition-all duration-200 ease-out-soft',
                         'active:scale-[0.98]',
                         active
-                          ? 'border-gold/60 bg-gold-soft text-gold-deep shadow-[0_0_0_1px_rgba(220,132,79,0.25)]'
-                          : 'border-celestial-line/80 bg-indigo-deep/70 text-purple hover:border-navy hover:bg-navy-soft hover:text-ink',
+                          ? 'border-copper bg-pale-copper text-copper-shadow shadow-[0_0_0_1px_rgba(220,132,79,0.2)]'
+                          : 'border-border bg-canvas text-purple hover:border-copper/40 hover:bg-pale-copper/40 hover:text-ink',
                       )}
                     >
                       {GENDER_LABEL[option]}
@@ -180,7 +179,6 @@ export default function BirthDetailsPage() {
             <div className="grid gap-4 sm:grid-cols-2">
               <Field appearance="plain" label="Date of birth" error={errors.date}>
                 <Input
-                  tone="celestial"
                   type="date"
                   mono
                   icon={<Sun strokeWidth={1.75} />}
@@ -205,7 +203,6 @@ export default function BirthDetailsPage() {
               >
                 <div className="space-y-2.5">
                   <Input
-                    tone="celestial"
                     type="time"
                     mono
                     icon={<MoonStar strokeWidth={1.75} />}
@@ -226,8 +223,8 @@ export default function BirthDetailsPage() {
                     className={cn(
                       'inline-flex w-fit items-center gap-2 rounded-control border px-3 py-1.5 text-sm transition-colors duration-150 ease-out-soft',
                       timeUnknown
-                        ? 'border-gold/45 bg-gold-soft/60 text-gold-deep'
-                        : 'border-celestial-line bg-transparent text-purple hover:border-border-strong hover:text-ink',
+                        ? 'border-copper/50 bg-pale-copper text-copper-shadow'
+                        : 'border-border bg-transparent text-muted hover:border-border-strong hover:text-ink',
                     )}
                   >
                     <span
@@ -235,7 +232,7 @@ export default function BirthDetailsPage() {
                       className={cn(
                         'flex size-4 items-center justify-center rounded-xs border',
                         timeUnknown
-                          ? 'border-gold bg-gold text-midnight'
+                          ? 'border-copper bg-copper text-midnight'
                           : 'border-border-strong',
                       )}
                     >
@@ -268,7 +265,6 @@ export default function BirthDetailsPage() {
               }
             >
               <PlaceField
-                tone="celestial"
                 value={place}
                 onChange={(next) => {
                   setPlace(next)

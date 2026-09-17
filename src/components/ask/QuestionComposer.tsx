@@ -104,8 +104,9 @@ export function QuestionComposer({
                 'focus-within:border-gold-soft-line focus-within:shadow-overlay',
               )
             : cn(
-                'bg-surface focus-within:border-gold focus-within:shadow-overlay',
-                hero ? 'border-border-strong/80 shadow-raised' : 'border-border shadow-card',
+                'border-copper/40 bg-surface shadow-[0_0_40px_-14px_rgba(220,132,79,0.4)]',
+                'focus-within:border-copper focus-within:shadow-[0_0_48px_-10px_rgba(220,132,79,0.55)]',
+                hero ? '' : 'border-border shadow-card',
               ),
         )}
       >
@@ -200,7 +201,7 @@ export function QuestionComposer({
               locked || canSend
                 ? dark
                   ? 'bg-indigo-royal text-on-celestial shadow-card hover:bg-indigo-deep hover:scale-[1.03] active:scale-100'
-                  : 'bg-navy text-on-celestial shadow-card hover:bg-navy-hover hover:scale-[1.03] active:bg-navy-active active:scale-100'
+                  : 'bg-copper text-on-celestial shadow-[0_0_24px_-4px_rgba(220,132,79,0.7)] hover:bg-light-copper hover:scale-[1.03] active:bg-copper-shadow active:scale-100'
                 : dark
                   ? 'bg-midnight/70 text-on-celestial-faint'
                   : 'bg-surface-sunken text-faint',

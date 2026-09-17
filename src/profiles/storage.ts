@@ -3,12 +3,20 @@ import type { ChartProfile } from '@/data/profiles'
 /**
  * Saved charts and the one currently being read, kept in `localStorage`.
  *
- * Separate from the auth store because these outlive a session: signing out
- * should not lose the charts you have saved for your family.
+ * Keyed by account id so each signed-in user keeps their own family charts,
+ * and signing out / in restores them.
  */
 
-const PROFILES_KEY = 'cyklos.profiles'
-const SELECTED_KEY = 'cyklos.selectedProfile'
+const LEGACY_PROFILES_KEY = 'cyklos.profiles'
+const LEGACY_SELECTED_KEY = 'cyklos.selectedProfile'
+
+function profilesKey(userId: string) {
+  return `cyklos.profiles.${userId}`
+}
+
+function selectedKey(userId: string) {
+  return `cyklos.selectedProfile.${userId}`
+}
 
 function read<T>(key: string, fallback: T): T {
   try {
@@ -27,19 +35,33 @@ function write(key: string, value: unknown): void {
   }
 }
 
-/** `null` means the key has never been written, so the seed should be used. */
-export function loadProfiles(): ChartProfile[] | null {
-  return read<ChartProfile[] | null>(PROFILES_KEY, null)
+/**
+ * Load this account's saved charts.
+ * `null` means nothing stored yet (start empty — no demo seed).
+ */
+export function loadProfiles(userId: string): ChartProfile[] | null {
+  const keyed = read<ChartProfile[] | null>(profilesKey(userId), null)
+  if (keyed) return keyed
+
+  // One-time migrate from the pre–per-user key so existing demos keep charts.
+  const legacy = read<ChartProfile[] | null>(LEGACY_PROFILES_KEY, null)
+  if (legacy) {
+    write(profilesKey(userId), legacy)
+    return legacy
+  }
+  return null
 }
 
-export function saveProfiles(profiles: ChartProfile[]): void {
-  write(PROFILES_KEY, profiles)
+export function saveProfiles(userId: string, profiles: ChartProfile[]): void {
+  write(profilesKey(userId), profiles)
 }
 
-export function loadSelected(): string {
-  return read<string>(SELECTED_KEY, 'self')
+export function loadSelected(userId: string): string {
+  const keyed = read<string | null>(selectedKey(userId), null)
+  if (keyed) return keyed
+  return read<string>(LEGACY_SELECTED_KEY, 'self')
 }
 
-export function saveSelected(id: string): void {
-  write(SELECTED_KEY, id)
+export function saveSelected(userId: string, id: string): void {
+  write(selectedKey(userId), id)
 }

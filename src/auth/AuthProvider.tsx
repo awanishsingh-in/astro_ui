@@ -106,6 +106,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     [user],
   )
 
+  const updatePhoto = useCallback(
+    async (photoUrl: string | null) => {
+      if (!user) throw new Error('Nobody is signed in.')
+      const updated = { ...user, photoUrl: photoUrl || null }
+      saveAccount(updated)
+      saveSession(updated)
+      setUser(updated)
+      return updated
+    },
+    [user],
+  )
+
   const updatePreferences = useCallback(
     (patch: { language?: AppLanguage; notifications?: NotificationPreference }) => {
       setUser((current) => {
@@ -148,6 +160,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       verifyCode,
       completeSignup,
       updateBirthDetails,
+      updatePhoto,
       updatePreferences,
       finishSignup,
       signOut,
@@ -163,6 +176,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       verifyCode,
       completeSignup,
       updateBirthDetails,
+      updatePhoto,
       updatePreferences,
       finishSignup,
       signOut,

@@ -8,12 +8,12 @@ import { FeatureSection } from '@/components/everything/FeatureSection'
 import { Input } from '@/components/forms/Input'
 import { MobileHeader } from '@/components/navigation/MobileHeader'
 import { useAuth } from '@/auth/auth-context'
-import { featureGroups, undecidedFeatures } from '@/data/features'
+import { liveFeatureGroups, liveFeatures } from '@/data/features'
 import { PageContainer } from '@/layouts/PageContainer'
 import { EmptyState } from '@/components/common/EmptyState'
 
 /**
- * All features — discovery hub grouped the way the product is organised.
+ * All features — live capabilities only, grouped the way the product is organised.
  */
 export default function EverythingPage() {
   const { user } = useAuth()
@@ -21,24 +21,12 @@ export default function EverythingPage() {
 
   const q = query.trim().toLowerCase()
 
-  const searchable = useMemo(
-    () => [
-      ...featureGroups.flatMap((group) =>
-        group.features.map((feature) => ({ feature, group: group.title })),
-      ),
-      ...undecidedFeatures.map((feature) => ({ feature, group: 'Not decided yet' })),
-    ],
-    [],
-  )
-
   const matches = useMemo(() => {
     if (!q) return null
-    return searchable
-      .filter(({ feature, group }) =>
-        `${feature.title} ${feature.description} ${group}`.toLowerCase().includes(q),
-      )
-      .map(({ feature }) => feature)
-  }, [q, searchable])
+    return liveFeatures.filter((feature) =>
+      `${feature.title} ${feature.description}`.toLowerCase().includes(q),
+    )
+  }, [q])
 
   if (!user) return null
 
@@ -53,7 +41,7 @@ export default function EverythingPage() {
             size="lg"
             className="max-lg:[&>div>h1]:sr-only [&_h1]:text-on-celestial [&_p]:text-on-celestial-muted"
             title="All features"
-            description="What Cyklos does, and what it deliberately does not."
+            description="Everything you can open in Cyklos today — charts, matching, horoscopes, and more."
           />
 
           <div className="mt-6 max-w-md">
@@ -88,7 +76,7 @@ export default function EverythingPage() {
                 variant="inline"
                 icon={<Search />}
                 title="Nothing matches that"
-                description={`No feature mentions “${query.trim()}”. It may be one Cyklos has decided not to build.`}
+                description={`No live feature mentions “${query.trim()}”. Try another word, or browse the groups below.`}
               />
             ) : (
               <ul className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
@@ -102,7 +90,7 @@ export default function EverythingPage() {
           </div>
         ) : (
           <div className="mt-10 space-y-12">
-            {featureGroups.map((group) => (
+            {liveFeatureGroups.map((group) => (
               <FeatureSection
                 key={group.id}
                 id={group.id}
@@ -111,24 +99,6 @@ export default function EverythingPage() {
                 features={group.features}
               />
             ))}
-
-            {undecidedFeatures.length > 0 && (
-              <section aria-labelledby="undecided-title" className="space-y-4">
-                <SectionHeader
-                  as="h2"
-                  size="md"
-                  title={<span id="undecided-title">Not decided yet</span>}
-                  description="Recorded in the product plan without a decision. Nothing here is promised, and none of it is built."
-                />
-                <ul className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-                  {undecidedFeatures.map((feature) => (
-                    <li key={feature.slug}>
-                      <FeatureCard feature={feature} variant="tile" />
-                    </li>
-                  ))}
-                </ul>
-              </section>
-            )}
           </div>
         )}
       </PageContainer>

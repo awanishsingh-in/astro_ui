@@ -55,12 +55,12 @@ export function AuthLayout({
     >
       {showPanel && (
         <CelestialBackground
-          motifs={['stars', 'zodiac']}
+          motifs={['stars', 'zodiac', 'constellation', 'orbits']}
           tone="midnight"
           seed="auth"
           className="hidden lg:block"
           contentClassName={cn(
-            'flex h-full flex-col justify-between p-10 xl:p-12',
+            'auth-panel-enter flex h-full flex-col justify-between p-10 xl:p-12',
             fitViewport ? 'min-h-0' : 'min-h-dvh',
           )}
         >
@@ -75,7 +75,13 @@ export function AuthLayout({
               </h2>
             )}
             {steps && (
-              <ProgressIndicator steps={steps} current={currentStep} variant="list" tone="dark" />
+              <ProgressIndicator
+                steps={steps}
+                current={currentStep}
+                variant="list"
+                tone="dark"
+                stagger
+              />
             )}
             {panelBody && (
               <div className="text-sub text-on-celestial-muted text-pretty">{panelBody}</div>
@@ -94,18 +100,29 @@ export function AuthLayout({
 
       <div
         className={cn(
-          'flex flex-col',
+          'relative flex flex-col',
           fitViewport ? 'h-full min-h-0 overflow-hidden' : 'min-h-dvh lg:min-h-0',
         )}
+        data-auth-form
       >
+        {/* Soft copper wash behind the form column */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 hidden lg:block"
+          style={{
+            background:
+              'radial-gradient(70% 55% at 100% 20%, rgba(220, 132, 79, 0.08) 0%, transparent 55%), radial-gradient(50% 40% at 0% 80%, rgba(46, 22, 35, 0.12) 0%, transparent 50%)',
+          }}
+        />
+
         {/* Mobile bar: back control on the left, progress underneath. */}
-        <div className="shrink-0 bg-surface pt-safe lg:hidden">
+        <div className="relative shrink-0 bg-surface/90 pt-safe backdrop-blur-md lg:hidden">
           <div className="flex h-mobilebar items-center gap-2 border-b border-border px-3">
             {backTo && (
               <Link
                 to={backTo}
                 aria-label="Go back"
-                className="inline-flex size-9 shrink-0 items-center justify-center rounded-control text-ink hover:bg-navy-soft"
+                className="inline-flex size-9 shrink-0 items-center justify-center rounded-control text-ink transition-colors hover:bg-navy-soft"
               >
                 <ChevronLeft className="size-5" />
               </Link>
@@ -122,7 +139,7 @@ export function AuthLayout({
 
         <div
           className={cn(
-            'flex min-h-0 flex-1 flex-col px-5 md:px-8 lg:justify-center lg:px-12 xl:px-16',
+            'relative flex min-h-0 flex-1 flex-col px-5 md:px-8 lg:justify-center lg:px-12 xl:px-16',
             fitViewport
               ? 'overflow-y-auto overscroll-contain no-scrollbar py-5 lg:py-6'
               : 'overflow-y-auto overscroll-contain py-8 lg:overflow-visible lg:py-12',
@@ -130,7 +147,7 @@ export function AuthLayout({
         >
           <div
             className={cn(
-              'mx-auto w-full animate-fade-in',
+              'auth-flow-enter mx-auto w-full',
               wide ? 'max-w-4xl' : 'max-w-md',
               fitViewport && 'flex min-h-0 flex-1 flex-col lg:flex-none lg:justify-center',
               !fitViewport && 'my-auto',

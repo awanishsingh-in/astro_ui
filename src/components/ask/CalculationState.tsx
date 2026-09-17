@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { PremiumChartWheel } from '@/components/charts/PremiumChartWheel'
+import { ChartDiamond } from '@/components/charts/ChartDiamond'
 import { CelestialCard } from '@/components/celestial/CelestialCard'
 import type { Chart, GrahaCode } from '@/types/astrology'
 import { cn } from '@/utils/cn'
@@ -72,13 +72,11 @@ export function CalculationState({
           {question}
         </h1>
 
-        <div className="mt-8 w-full max-w-[300px]">
-          <PremiumChartWheel
+        <div className="mt-8 w-full max-w-[300px] rounded-card bg-[#FDF8F4] p-2">
+          <ChartDiamond
             chart={chart}
-            tone="dark"
-            animationKey="ask"
+            tone="paper"
             activeBhava={stage >= 1 ? bhava : undefined}
-            activeGraha={stage >= 2 ? grahas[0] : null}
           />
         </div>
 

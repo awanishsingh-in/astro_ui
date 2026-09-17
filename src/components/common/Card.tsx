@@ -15,13 +15,13 @@ interface BaseProps {
 export type CardProps = BaseProps & Omit<HTMLAttributes<HTMLDivElement>, keyof BaseProps>
 
 const TONES: Record<CardTone, string> = {
-  default: 'bg-surface border border-border shadow-card',
-  gold: 'bg-gold-soft border border-gold-border',
-  sunken: 'bg-surface-sunken border border-transparent',
-  /** No shadow — for cards inside an already-elevated surface. */
-  outline: 'bg-surface border border-border',
-  /** The one lifted surface, for a panel that floats above the page. */
-  elevated: 'bg-surface border border-border shadow-raised',
+  default:
+    'bg-surface/90 border border-border/90 shadow-card backdrop-blur-[2px] [background-image:linear-gradient(165deg,rgba(92,71,80,0.22)_0%,transparent_42%)]',
+  gold: 'bg-gold-soft border border-copper/35 shadow-card [box-shadow:0_0_28px_-12px_rgba(220,132,79,0.35)]',
+  sunken: 'bg-surface-sunken/80 border border-transparent',
+  outline: 'bg-surface/80 border border-border',
+  elevated:
+    'bg-surface-raised/95 border border-muted-plum/50 shadow-raised backdrop-blur-sm',
   plain: 'bg-transparent border border-transparent',
 }
 

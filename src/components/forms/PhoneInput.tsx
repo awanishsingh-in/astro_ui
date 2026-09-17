@@ -21,8 +21,8 @@ export function PhoneInput({ invalid, className, disabled, ...rest }: PhoneInput
     <div
       className={cn(
         'flex h-control-lg items-stretch overflow-hidden rounded-control border bg-surface',
-        'transition-[border-color,box-shadow] duration-150 ease-out-soft',
-        'focus-within:border-navy focus-within:shadow-focus',
+        'transition-[border-color,box-shadow,transform] duration-200 ease-out-soft',
+        'focus-within:border-copper focus-within:shadow-glow motion-safe:focus-within:scale-[1.01]',
         hasError ? 'border-critical' : 'border-border',
         disabled && 'bg-surface-sunken text-faint',
         className,

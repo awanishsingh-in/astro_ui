@@ -67,16 +67,28 @@ export function VargaSelector({ value, onChange, className }: VargaSelectorProps
 
   return (
     <>
-      <ChipGroup label="Divisional chart" className={className}>
-        {inRail.map((varga) => (
-          <Chip key={varga.code} mono selected={varga.code === value} onClick={() => onChange(varga.code)}>
-            {vargaLabel(varga.code)} {varga.name}
+      <div
+        className={cn(
+          'rounded-panel border border-border/70 bg-surface/50 px-3 py-2.5 sm:px-3.5',
+          className,
+        )}
+      >
+        <ChipGroup label="Divisional chart">
+          {inRail.map((varga) => (
+            <Chip
+              key={varga.code}
+              mono
+              selected={varga.code === value}
+              onClick={() => onChange(varga.code)}
+            >
+              {vargaLabel(varga.code)} {varga.name}
+            </Chip>
+          ))}
+          <Chip onClick={picker.open} aria-haspopup="dialog">
+            All 16 ⌄
           </Chip>
-        ))}
-        <Chip onClick={picker.open} aria-haspopup="dialog">
-          All 16 ⌄
-        </Chip>
-      </ChipGroup>
+        </ChipGroup>
+      </div>
 
       {isDesktop ? (
         <Modal
@@ -121,7 +133,7 @@ function VargaRow({
         'transition-[border-color,background-color,transform] duration-150 ease-out-soft',
         'active:scale-[0.99]',
         active
-          ? 'border-gold bg-gold-soft'
+          ? 'border-copper/55 bg-copper/12'
           : 'border-border bg-surface hover:border-border-strong hover:bg-navy-soft',
       )}
     >
@@ -132,7 +144,7 @@ function VargaRow({
         <span className="block truncate text-sm text-muted">{varga.signifies}</span>
       </span>
       {active && (
-        <span className="shrink-0 font-mono text-label uppercase text-gold-deep">On</span>
+        <span className="shrink-0 font-mono text-label uppercase text-copper">On</span>
       )}
     </button>
   )

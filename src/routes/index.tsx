@@ -41,7 +41,9 @@ const FeaturePage = lazy(() => import('@/pages/everything/FeaturePage'))
 const MatchingPage = lazy(() => import('@/pages/matching/MatchingPage'))
 const CompatibilityPage = lazy(() => import('@/pages/matching/CompatibilityPage'))
 const HoroscopePage = lazy(() => import('@/pages/horoscope/HoroscopePage'))
+const CalendarPage = lazy(() => import('@/pages/calendar/CalendarPage'))
 const AccountPage = lazy(() => import('@/pages/account/AccountPage'))
+const ProfilePage = lazy(() => import('@/pages/account/ProfilePage'))
 const FoundationPage = lazy(() => import('@/pages/foundation/FoundationPage'))
 const NotFoundPage = lazy(() => import('@/pages/NotFoundPage'))
 
@@ -143,7 +145,9 @@ const routes: RouteObject[] = [
       { path: paths.matching, element: page(<MatchingPage />) },
       { path: paths.compatibility, element: page(<CompatibilityPage />) },
       { path: paths.horoscope(), element: page(<HoroscopePage />) },
+      { path: paths.calendar, element: page(<CalendarPage />) },
       { path: paths.account, element: page(<AccountPage />) },
+      { path: paths.profile, element: page(<ProfilePage />) },
     ],
   },
 

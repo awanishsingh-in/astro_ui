@@ -26,21 +26,17 @@ export interface ButtonProps
 
 const VARIANTS: Record<ButtonVariant, string> = {
   primary:
-    'bg-navy text-midnight hover:bg-navy-hover active:bg-navy-active active:text-warm-white disabled:bg-border-strong disabled:text-muted',
+    'bg-gradient-to-b from-light-copper to-copper text-midnight shadow-glow hover:from-pale-copper hover:to-light-copper active:from-copper active:to-copper-shadow active:text-warm-white disabled:bg-none disabled:bg-border-strong disabled:text-muted disabled:shadow-none',
   secondary:
-    'bg-surface text-ink border border-border-strong hover:bg-navy-soft hover:border-navy active:bg-navy-soft disabled:border-border disabled:text-faint',
-  ghost: 'bg-transparent text-ink hover:bg-navy-soft active:bg-navy-soft disabled:text-faint',
-  gold: 'bg-gold-soft text-gold-deep border border-gold-border hover:bg-gold-border/40 active:bg-gold-border/55 disabled:text-faint',
+    'bg-surface-raised/80 text-ink border border-border-strong/80 backdrop-blur-sm hover:border-copper/50 hover:bg-nebula-plum hover:shadow-card active:bg-navy-soft disabled:border-border disabled:text-faint',
+  ghost: 'bg-transparent text-ink hover:bg-navy-soft/80 active:bg-navy-soft disabled:text-faint',
+  gold: 'bg-gold-soft text-light-copper border border-copper/40 hover:border-copper hover:bg-copper-shadow/40 hover:shadow-glow active:bg-copper-shadow/55 disabled:text-faint',
   danger:
     'bg-transparent text-critical border border-critical/35 hover:bg-critical-soft disabled:text-faint',
-  /*
-    Gold on midnight for full-bleed celestial screens — reads as the brand
-    accent rather than a white slab on the night sky.
-  */
   celestial:
-    'bg-gold text-midnight hover:bg-gold-soft-line active:bg-gold-deep active:text-midnight disabled:bg-celestial-line disabled:text-on-celestial-faint focus-visible:outline-gold-soft-line',
+    'bg-gradient-to-b from-light-copper to-copper text-midnight shadow-glow hover:from-pale-copper hover:to-light-copper active:from-copper active:to-copper-shadow disabled:bg-none disabled:bg-celestial-line disabled:text-on-celestial-faint disabled:shadow-none focus-visible:outline-gold-soft-line',
   celestialGhost:
-    'bg-transparent text-on-celestial border border-gold-soft-line/45 hover:border-gold-soft-line hover:bg-gold/10 disabled:text-on-celestial-faint focus-visible:outline-gold-soft-line',
+    'bg-transparent text-on-celestial border border-light-copper/40 hover:border-light-copper hover:bg-copper/10 hover:shadow-glow disabled:text-on-celestial-faint focus-visible:outline-gold-soft-line',
 }
 
 const SIZES: Record<ButtonSize, string> = {

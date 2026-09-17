@@ -22,6 +22,13 @@ export interface ProfilesApi {
   add: (profile: NewProfile) => ChartProfile
   update: (id: string, patch: Partial<NewProfile>) => void
   remove: (id: string) => void
+
+  /** How many additional (non-self) profiles are saved. */
+  additionalCount: number
+  /** Free-tier cap for additional profiles. */
+  freeAdditionalLimit: number
+  /** Whether another additional profile can be created right now. */
+  canAddAdditional: boolean
 }
 
 export const ProfilesContext = createContext<ProfilesApi | null>(null)

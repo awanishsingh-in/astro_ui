@@ -1,12 +1,11 @@
 import type { GrahaCode } from '@/types/astrology'
-import { ArrowLeft, Check, Lock, Sparkles } from 'lucide-react'
+import { ArrowLeft, Check, Crown, Download, Lock, Orbit } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { PlanetGlyph } from '@/components/astrology/PlanetGlyph'
 import { ChatPaywall } from '@/components/ask/ChatPaywall'
 import { QuestionComposer } from '@/components/ask/QuestionComposer'
 import { Button } from '@/components/common/Button'
-import { MobileHeader } from '@/components/navigation/MobileHeader'
 import { useAuth } from '@/auth/auth-context'
 import {
   insightsByIds,
@@ -54,6 +53,7 @@ export default function YourPastPage() {
     user ? hasActivePlan(user.id) : false,
   )
   const [paywallOpen, setPaywallOpen] = useState(false)
+  const [downloadReady, setDownloadReady] = useState(false)
 
   const atLimit = picked.length >= MAX_PAST_SELECTIONS
   const slotsLeft = Math.max(0, MAX_PAST_SELECTIONS - picked.length)
@@ -101,6 +101,7 @@ export default function YourPastPage() {
     setPlanUnlocked(true)
     setSelectionsLocked(false)
     setPaywallOpen(false)
+    setDownloadReady(true)
   }
 
   const paywall = (
@@ -108,25 +109,17 @@ export default function YourPastPage() {
       isOpen={paywallOpen}
       onClose={() => setPaywallOpen(false)}
       onUnlock={confirmPlan}
-      title="Unlock your past picks"
-      description="Free readings cover up to three areas. Cyklos Plus lets you change which ones you read."
-      benefit="Upgrade to change your past areas anytime — still up to three at once."
-      unlockLabel="Unlock past editing"
+      title="Unlock Cyklos Plus"
+      description="Past reports and editing your three areas are included with Cyklos Plus."
+      benefit="Upgrade to download past reports and change which areas you read."
+      unlockLabel="Unlock Plus"
     />
   )
 
   if (revealOpen && active) {
     return (
       <>
-        <div className="flex h-[calc(100dvh-var(--spacing-bottomnav))] flex-col overflow-hidden lg:h-full">
-          <MobileHeader
-            title="Your Past"
-            titleAs="p"
-            user={user}
-            showBack
-            onBack={() => setRevealOpen(false)}
-          />
-
+        <div className="flex h-full min-h-[calc(100dvh-3.5rem)] flex-col overflow-hidden lg:min-h-0">
           <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain no-scrollbar">
             <PageContainer width="wide" className="space-y-5 py-5 sm:py-6 lg:py-8">
               <header className="flex items-start gap-3">
@@ -134,7 +127,7 @@ export default function YourPastPage() {
                   type="button"
                   onClick={() => setRevealOpen(false)}
                   aria-label="Back to choices"
-                  className="mt-0.5 hidden size-10 shrink-0 items-center justify-center rounded-full border border-border bg-surface text-ink transition-colors hover:border-gold/45 hover:bg-navy-soft lg:inline-flex"
+                  className="mt-0.5 inline-flex size-10 shrink-0 items-center justify-center rounded-full border border-border bg-surface text-ink transition-colors hover:border-gold/45 hover:bg-navy-soft"
                 >
                   <ArrowLeft className="size-5" />
                 </button>
@@ -199,6 +192,15 @@ export default function YourPastPage() {
                       navigate(`${paths.ask}?q=${encodeURIComponent(question)}`)
                     }
                     onLookCalculation={() => navigate(paths.chart)}
+                    onDownloadReport={() => {
+                      if (!planUnlocked) {
+                        setPaywallOpen(true)
+                        return
+                      }
+                      setDownloadReady(true)
+                    }}
+                    reportPaid={!planUnlocked}
+                    downloadReady={downloadReady}
                   />
                 </section>
               </div>
@@ -212,9 +214,7 @@ export default function YourPastPage() {
 
   return (
     <>
-      <div className="flex h-[calc(100dvh-var(--spacing-bottomnav))] flex-col overflow-hidden lg:h-full">
-        <MobileHeader title="Your Past" titleAs="p" user={user} />
-
+      <div className="flex h-full min-h-[calc(100dvh-3.5rem)] flex-col overflow-hidden lg:min-h-0">
         <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain no-scrollbar">
           <PageContainer width="wide" className="flex min-h-full flex-col py-5 sm:py-6 lg:py-8">
             <header className="relative shrink-0 text-center lg:text-left">
@@ -263,7 +263,7 @@ export default function YourPastPage() {
                   : `Choose up to ${MAX_PAST_SELECTIONS}`}
             </p>
 
-              <div className="grid grid-cols-2 gap-2.5 sm:gap-3 lg:grid-cols-3">
+              <div className="grid grid-cols-2 gap-2.5 overflow-visible pt-1.5 sm:gap-3 lg:grid-cols-3">
                 {PAST_INSIGHTS.map((insight, index) => {
                   const isOn = picked.includes(insight.id)
                   const showLock =
@@ -382,18 +382,59 @@ function PastReadingDetail({
   insight,
   onAsk,
   onLookCalculation,
+  onDownloadReport,
+  reportPaid = false,
+  downloadReady = false,
 }: {
   insight: PastInsight
   onAsk: (question: string) => void
   onLookCalculation: () => void
+  onDownloadReport: () => void
+  reportPaid?: boolean
+  downloadReady?: boolean
 }) {
   return (
     <article className="animate-fade-in space-y-5">
-      <div>
-        <p className="text-[11px] font-medium uppercase tracking-[0.16em] text-gold-deep">
-          {insight.category} · {insight.period}
-        </p>
-        <p className="mt-2 font-serif text-title text-ink text-pretty lg:text-title-lg">
+      <div className="space-y-3">
+        <div className="flex flex-wrap items-start justify-between gap-2.5">
+          <p className="pt-1 text-[11px] font-medium uppercase tracking-[0.16em] text-gold-deep">
+            {insight.category} · {insight.period}
+          </p>
+
+          <div className="ml-auto flex flex-wrap items-center justify-end gap-2">
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={onLookCalculation}
+              iconLeft={<Orbit className="size-3.5" strokeWidth={2} />}
+              className="rounded-full"
+            >
+              Look your calculation
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onDownloadReport}
+              iconLeft={
+                reportPaid ? (
+                  <Crown className="size-3.5" strokeWidth={2} />
+                ) : (
+                  <Download className="size-3.5" strokeWidth={2} />
+                )
+              }
+              className="rounded-full"
+            >
+              {downloadReady && !reportPaid ? 'Report ready' : 'Download report'}
+              {reportPaid && (
+                <span className="ml-1 font-mono text-[9px] uppercase tracking-[0.12em] text-gold-deep">
+                  Plus
+                </span>
+              )}
+            </Button>
+          </div>
+        </div>
+
+        <p className="font-serif text-title text-ink text-pretty lg:text-title-lg">
           {insight.verdict}
         </p>
       </div>
@@ -435,22 +476,13 @@ function PastReadingDetail({
         Source · {bhavaRef(insight.bhava)} · {insight.source}
       </p>
 
-      <div className="space-y-3 border-t border-border pt-5">
+      <div className="border-t border-border pt-5">
         <QuestionComposer
           key={insight.id}
           variant="bar"
           placeholder={`Ask about your past in ${insight.category.toLowerCase()}…`}
           onAsk={onAsk}
         />
-        <Button
-          variant="primary"
-          size="md"
-          onClick={onLookCalculation}
-          iconLeft={<Sparkles className="size-4" strokeWidth={1.75} />}
-          className="w-full rounded-full sm:w-auto"
-        >
-          Look your calculation
-        </Button>
       </div>
     </article>
   )

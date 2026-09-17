@@ -52,7 +52,7 @@ export function CelestialBackground({
         className="pointer-events-none absolute inset-0 opacity-70"
         style={{
           background:
-            'radial-gradient(120% 90% at 18% 0%, var(--color-indigo-royal) 0%, transparent 62%)',
+            'radial-gradient(120% 90% at 18% 0%, rgba(46, 22, 35, 0.95) 0%, transparent 62%), radial-gradient(70% 55% at 90% 10%, rgba(220, 132, 79, 0.16) 0%, transparent 50%)',
         }}
       />
 

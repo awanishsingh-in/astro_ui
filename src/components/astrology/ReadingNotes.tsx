@@ -39,7 +39,7 @@ export function ReadingNotes({ chart, activeGraha, activeBhava, className }: Rea
       {graha ? (
         <>
           <SectionHeader as="h2" size="sm" title={`${GRAHAS[graha.graha].name} in detail`} />
-          <Card padding="md" className="gap-3">
+          <Card padding="md" tone="gold" className="gap-3">
             <div className="flex items-center gap-3">
               <PlanetGlyph code={graha.graha} size="lg" />
               <div className="min-w-0">
@@ -83,7 +83,7 @@ export function ReadingNotes({ chart, activeGraha, activeBhava, className }: Rea
       ) : bhava ? (
         <>
           <SectionHeader as="h2" size="sm" title={`Bhava ${bhava.bhava} in detail`} />
-          <Card padding="md" className="gap-3">
+          <Card padding="md" tone="gold" className="gap-3">
             <p className="text-sub font-medium text-ink">{bhava.signifies}</p>
             <dl className="grid grid-cols-2 gap-px overflow-hidden rounded-card border border-border bg-border">
               <Fact label="Rashi" value={bhava.rashi} />
@@ -109,30 +109,42 @@ export function ReadingNotes({ chart, activeGraha, activeBhava, className }: Rea
             title="Reading notes"
             description="What this chart says before anything is asked of it."
           />
-          <ul className="space-y-3">
-            {chart.notes.map((note) => {
-              /*
-                The notes are written from `GRAHAS[code].name`, so reading
-                those names back out recovers exactly the grahas each one is
-                about — no guessing, and nothing to keep in sync.
-              */
-              const cited = GRAHA_ORDER.filter((code) => note.includes(GRAHAS[code].name))
-              return (
-                <li key={note}>
-                  <Card padding="md" className="gap-2">
-                    {cited.length > 0 && (
-                      <span className="flex flex-wrap items-center gap-x-3 gap-y-1">
-                        {cited.map((code) => (
-                          <PlanetGlyph key={code} code={code} withName size="sm" />
-                        ))}
-                      </span>
-                    )}
-                    <p className="text-sm text-purple text-pretty">{note}</p>
-                  </Card>
-                </li>
-              )
-            })}
-          </ul>
+          {chart.notes.length === 0 ? (
+            <Card padding="md" className="gap-2 border-dashed">
+              <p className="text-sm text-muted text-pretty">
+                Tap a house on the diamond, or a graha in the tables, to focus a reading here.
+              </p>
+            </Card>
+          ) : (
+            <ul className="space-y-3">
+              {chart.notes.map((note, index) => {
+                const cited = GRAHA_ORDER.filter((code) => note.includes(GRAHAS[code].name))
+                return (
+                  <li key={note}>
+                    <Card
+                      padding="md"
+                      tone={index === 0 ? 'gold' : 'default'}
+                      className="gap-2"
+                    >
+                      {cited.length > 0 && (
+                        <span className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                          {cited.map((code) => (
+                            <PlanetGlyph key={code} code={code} withName size="sm" />
+                          ))}
+                        </span>
+                      )}
+                      <p className="text-sm leading-relaxed text-purple text-pretty">{note}</p>
+                    </Card>
+                  </li>
+                )
+              })}
+            </ul>
+          )}
+          {!activeGraha && !activeBhava && chart.notes.length > 0 && (
+            <p className="font-mono text-label uppercase tracking-[0.12em] text-faint">
+              Tip · tap a house on the chart
+            </p>
+          )}
         </>
       )}
     </aside>

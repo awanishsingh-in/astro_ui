@@ -158,15 +158,15 @@ export function BirthDetailsSheet({
               className={cn(
                 'inline-flex w-fit items-center gap-2 rounded-control border px-3 py-1.5 text-sm transition-colors duration-150 ease-out-soft',
                 timeUnknown
-                  ? 'border-gold/45 bg-gold-soft/60 text-gold-deep'
-                  : 'border-celestial-line bg-transparent text-purple hover:border-border-strong hover:text-ink',
+                  ? 'border-copper/50 bg-pale-copper text-copper-shadow'
+                  : 'border-border bg-transparent text-muted hover:border-border-strong hover:text-ink',
               )}
             >
               <span
                 aria-hidden
                 className={cn(
                   'flex size-4 items-center justify-center rounded-xs border',
-                  timeUnknown ? 'border-gold bg-gold text-midnight' : 'border-border-strong',
+                  timeUnknown ? 'border-copper bg-copper text-midnight' : 'border-border-strong',
                 )}
               >
                 {timeUnknown && (

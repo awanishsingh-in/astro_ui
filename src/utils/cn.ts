@@ -32,7 +32,21 @@ const twMerge = extendTailwindMerge({
         },
       ],
       rounded: [{ rounded: ['xs', 'control', 'card', 'panel', 'sheet'] }],
-      shadow: [{ shadow: ['card', 'raised', 'overlay', 'sheet', 'focus'] }],
+      shadow: [{ shadow: ['card', 'raised', 'overlay', 'sheet', 'focus', 'glow'] }],
+      animate: [
+        {
+          animate: [
+            'fade-in',
+            'rise',
+            'rise-slow',
+            'auth-step',
+            'auth-shimmer',
+            'pulse-soft',
+            'zodiac-turn',
+            'zodiac-turn-slow',
+          ],
+        },
+      ],
       h: [{ h: ['control-sm', 'control-md', 'control-lg', 'topnav', 'mobilebar', 'bottomnav'] }],
       'min-h': [{ 'min-h': ['control-sm', 'control-md', 'control-lg'] }],
       'max-w': [{ 'max-w': ['reading', 'content', 'wide'] }],

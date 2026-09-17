@@ -14,6 +14,8 @@ export interface ProgressIndicatorProps {
   variant?: 'bar' | 'list'
   /** `dark` inverts the palette for the navy auth panel. */
   tone?: 'light' | 'dark'
+  /** Stagger list steps in from the left (auth panel). */
+  stagger?: boolean
   className?: string
 }
 
@@ -26,6 +28,7 @@ export function ProgressIndicator({
   current,
   variant = 'bar',
   tone = 'light',
+  stagger = false,
   className,
 }: ProgressIndicatorProps) {
   const total = steps.length
@@ -53,21 +56,44 @@ export function ProgressIndicator({
           aria-label={steps[clamped]?.label}
           className="flex gap-1.5"
         >
-          {steps.map((step, index) => (
-            <span
-              key={step.id}
-              className={cn(
-                'h-1 flex-1 rounded-full transition-colors duration-300 ease-out-soft',
-                index <= clamped
-                  ? dark
-                    ? 'bg-gold'
-                    : 'bg-navy'
-                  : dark
-                    ? 'bg-celestial-line'
-                    : 'bg-border',
-              )}
-            />
-          ))}
+          {steps.map((step, index) => {
+            const filled = index <= clamped
+            const current = index === clamped
+            return (
+              <span
+                key={step.id}
+                className={cn(
+                  'relative h-1 flex-1 overflow-hidden rounded-full',
+                  filled
+                    ? dark
+                      ? 'bg-copper/20'
+                      : 'bg-navy/15'
+                    : dark
+                      ? 'bg-celestial-line'
+                      : 'bg-border',
+                )}
+              >
+                {filled && (
+                  <span
+                    className={cn(
+                      'absolute inset-y-0 left-0 w-full rounded-full',
+                      dark ? 'bg-copper' : 'bg-navy',
+                      current && 'motion-safe:animate-auth-shimmer',
+                    )}
+                    style={
+                      current
+                        ? {
+                            backgroundImage:
+                              'linear-gradient(90deg, var(--color-copper) 0%, var(--color-light-copper) 50%, var(--color-copper) 100%)',
+                            backgroundSize: '200% 100%',
+                          }
+                        : undefined
+                    }
+                  />
+                )}
+              </span>
+            )
+          })}
         </div>
       </div>
     )
@@ -79,16 +105,27 @@ export function ProgressIndicator({
         const done = index < clamped
         const active = index === clamped
         return (
-          <li key={step.id} className="flex items-center gap-3">
+          <li
+            key={step.id}
+            className={cn(
+              'flex items-center gap-3 motion-safe:transition-[opacity,transform] motion-safe:duration-300',
+              stagger && 'motion-safe:animate-auth-step',
+            )}
+            style={stagger ? { animationDelay: `${140 + index * 100}ms` } : undefined}
+          >
             <span
               aria-hidden
               className={cn(
                 'inline-flex size-7 shrink-0 items-center justify-center rounded-full border',
-                'font-mono text-[11px] transition-colors duration-200 ease-out-soft',
-                (done || active) &&
+                'font-mono text-[11px] transition-all duration-300 ease-out-soft',
+                done &&
                   (dark
-                    ? 'border-gold-soft-line bg-gold-soft-line text-midnight'
+                    ? 'border-light-copper bg-copper text-midnight shadow-glow'
                     : 'border-navy bg-navy text-on-celestial'),
+                active &&
+                  (dark
+                    ? 'scale-110 border-light-copper bg-gradient-to-b from-light-copper to-copper text-midnight shadow-glow motion-safe:animate-pulse-soft'
+                    : 'scale-110 border-navy bg-navy text-on-celestial shadow-glow'),
                 !done &&
                   !active &&
                   (dark
@@ -100,14 +137,18 @@ export function ProgressIndicator({
             </span>
             <span
               className={cn(
-                'text-sub',
+                'text-sub transition-colors duration-300',
                 active
                   ? dark
                     ? 'font-semibold text-on-celestial'
                     : 'font-semibold text-ink'
-                  : dark
-                    ? 'text-on-celestial-muted'
-                    : 'text-muted',
+                  : done
+                    ? dark
+                      ? 'text-on-celestial-muted'
+                      : 'text-purple'
+                    : dark
+                      ? 'text-on-celestial-faint'
+                      : 'text-muted',
               )}
             >
               {step.label}

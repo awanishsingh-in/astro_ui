@@ -43,7 +43,7 @@ export function BottomNav({ className }: { className?: string }) {
       aria-label="Primary"
       data-bottom-nav=""
       className={cn(
-        'pb-safe sticky bottom-0 z-30 shrink-0 border-t border-border/80 bg-surface/95 backdrop-blur-md lg:hidden',
+        'pb-safe sticky bottom-0 z-30 shrink-0 border-t border-border/60 bg-surface/80 backdrop-blur-xl lg:hidden',
         className,
       )}
     >
@@ -60,7 +60,7 @@ export function BottomNav({ className }: { className?: string }) {
                   return cn(
                     'relative flex h-full flex-col items-center justify-center gap-1 px-0.5',
                     'transition-colors duration-150',
-                    active ? 'text-navy' : 'text-muted',
+                    active ? 'text-copper' : 'text-muted',
                   )
                 }}
               >

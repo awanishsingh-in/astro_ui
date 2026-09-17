@@ -1,18 +1,30 @@
 import { ChevronRight } from 'lucide-react'
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type KeyboardEvent } from 'react'
 import { createPortal } from 'react-dom'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
+import { AddProfileFolders } from '@/components/account/AddProfileFolders'
+import {
+  AccountPanel,
+  type AccountPanelId,
+} from '@/components/account/AccountPanel'
+import { ChatPaywall } from '@/components/ask/ChatPaywall'
 import { ThemeQuickToggle } from '@/components/account/ThemeQuickToggle'
 import { Avatar } from '@/components/common/Avatar'
 import { Badge } from '@/components/common/Badge'
 import { useToast } from '@/components/feedback/toast-context'
 import { BottomSheet } from '@/components/sheets/BottomSheet'
+import { HIGHLIGHT_ADD_PROFILE_KEY } from '@/components/navigation/FullPageChrome'
 import { useAuth } from '@/auth/auth-context'
+import { canAddAdditionalProfile } from '@/data/profile-limits'
+import type { ProfileRelation } from '@/data/profiles'
 import { useDisclosure } from '@/hooks/useDisclosure'
 import { useIsDesktop } from '@/hooks/useMediaQuery'
+import { hasActivePlan, unlockPlan } from '@/onboarding/past-intro'
+import { useProfiles } from '@/profiles/profiles-context'
 import { accountMenu, signOutItem, type AccountMenuItem } from '@/routes/navigation'
 import { paths } from '@/routes/paths'
 import type { User } from '@/types/user'
+import { consumeAvatarMenuReopen } from '@/utils/avatar-menu'
 import { cn } from '@/utils/cn'
 import { formatPhone } from '@/utils/format'
 
@@ -32,8 +44,7 @@ export interface AvatarMenuProps {
  * The only account control in the product, on both breakpoints.
  *
  * Desktop opens a dropdown anchored to the avatar; mobile opens a bottom sheet.
- * The desktop panel is portaled so parent overflow (AppLayout / SideNav) cannot
- * clip it out of view.
+ * Profile opens a full-page screen; other live items open as popups.
  */
 export function AvatarMenu({
   user,
@@ -44,13 +55,52 @@ export function AvatarMenu({
   const menu = useDisclosure()
   const isDesktop = useIsDesktop()
   const navigate = useNavigate()
+  const location = useLocation()
   const toast = useToast()
   const { signOut } = useAuth()
+  const profiles = useProfiles()
   const wrapperRef = useRef<HTMLDivElement>(null)
   const panelRef = useRef<HTMLDivElement>(null)
   const [coords, setCoords] = useState<{ top: number; left: number } | null>(null)
+  const [accountPanel, setAccountPanel] = useState<AccountPanelId | null>(null)
+  const folders = useDisclosure()
+  const paywall = useDisclosure()
+  const [planUnlocked, setPlanUnlocked] = useState(() => hasActivePlan(user.id))
 
   const close = menu.close
+  const open = menu.open
+
+  // Back from Profile should land with this menu open again.
+  useEffect(() => {
+    if (consumeAvatarMenuReopen()) open()
+  }, [location.pathname, location.key, open])
+
+  const openAddForRelation = useCallback(
+    (relation: Exclude<ProfileRelation, 'self'>) => {
+      folders.close()
+      const canAdd = canAddAdditionalProfile(
+        profiles.additionalCount,
+        planUnlocked || hasActivePlan(user.id),
+      )
+      if (!canAdd) {
+        window.setTimeout(() => paywall.open(), 50)
+        return
+      }
+
+      // Family → Profile with self + dashed add (popup only after +).
+      // Friend / Relative / Other → Profile with the form open under +.
+      try {
+        sessionStorage.setItem(HIGHLIGHT_ADD_PROFILE_KEY, '1')
+      } catch {
+        /* private mode */
+      }
+      window.setTimeout(() => {
+        const openForm = relation === 'family' ? '' : '&form=1'
+        navigate(`${paths.profile}?add=1&relation=${relation}${openForm}`)
+      }, 50)
+    },
+    [folders, profiles.additionalCount, planUnlocked, user.id, paywall, navigate],
+  )
 
   useEffect(() => {
     if (!menu.isOpen || !isDesktop) return
@@ -115,6 +165,7 @@ export function AvatarMenu({
       menu.close()
 
       if (item.id === signOutItem.id) {
+        setAccountPanel(null)
         signOut()
         navigate(paths.landing, { replace: true })
         toast.success('Signed out', {
@@ -130,9 +181,19 @@ export function AvatarMenu({
         return
       }
 
+      if (item.id === 'add-profile') {
+        folders.open()
+        return
+      }
+
+      if (item.panel) {
+        setAccountPanel(item.panel)
+        return
+      }
+
       if (item.to) navigate(item.to)
     },
-    [menu, navigate, toast, signOut],
+    [menu, navigate, toast, signOut, folders],
   )
 
   const onTriggerKeyDown = (event: KeyboardEvent<HTMLButtonElement>) => {
@@ -157,13 +218,13 @@ export function AvatarMenu({
         menu.isOpen && 'ring-2 ring-navy ring-offset-2 ring-offset-surface',
       )}
     >
-      <Avatar name={user.fullName} initials={user.initials} size={size} />
+      <Avatar name={user.fullName} initials={user.initials} src={user.photoUrl} size={size} />
     </button>
   )
 
   const identity = (
     <div className="flex items-center gap-3 border-b border-border px-4 py-3.5">
-      <Avatar name={user.fullName} initials={user.initials} size="lg" />
+      <Avatar name={user.fullName} initials={user.initials} src={user.photoUrl} size="lg" />
       <div className="min-w-0">
         <p className="truncate text-sub font-semibold text-ink">{user.fullName}</p>
         <p className="truncate font-mono text-data text-muted">{formatPhone(user.phone)}</p>
@@ -188,6 +249,38 @@ export function AvatarMenu({
     </>
   )
 
+  const accountOverlay = (
+    <>
+      <AccountPanel
+        panel={accountPanel}
+        onClose={() => setAccountPanel(null)}
+        onOpenPanel={setAccountPanel}
+      />
+      <AddProfileFolders
+        isOpen={folders.isOpen}
+        onClose={folders.close}
+        onSelect={openAddForRelation}
+      />
+      <ChatPaywall
+        isOpen={paywall.isOpen}
+        onClose={paywall.close}
+        onUnlock={() => {
+          unlockPlan(user.id)
+          setPlanUnlocked(true)
+          paywall.close()
+          folders.open()
+          toast.success('Profiles unlocked', {
+            description: 'Pick a folder to add someone.',
+          })
+        }}
+        title="You've reached your free profile limit."
+        description="Add more profiles to explore charts for family, friends, and loved ones."
+        benefit="Free accounts include two additional profiles. Cyklos Plus unlocks more."
+        unlockLabel="Unlock More Profiles"
+      />
+    </>
+  )
+
   if (!isDesktop) {
     return (
       <div className={className}>
@@ -202,6 +295,7 @@ export function AvatarMenu({
             {items}
           </div>
         </BottomSheet>
+        {accountOverlay}
       </div>
     )
   }
@@ -240,6 +334,8 @@ export function AvatarMenu({
           </div>,
           document.body,
         )}
+
+      {accountOverlay}
     </div>
   )
 }

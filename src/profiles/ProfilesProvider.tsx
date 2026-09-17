@@ -1,6 +1,8 @@
-import { useCallback, useMemo, useState, type ReactNode } from 'react'
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { useAuth } from '@/auth/auth-context'
-import { savedProfiles as seedProfiles, selfProfile, type ChartProfile } from '@/data/profiles'
+import { FREE_ADDITIONAL_PROFILES, canAddAdditionalProfile } from '@/data/profile-limits'
+import { selfProfile, type ChartProfile } from '@/data/profiles'
+import { hasActivePlan } from '@/onboarding/past-intro'
 import { ProfilesContext, type NewProfile, type ProfilesApi } from './profiles-context'
 import { loadProfiles, loadSelected, saveProfiles, saveSelected } from './storage'
 
@@ -16,48 +18,92 @@ import { loadProfiles, loadSelected, saveProfiles, saveSelected } from './storag
  */
 export function ProfilesProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth()
+  const userId = user?.id
 
-  // Read synchronously, seeding on first run so a new account has examples.
-  const [saved, setSaved] = useState<ChartProfile[]>(() => loadProfiles() ?? seedProfiles)
-  const [selectedId, setSelectedId] = useState<string>(() => loadSelected())
+  const [saved, setSaved] = useState<ChartProfile[]>([])
+  const [selectedId, setSelectedId] = useState('self')
 
-  const persist = useCallback((next: ChartProfile[]) => {
-    setSaved(next)
-    saveProfiles(next)
-  }, [])
+  // Load (or clear) this account's charts whenever the signed-in user changes.
+  useEffect(() => {
+    if (!userId) {
+      setSaved([])
+      setSelectedId('self')
+      return
+    }
+    setSaved(loadProfiles(userId) ?? [])
+    setSelectedId(loadSelected(userId))
+  }, [userId])
+
+  const persist = useCallback(
+    (next: ChartProfile[]) => {
+      setSaved(next)
+      if (userId) saveProfiles(userId, next)
+    },
+    [userId],
+  )
 
   const profiles = useMemo<ChartProfile[]>(
     () => (user ? [selfProfile(user.fullName, user.birthDetails), ...saved] : saved),
     [user, saved],
   )
 
-  // A deleted profile must not leave the app reading a chart that is gone.
   const selected =
-    profiles.find((profile) => profile.id === selectedId) ?? profiles[0] ?? seedProfiles[0]
+    profiles.find((profile) => profile.id === selectedId) ?? profiles[0] ?? selfProfile('You', {
+      fullName: 'You',
+      date: '2000-01-01',
+      time: '12:00',
+      timeUnknown: true,
+      place: {
+        label: 'New Delhi, Delhi NCR',
+        latitude: 28.6139,
+        longitude: 77.209,
+        timeZone: 'Asia/Kolkata',
+      },
+    })
 
-  const select = useCallback((id: string) => {
-    setSelectedId(id)
-    saveSelected(id)
-  }, [])
+  const select = useCallback(
+    (id: string) => {
+      setSelectedId(id)
+      if (userId) saveSelected(userId, id)
+    },
+    [userId],
+  )
+
+  const planUnlocked = Boolean(userId && hasActivePlan(userId))
+  const canAdd = canAddAdditionalProfile(saved.length, planUnlocked)
 
   const add = useCallback(
     (profile: NewProfile) => {
+      if (!canAddAdditionalProfile(saved.length, Boolean(userId && hasActivePlan(userId)))) {
+        throw new Error('Free accounts can save two additional profiles. Upgrade to add more.')
+      }
       const created: ChartProfile = {
         id: `pr_${Date.now().toString(36)}`,
         name: profile.name,
-        relation: profile.relation,
+        relation: profile.relation === 'self' ? 'family' : profile.relation,
         note: profile.note,
         birthDetails: profile.birthDetails,
       }
       persist([...saved, created])
       return created
     },
-    [saved, persist],
+    [saved, persist, userId],
   )
 
   const update = useCallback(
     (id: string, patch: Partial<NewProfile>) => {
-      persist(saved.map((profile) => (profile.id === id ? { ...profile, ...patch } : profile)))
+      persist(
+        saved.map((profile) => {
+          if (profile.id !== id) return profile
+          return {
+            ...profile,
+            name: patch.name ?? profile.name,
+            relation: patch.relation ?? profile.relation,
+            note: patch.note !== undefined ? patch.note : profile.note,
+            birthDetails: patch.birthDetails ?? profile.birthDetails,
+          }
+        }),
+      )
     },
     [saved, persist],
   )
@@ -65,15 +111,26 @@ export function ProfilesProvider({ children }: { children: ReactNode }) {
   const remove = useCallback(
     (id: string) => {
       persist(saved.filter((profile) => profile.id !== id))
-      // Fall back to the account holder's own chart.
       if (selectedId === id) select('self')
     },
     [saved, persist, selectedId, select],
   )
 
   const value = useMemo<ProfilesApi>(
-    () => ({ profiles, saved, selectedId: selected.id, selected, select, add, update, remove }),
-    [profiles, saved, selected, select, add, update, remove],
+    () => ({
+      profiles,
+      saved,
+      selectedId: selected.id,
+      selected,
+      select,
+      add,
+      update,
+      remove,
+      additionalCount: saved.length,
+      freeAdditionalLimit: FREE_ADDITIONAL_PROFILES,
+      canAddAdditional: canAdd,
+    }),
+    [profiles, saved, selected, select, add, update, remove, canAdd],
   )
 
   return <ProfilesContext.Provider value={value}>{children}</ProfilesContext.Provider>

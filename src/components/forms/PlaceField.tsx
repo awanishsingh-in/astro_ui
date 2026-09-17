@@ -139,20 +139,20 @@ export function PlaceField({
             'absolute inset-x-0 bottom-[calc(100%+0.5rem)] z-50',
             'animate-scale-in origin-bottom rounded-card border shadow-overlay',
             celestial
-              ? 'border-gold/25 bg-indigo-deep backdrop-blur-md'
+              ? 'border-[var(--color-field-border)] bg-[var(--color-field)] backdrop-blur-md'
               : 'border-border bg-surface',
           )}
         >
           <div
             className={cn(
               'flex items-center gap-2 border-b px-3.5 py-2',
-              celestial ? 'border-celestial-line/80' : 'border-border',
+              celestial ? 'border-[var(--color-field-border)]' : 'border-border',
             )}
           >
             <span
               className={cn(
                 'font-mono text-[10px] uppercase tracking-[0.14em]',
-                celestial ? 'text-gold/80' : 'text-muted',
+                celestial ? 'text-copper' : 'text-muted',
               )}
             >
               {results.length > 0
@@ -196,7 +196,7 @@ export function PlaceField({
                           active
                             ? 'border-gold/45 bg-gold/15 text-gold'
                             : celestial
-                              ? 'border-celestial-line text-gold/60'
+                              ? 'border-[var(--color-field-border)] text-copper/70'
                               : 'border-border text-muted',
                         )}
                       >

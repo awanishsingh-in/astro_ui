@@ -39,7 +39,10 @@ export const paths = {
   matching: '/matching',
   compatibility: '/compatibility',
   horoscope: (kind = ':kind') => `/horoscope/${kind}`,
+  calendar: '/calendar',
   account: '/account',
+  /** Full-page profile — identity and birth details. */
+  profile: '/profile',
 
   // Development only
   foundation: '/foundation',

@@ -47,6 +47,8 @@ export interface User {
   phone: string
   /** Derived two-letter monogram for the avatar. */
   initials: string
+  /** Data URL or remote URL for the profile photo. */
+  photoUrl?: string | null
   birthDetails: BirthDetails
   language: AppLanguage
   notifications: NotificationPreference

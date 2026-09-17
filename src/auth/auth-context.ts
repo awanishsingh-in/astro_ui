@@ -50,6 +50,9 @@ export interface AuthApi {
    */
   updateBirthDetails: (details: BirthDetails) => Promise<User>
 
+  /** Sets or clears the profile photo (data URL in the demo). */
+  updatePhoto: (photoUrl: string | null) => Promise<User>
+
   /** Language, notifications and the rest of the account preferences. */
   updatePreferences: (patch: {
     language?: AppLanguage

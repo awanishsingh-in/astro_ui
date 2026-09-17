@@ -7,7 +7,7 @@ import type { BirthDetails } from '@/types/user'
  * corporates, friends, relatives" — so the chart dashboard reads for more than
  * the account holder. `self` is always first and cannot be removed.
  */
-export type ProfileRelation = 'self' | 'family' | 'friend' | 'other'
+export type ProfileRelation = 'self' | 'family' | 'friend' | 'relative' | 'other'
 
 export interface ChartProfile {
   id: string
@@ -21,12 +21,27 @@ export interface ChartProfile {
 export const RELATION_LABEL: Record<ProfileRelation, string> = {
   self: 'You',
   family: 'Family',
-  friend: 'Friends',
+  friend: 'Friend',
+  relative: 'Relative',
   other: 'Other',
 }
 
+/** Relations a user can pick when adding a profile (not self). */
+export const ADDABLE_RELATIONS: Exclude<ProfileRelation, 'self'>[] = [
+  'family',
+  'friend',
+  'relative',
+  'other',
+]
+
 /** The order the picker groups them in. */
-export const RELATION_ORDER: ProfileRelation[] = ['self', 'family', 'friend', 'other']
+export const RELATION_ORDER: ProfileRelation[] = [
+  'self',
+  'family',
+  'friend',
+  'relative',
+  'other',
+]
 
 const kolkata = (label: string, latitude: number, longitude: number) => ({
   label,

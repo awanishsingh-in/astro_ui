@@ -50,7 +50,7 @@ export function GalaxyBackdrop({
           density={quiet ? 0.55 : soft ? 0.85 : 1.1}
           glowIntensity={quiet ? 0.1 : soft ? 0.2 : 0.28}
           saturation={0}
-          hueShift={220}
+          hueShift={18}
           twinkleIntensity={quiet ? 0.12 : soft ? 0.28 : 0.4}
           rotationSpeed={quiet ? 0.02 : soft ? 0.045 : 0.08}
           repulsionStrength={2}
@@ -69,8 +69,8 @@ export function GalaxyBackdrop({
         )}
         style={{
           background: quiet
-            ? 'radial-gradient(90% 70% at 50% 0%, rgba(42, 36, 96, 0.45) 0%, transparent 58%), radial-gradient(70% 55% at 80% 80%, rgba(20, 18, 46, 0.5) 0%, transparent 60%)'
-            : 'radial-gradient(120% 90% at 18% 0%, var(--color-indigo-royal) 0%, transparent 62%)',
+            ? 'radial-gradient(90% 70% at 50% 0%, rgba(46, 22, 35, 0.55) 0%, transparent 58%), radial-gradient(70% 55% at 85% 75%, rgba(125, 72, 53, 0.28) 0%, transparent 60%)'
+            : 'radial-gradient(120% 90% at 18% 0%, rgba(46, 22, 35, 0.9) 0%, transparent 62%), radial-gradient(80% 60% at 88% 20%, rgba(220, 132, 79, 0.18) 0%, transparent 55%)',
         }}
       />
 

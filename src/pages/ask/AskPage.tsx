@@ -1,6 +1,6 @@
-import { MessageCirclePlus } from 'lucide-react'
+import { ArrowLeft, MessageCirclePlus } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useRef, useState, type MouseEvent } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import {
   newChatSessionId,
   setChatSessions,
@@ -31,6 +31,7 @@ import { chartSeedFor } from '@/data/profiles'
 import { hasActivePlan, unlockPlan } from '@/onboarding/past-intro'
 import { useProfiles } from '@/profiles/profiles-context'
 import { PageContainer } from '@/layouts/PageContainer'
+import { paths } from '@/routes/paths'
 import { askQuestion } from '@/services/ask.service'
 import { toAppError } from '@/services/client'
 import { bhavaRef } from '@/utils/astro'
@@ -46,6 +47,7 @@ export default function AskPage() {
   const { selected } = useProfiles()
   const seed = chartSeedFor(selected)
   const [params, setParams] = useSearchParams()
+  const navigate = useNavigate()
 
   const sessions = useChatSessions()
   const [activeId, setActiveId] = useState<string | null>(null)
@@ -238,6 +240,7 @@ export default function AskPage() {
 
   // Deep link / reload with ?q= starts a fresh chat for that question.
   // Skipped after New chat so clearing the URL cannot re-open the old thread.
+  // Without a plan we never auto-open the paywall on visit — only on Ask.
   const initial = params.get('q')
   const chatParam = params.get('chat')
   const modeParam = params.get('mode')
@@ -251,11 +254,20 @@ export default function AskPage() {
     if (!initial || lastAsked.current === initial) return
     if (activeId || draftMessages.length > 0) return
     if (!planActive) {
-      setPaywallOpen(true)
+      // Drop the deep-link so switching back to Ask does not re-pop the paywall.
+      lastAsked.current = initial
+      setParams(
+        (prev) => {
+          const next = new URLSearchParams(prev)
+          next.delete('q')
+          return next
+        },
+        { replace: true },
+      )
       return
     }
     void ask(initial)
-  }, [initial, ask, activeId, draftMessages.length, planActive])
+  }, [initial, ask, activeId, draftMessages.length, planActive, setParams])
 
   const startNewChat = useCallback(() => {
     suppressUrlAsk.current = true
@@ -387,9 +399,23 @@ export default function AskPage() {
                 <PageContainer width="reading" className="pb-4">
                   <div className="mx-auto flex max-w-reading flex-col gap-6 sm:gap-8">
                     {viewOnly && (
-                      <p className="rounded-control border border-border bg-surface/80 px-3 py-2 font-mono text-label uppercase tracking-[0.12em] text-muted">
-                        Viewing · read only
-                      </p>
+                      <div className="flex flex-wrap items-center gap-2.5">
+                        <button
+                          type="button"
+                          onClick={() => navigate(paths.askHistory)}
+                          className={cn(
+                            'inline-flex min-h-9 items-center gap-1.5 rounded-control border border-border',
+                            'bg-surface/80 px-3 py-1.5 text-sm font-medium text-ink',
+                            'transition-colors hover:border-border-strong hover:bg-navy-soft',
+                          )}
+                        >
+                          <ArrowLeft className="size-4 shrink-0" aria-hidden />
+                          Back to history
+                        </button>
+                        <p className="rounded-control border border-border bg-surface/80 px-3 py-2 font-mono text-label uppercase tracking-[0.12em] text-muted">
+                          Viewing · read only
+                        </p>
+                      </div>
                     )}
                     {messages.map((message) => {
                       if (message.role === 'user') {

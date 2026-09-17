@@ -1,8 +1,9 @@
 import type { GrahaCode } from '@/types/astrology'
-import { ArrowLeft, Check, Home, Lock, Sparkles } from 'lucide-react'
+import { ArrowLeft, Check, Crown, Download, Home, Lock, Orbit } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { Navigate, useNavigate } from 'react-router-dom'
 import { PlanetGlyph } from '@/components/astrology/PlanetGlyph'
+import { ChatPaywall } from '@/components/ask/ChatPaywall'
 import { QuestionComposer } from '@/components/ask/QuestionComposer'
 import { Button } from '@/components/common/Button'
 import { GalaxyBackdrop } from '@/components/celestial/GalaxyBackdrop'
@@ -16,9 +17,11 @@ import {
   type PastInsightCategory,
 } from '@/data/past-insights'
 import {
+  hasActivePlan,
   hasSeenPastIntro,
   markPastIntroSeen,
   savePastSelections,
+  unlockPlan,
 } from '@/onboarding/past-intro'
 import { paths } from '@/routes/paths'
 import { bhavaRef, GRAHAS } from '@/utils/astro'
@@ -87,6 +90,7 @@ export default function PastInsightPage() {
   if (revealOpen && activeInsight) {
     return (
       <PastRevealScreen
+        userId={user.id}
         insights={revealed}
         activeId={activeInsight.id}
         onSelect={setActiveId}
@@ -128,7 +132,7 @@ export default function PastInsightPage() {
         </header>
 
         <section
-          className="mt-4 flex min-h-0 flex-1 flex-col overflow-hidden lg:mt-5"
+          className="mt-4 flex min-h-0 flex-1 flex-col lg:mt-5"
           aria-label={
             selectionsLocked
               ? 'Locked past areas'
@@ -141,7 +145,7 @@ export default function PastInsightPage() {
               : `Choose up to ${MAX_PAST_SELECTIONS}`}
           </p>
 
-          <div className="grid min-h-0 flex-1 grid-cols-2 gap-2.5 overflow-hidden sm:gap-3 lg:auto-rows-fr lg:grid-cols-3">
+          <div className="grid min-h-0 flex-1 grid-cols-2 gap-2.5 overflow-visible pt-1.5 sm:gap-3 lg:auto-rows-fr lg:grid-cols-3">
             {PAST_INSIGHTS.map((insight, index) => {
               const isOn = picked.includes(insight.id)
               const lockedOut = selectionsLocked || (atLimit && !isOn)
@@ -186,6 +190,7 @@ export default function PastInsightPage() {
 
 /** Full-screen past reader — areas on the left, detail on the right. */
 function PastRevealScreen({
+  userId,
   insights,
   activeId,
   onSelect,
@@ -195,6 +200,7 @@ function PastRevealScreen({
   onAsk,
   onLookCalculation,
 }: {
+  userId: string
   insights: PastInsight[]
   activeId: PastInsightCategory
   onSelect: (id: PastInsightCategory) => void
@@ -205,115 +211,148 @@ function PastRevealScreen({
   onLookCalculation: () => void
 }) {
   const active = insights.find((item) => item.id === activeId) ?? insights[0]
+  const [planUnlocked, setPlanUnlocked] = useState(() => hasActivePlan(userId))
+  const [paywallOpen, setPaywallOpen] = useState(false)
+  const [downloadReady, setDownloadReady] = useState(false)
+
+  const requestDownload = () => {
+    if (!planUnlocked) {
+      setPaywallOpen(true)
+      return
+    }
+    setDownloadReady(true)
+  }
+
+  const confirmPlan = (_planId: string) => {
+    unlockPlan(userId)
+    setPlanUnlocked(true)
+    setPaywallOpen(false)
+    setDownloadReady(true)
+  }
 
   return (
-    <GalaxyBackdrop
-      intensity="quiet"
-      className="h-dvh max-h-dvh"
-      contentClassName="relative flex h-dvh max-h-dvh flex-col overflow-hidden"
-    >
-      <header className="relative z-10 shrink-0 border-b border-celestial-line px-4 pb-3 pt-safe sm:px-8 lg:px-12">
-        <div className="mx-auto flex w-full max-w-[90rem] items-center gap-3 pt-4">
-          <button
-            type="button"
-            onClick={onBack}
-            aria-label="Back to choices"
-            className="inline-flex size-10 shrink-0 items-center justify-center rounded-full border border-celestial-line bg-indigo-deep/65 text-ink transition-colors hover:border-gold/45"
-          >
-            <ArrowLeft className="size-5" />
-          </button>
-          <div className="min-w-0">
-            <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-gold-deep">
-              Your past
-            </p>
-            <p className="truncate text-sm text-purple">
-              {insights.length} area{insights.length === 1 ? '' : 's'} from your chart · tap a card
-            </p>
+    <>
+      <GalaxyBackdrop
+        intensity="quiet"
+        className="h-dvh max-h-dvh"
+        contentClassName="relative flex h-dvh max-h-dvh flex-col overflow-hidden"
+      >
+        <header className="relative z-10 shrink-0 border-b border-celestial-line px-4 pb-3 pt-safe sm:px-8 lg:px-12">
+          <div className="mx-auto flex w-full max-w-[90rem] items-center gap-3 pt-4">
+            <button
+              type="button"
+              onClick={onBack}
+              aria-label="Back to choices"
+              className="inline-flex size-10 shrink-0 items-center justify-center rounded-full border border-celestial-line bg-indigo-deep/65 text-ink transition-colors hover:border-gold/45"
+            >
+              <ArrowLeft className="size-5" />
+            </button>
+            <div className="min-w-0">
+              <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-gold-deep">
+                Your past
+              </p>
+              <p className="truncate text-sm text-purple">
+                {insights.length} area{insights.length === 1 ? '' : 's'} from your chart · tap a card
+              </p>
+            </div>
           </div>
-        </div>
-      </header>
+        </header>
 
-      <div className="relative z-10 mx-auto grid min-h-0 w-full max-w-[90rem] flex-1 grid-cols-1 lg:grid-cols-[minmax(0,18rem)_minmax(0,1fr)] xl:grid-cols-[minmax(0,20rem)_minmax(0,1fr)]">
-        <aside
-          className="shrink-0 border-b border-celestial-line px-4 py-4 sm:px-8 lg:border-b-0 lg:border-r lg:border-celestial-line lg:px-6 lg:py-6 xl:px-8"
-          aria-label="Selected past areas"
-        >
+        <div className="relative z-10 mx-auto grid min-h-0 w-full max-w-[90rem] flex-1 grid-cols-1 lg:grid-cols-[minmax(0,18rem)_minmax(0,1fr)] xl:grid-cols-[minmax(0,20rem)_minmax(0,1fr)]">
+          <aside
+            className="shrink-0 border-b border-celestial-line px-4 py-4 sm:px-8 lg:border-b-0 lg:border-r lg:border-celestial-line lg:px-6 lg:py-6 xl:px-8"
+            aria-label="Selected past areas"
+          >
+            <div
+              className="flex gap-2 overflow-x-auto pt-1 no-scrollbar sm:gap-3 lg:flex-col lg:overflow-visible"
+              role="tablist"
+            >
+              {insights.map((insight) => {
+                const selected = insight.id === active.id
+                return (
+                  <button
+                    key={insight.id}
+                    type="button"
+                    role="tab"
+                    aria-selected={selected}
+                    onClick={() => onSelect(insight.id)}
+                    className={cn(
+                      'flex min-w-[9.5rem] flex-col rounded-[16px] border px-3.5 py-3 text-left transition-[border-color,background-color,box-shadow] duration-250 ease-out-soft sm:min-w-[11rem] lg:min-w-0 lg:w-full',
+                      selected
+                        ? 'border-gold/55 bg-deep-burgundy/55 shadow-[0_0_0_1px_rgba(220,132,79,0.12)]'
+                        : 'border-celestial-line/80 bg-indigo-deep/55 hover:border-gold/30',
+                    )}
+                  >
+                    <span className="flex items-center gap-1.5">
+                      {insight.planets.map((code) => (
+                        <PlanetGlyph key={code} code={code} size="sm" tone="dark" />
+                      ))}
+                    </span>
+                    <span className="mt-2 line-clamp-2 font-serif text-base text-ink">
+                      {insight.category}
+                    </span>
+                    <span className="mt-1 text-[10px] uppercase tracking-[0.12em] text-muted">
+                      {insight.period}
+                    </span>
+                  </button>
+                )
+              })}
+            </div>
+          </aside>
+
           <div
-            className="flex gap-2 overflow-x-auto no-scrollbar sm:gap-3 lg:flex-col lg:overflow-visible"
-            role="tablist"
+            className="min-h-0 flex-1 overflow-y-auto overscroll-contain no-scrollbar px-5 py-6 sm:px-8 lg:px-10 lg:py-8"
+            role="tabpanel"
+            aria-label={active.category}
           >
-            {insights.map((insight) => {
-              const selected = insight.id === active.id
-              return (
-                <button
-                  key={insight.id}
-                  type="button"
-                  role="tab"
-                  aria-selected={selected}
-                  onClick={() => onSelect(insight.id)}
-                  className={cn(
-                    'flex min-w-[9.5rem] flex-col rounded-[16px] border px-3.5 py-3 text-left transition-[border-color,background-color,box-shadow] duration-250 ease-out-soft sm:min-w-[11rem] lg:min-w-0 lg:w-full',
-                    selected
-                      ? 'border-gold/55 bg-deep-burgundy/55 shadow-[0_0_0_1px_rgba(220,132,79,0.12)]'
-                      : 'border-celestial-line/80 bg-indigo-deep/55 hover:border-gold/30',
-                  )}
-                >
-                  <span className="flex items-center gap-1.5">
-                    {insight.planets.map((code) => (
-                      <PlanetGlyph key={code} code={code} size="sm" tone="dark" />
-                    ))}
-                  </span>
-                  <span className="mt-2 line-clamp-2 font-serif text-base text-ink">
-                    {insight.category}
-                  </span>
-                  <span className="mt-1 text-[10px] uppercase tracking-[0.12em] text-muted">
-                    {insight.period}
-                  </span>
-                </button>
-              )
-            })}
-          </div>
-        </aside>
-
-        <div
-          className="min-h-0 flex-1 overflow-y-auto overscroll-contain no-scrollbar px-5 py-6 sm:px-8 lg:px-10 lg:py-8"
-          role="tabpanel"
-          aria-label={active.category}
-        >
-          <div className={cn(glassSurface, 'p-5 sm:p-7')}>
-            <InsightDetail
-              key={active.id}
-              insight={active}
-              tone="dark"
-              onAsk={onAsk}
-              onLookCalculation={onLookCalculation}
-            />
+            <div className={cn(glassSurface, 'p-5 sm:p-7')}>
+              <InsightDetail
+                key={active.id}
+                insight={active}
+                tone="dark"
+                onAsk={onAsk}
+                onLookCalculation={onLookCalculation}
+                onDownloadReport={requestDownload}
+                reportPaid={!planUnlocked}
+                downloadReady={downloadReady}
+              />
+            </div>
           </div>
         </div>
-      </div>
 
-      <div className="relative z-20 shrink-0 border-t border-celestial-line bg-midnight/82 backdrop-blur-xl pb-safe">
-        <div className="mx-auto flex w-full max-w-[90rem] items-center justify-between gap-4 px-5 py-4 sm:px-8 lg:px-12">
-          <button
-            type="button"
-            onClick={onHome}
-            className="inline-flex items-center gap-2 py-1 text-sm font-medium text-purple transition-colors hover:text-ink"
-          >
-            <Home className="size-4" strokeWidth={1.75} />
-            Home
-          </button>
+        <div className="relative z-20 shrink-0 border-t border-celestial-line bg-midnight/82 backdrop-blur-xl pb-safe">
+          <div className="mx-auto flex w-full max-w-[90rem] items-center justify-between gap-4 px-5 py-4 sm:px-8 lg:px-12">
+            <button
+              type="button"
+              onClick={onHome}
+              className="inline-flex items-center gap-2 py-1 text-sm font-medium text-purple transition-colors hover:text-ink"
+            >
+              <Home className="size-4" strokeWidth={1.75} />
+              Home
+            </button>
 
-          <Button
-            variant="celestial"
-            size="lg"
-            onClick={onContinue}
-            className="rounded-full sm:min-w-[14rem]"
-          >
-            Continue →
-          </Button>
+            <Button
+              variant="celestial"
+              size="lg"
+              onClick={onContinue}
+              className="rounded-full sm:min-w-[14rem]"
+            >
+              Continue →
+            </Button>
+          </div>
         </div>
-      </div>
-    </GalaxyBackdrop>
+      </GalaxyBackdrop>
+
+      <ChatPaywall
+        isOpen={paywallOpen}
+        onClose={() => setPaywallOpen(false)}
+        onUnlock={confirmPlan}
+        title="Download needs a plan"
+        description="Past reports are included with Cyklos Plus. Unlock to save this reading as a PDF."
+        benefit="Plus unlocks downloadable past reports — keep a copy of what your chart carried."
+        unlockLabel="Unlock downloads"
+      />
+    </>
   )
 }
 
@@ -397,27 +436,75 @@ function InsightDetail({
   tone = 'light',
   onAsk,
   onLookCalculation,
+  onDownloadReport,
+  reportPaid = false,
+  downloadReady = false,
 }: {
   insight: PastInsight
   tone?: 'light' | 'dark'
   onAsk?: (question: string) => void
   onLookCalculation?: () => void
+  onDownloadReport?: () => void
+  /** When true, download is gated behind Plus. */
+  reportPaid?: boolean
+  downloadReady?: boolean
 }) {
   const dark = tone === 'dark'
   return (
     <article className="animate-fade-in space-y-5">
-      <div>
-        <p
-          className={cn(
-            'text-[11px] font-medium uppercase tracking-[0.16em]',
-            dark ? 'text-gold-deep' : 'text-muted',
+      <div className="space-y-3">
+        <div className="flex flex-wrap items-start justify-between gap-2.5">
+          <p
+            className={cn(
+              'pt-1 text-[11px] font-medium uppercase tracking-[0.16em]',
+              dark ? 'text-gold-deep' : 'text-muted',
+            )}
+          >
+            {insight.category} · {insight.period}
+          </p>
+
+          {(onLookCalculation || onDownloadReport) && (
+            <div className="ml-auto flex flex-wrap items-center justify-end gap-2">
+              {onLookCalculation && (
+                <Button
+                  variant={dark ? 'celestial' : 'primary'}
+                  size="sm"
+                  onClick={onLookCalculation}
+                  iconLeft={<Orbit className="size-3.5" strokeWidth={2} />}
+                  className="rounded-full"
+                >
+                  Look your calculation
+                </Button>
+              )}
+              {onDownloadReport && (
+                <Button
+                  variant={dark ? 'celestialGhost' : 'ghost'}
+                  size="sm"
+                  onClick={onDownloadReport}
+                  iconLeft={
+                    reportPaid ? (
+                      <Crown className="size-3.5" strokeWidth={2} />
+                    ) : (
+                      <Download className="size-3.5" strokeWidth={2} />
+                    )
+                  }
+                  className="rounded-full"
+                >
+                  {downloadReady && !reportPaid ? 'Report ready' : 'Download report'}
+                  {reportPaid && (
+                    <span className="ml-1 font-mono text-[9px] uppercase tracking-[0.12em] text-gold-deep">
+                      Plus
+                    </span>
+                  )}
+                </Button>
+              )}
+            </div>
           )}
-        >
-          {insight.category} · {insight.period}
-        </p>
+        </div>
+
         <p
           className={cn(
-            'mt-2 font-serif text-title text-pretty lg:text-title-lg',
+            'font-serif text-title text-pretty lg:text-title-lg',
             dark ? 'text-ink' : 'text-ink',
           )}
         >
@@ -495,33 +582,20 @@ function InsightDetail({
         Source · {bhavaRef(insight.bhava)} · {insight.source}
       </p>
 
-      {(onAsk || onLookCalculation) && (
+      {onAsk && (
         <div
           className={cn(
-            'space-y-3 border-t pt-5',
+            'border-t pt-5',
             dark ? 'border-celestial-line' : 'border-border',
           )}
         >
-          {onAsk && (
-            <QuestionComposer
-              key={insight.id}
-              variant="bar"
-              tone={dark ? 'dark' : 'light'}
-              placeholder={`Ask about your past in ${insight.category.toLowerCase()}…`}
-              onAsk={onAsk}
-            />
-          )}
-          {onLookCalculation && (
-            <Button
-              variant={dark ? 'celestial' : 'primary'}
-              size="md"
-              onClick={onLookCalculation}
-              iconLeft={<Sparkles className="size-4" strokeWidth={1.75} />}
-              className="w-full rounded-full sm:w-auto"
-            >
-              Look your calculation
-            </Button>
-          )}
+          <QuestionComposer
+            key={insight.id}
+            variant="bar"
+            tone={dark ? 'dark' : 'light'}
+            placeholder={`Ask about your past in ${insight.category.toLowerCase()}…`}
+            onAsk={onAsk}
+          />
         </div>
       )}
     </article>

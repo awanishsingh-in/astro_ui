@@ -33,10 +33,12 @@ const SIZES: Record<InputSize, { shell: string; text: string; pad: string }> = {
 }
 
 const TONE_SHELL: Record<NonNullable<BaseProps['tone']>, string> = {
-  surface: 'bg-surface border-border focus-within:border-navy focus-within:shadow-focus',
-  sunken: 'bg-surface-sunken border-border focus-within:border-navy focus-within:shadow-focus',
+  surface:
+    'bg-surface border-border focus-within:border-copper focus-within:shadow-focus',
+  sunken:
+    'bg-surface-sunken border-border focus-within:border-copper focus-within:shadow-focus',
   celestial:
-    'bg-indigo-deep/90 border-celestial-line/80 shadow-[inset_0_1px_0_rgba(245,242,255,0.04)] focus-within:border-gold/45 focus-within:shadow-focus',
+    'bg-[var(--color-field)] border-[var(--color-field-border)] shadow-[inset_0_1px_0_var(--color-field-inset)] focus-within:border-copper focus-within:shadow-focus',
 }
 
 /** One control, three heights. `lg` is what the birth-details form uses. */
@@ -98,8 +100,9 @@ export function Input({
           size.pad,
           mono ? 'font-mono' : size.text,
           mono && (inputSize === 'sm' ? 'text-data' : 'text-data-lg'),
-          /* Native date/time pickers need the dark scheme on celestial fields. */
-          (rest.type === 'date' || rest.type === 'time') && '[color-scheme:dark]',
+          /* Native date/time pickers follow the active theme. */
+          (rest.type === 'date' || rest.type === 'time') &&
+            '[color-scheme:inherit]',
         )}
         {...rest}
       />

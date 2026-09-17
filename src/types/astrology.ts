@@ -187,3 +187,21 @@ export interface Panchang {
   tithi: string
   nakshatra: string
 }
+
+export type CalendarEventKind = 'festival' | 'vrat' | 'ekadashi'
+
+/** A festival, vrat or ekadashi on a calendar day. */
+export interface CalendarEvent {
+  name: string
+  kind: CalendarEventKind
+}
+
+/** Full panchang for one day in the Hindu calendar view. */
+export interface CalendarDay extends Panchang {
+  yoga: string
+  karana: string
+  /** Weekday — e.g. Guruvara. */
+  vaar: string
+  paksha: 'Shukla' | 'Krishna'
+  events: CalendarEvent[]
+}

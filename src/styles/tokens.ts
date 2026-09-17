@@ -46,6 +46,7 @@ export const color = {
 
   canvas: astrovate.deepSpace,
   surface: astrovate.darkPurple,
+  surfaceRaised: astrovate.nebulaPlum,
   surfaceSunken: astrovate.deepSpace,
   border: astrovate.darkMauve,
   borderStrong: astrovate.mutedPlum,

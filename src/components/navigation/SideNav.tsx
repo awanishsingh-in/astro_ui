@@ -1,17 +1,18 @@
 import {
-  History,
-  Hourglass,
-  MessageCircleHeart,
-  MessageCirclePlus,
+  BookMarked,
+  LayoutGrid,
+  ScrollText,
+  Sparkles,
+  SquarePen,
+  WandSparkles,
   PanelLeftClose,
   PanelLeftOpen,
-  Telescope,
 } from 'lucide-react'
 import { NavLink, useLocation, useNavigate } from 'react-router-dom'
 import { Logo, LogoMark } from '@/components/brand/Logo'
 import { AvatarMenu } from '@/components/navigation/AvatarMenu'
 import { ThemeQuickToggle } from '@/components/account/ThemeQuickToggle'
-import { primaryProductFeatures } from '@/data/features'
+import { livePrimaryFeatures } from '@/data/features'
 import { paths } from '@/routes/paths'
 import type { User } from '@/types/user'
 import { cn } from '@/utils/cn'
@@ -31,7 +32,7 @@ function isFeatureActive(pathname: string, to: string | undefined, slug: string)
   const href = featureHref(to, slug)
   if (pathname === href || pathname.startsWith(`${href}/`)) return true
 
-  if (slug === 'kundli') {
+  if (slug === 'my-chart' || slug === 'kundli') {
     return pathname === paths.chart || pathname.startsWith(`${paths.chart}/`)
   }
   if (slug === 'matching') {
@@ -42,6 +43,9 @@ function isFeatureActive(pathname: string, to: string | undefined, slug: string)
   }
   if (slug === 'horoscope') {
     return pathname.startsWith('/horoscope')
+  }
+  if (slug === 'calendar') {
+    return pathname === paths.calendar || pathname.startsWith(`${paths.calendar}/`)
   }
   return pathname === paths.explore(slug)
 }
@@ -69,7 +73,7 @@ export function SideNav({
       <aside
         className={cn(
           'sticky top-0 z-30 hidden h-dvh w-14 shrink-0 flex-col items-center',
-          'border-r border-border bg-surface px-1.5 py-4',
+          'border-r border-border/70 bg-surface/75 px-1.5 py-4 backdrop-blur-xl',
           'lg:flex',
           className,
         )}
@@ -103,11 +107,11 @@ export function SideNav({
             className={() =>
               cn(
                 'inline-flex size-9 items-center justify-center rounded-control transition-colors',
-                onAsk ? 'bg-navy-soft text-gold-deep' : 'text-muted hover:bg-navy-soft/70 hover:text-ink',
+                onAsk ? 'bg-copper/20 text-copper' : 'text-muted hover:bg-navy-soft/70 hover:text-ink',
               )
             }
           >
-            <MessageCircleHeart className="size-5" strokeWidth={onAsk ? 2.25 : 1.75} aria-hidden />
+            <WandSparkles className="size-5" strokeWidth={onAsk ? 2.25 : 1.75} aria-hidden />
           </NavLink>
 
           <button
@@ -117,7 +121,7 @@ export function SideNav({
             onClick={() => navigate(`${paths.ask}?new=1`)}
             className="inline-flex size-9 items-center justify-center rounded-control text-gold-deep transition-colors hover:bg-navy-soft/70"
           >
-            <MessageCirclePlus className="size-4" aria-hidden />
+            <SquarePen className="size-4" aria-hidden />
           </button>
 
           <NavLink
@@ -132,7 +136,7 @@ export function SideNav({
             }
           >
             {({ isActive }) => (
-              <History className="size-5" strokeWidth={isActive ? 2.25 : 1.75} aria-hidden />
+              <ScrollText className="size-5" strokeWidth={isActive ? 2.25 : 1.75} aria-hidden />
             )}
           </NavLink>
 
@@ -148,13 +152,13 @@ export function SideNav({
             }
           >
             {({ isActive }) => (
-              <Hourglass className="size-5" strokeWidth={isActive ? 2.25 : 1.75} aria-hidden />
+              <BookMarked className="size-5" strokeWidth={isActive ? 2.25 : 1.75} aria-hidden />
             )}
           </NavLink>
 
           <span className="my-2 h-px w-6 bg-border" aria-hidden />
 
-          {primaryProductFeatures.slice(0, 4).map((feature) => {
+          {livePrimaryFeatures.slice(0, 4).map((feature) => {
             const href = featureHref(feature.to, feature.slug)
             const active = isFeatureActive(location.pathname, feature.to, feature.slug)
             const Icon = feature.icon
@@ -169,13 +173,7 @@ export function SideNav({
                   active ? 'bg-navy-soft text-gold-deep' : 'text-muted hover:bg-navy-soft/70 hover:text-ink',
                 )}
               >
-                {feature.glyph ? (
-                  <span aria-hidden className="text-sm leading-none">
-                    {feature.glyph}
-                  </span>
-                ) : (
-                  <Icon className="size-4" strokeWidth={active ? 2.25 : 1.75} aria-hidden />
-                )}
+                <Icon className="size-4" strokeWidth={active ? 2.25 : 1.75} aria-hidden />
               </NavLink>
             )
           })}
@@ -192,14 +190,14 @@ export function SideNav({
             }
           >
             {({ isActive }) => (
-              <Telescope className="size-4" strokeWidth={isActive ? 2.25 : 1.75} aria-hidden />
+              <LayoutGrid className="size-4" strokeWidth={isActive ? 2.25 : 1.75} aria-hidden />
             )}
           </NavLink>
         </nav>
 
         <div className="mt-3 flex flex-col items-center gap-1">
-          <ThemeQuickToggle />
           <AvatarMenu user={user} placement="up" />
+          <ThemeQuickToggle />
         </div>
       </aside>
     )
@@ -208,13 +206,22 @@ export function SideNav({
   return (
     <aside
       className={cn(
-        'sticky top-0 z-30 hidden h-dvh w-52 shrink-0 flex-col',
-        'border-r border-border bg-surface px-3 py-5',
-        'lg:flex xl:w-56',
+        'sticky top-0 z-30 hidden h-dvh w-60 shrink-0 flex-col',
+        'border-r border-border/60 bg-surface/80 px-3.5 py-5 backdrop-blur-xl',
+        'lg:flex xl:w-64',
+        'shadow-[inset_-1px_0_0_0_rgba(232,168,78,0.06)]',
         className,
       )}
     >
-      <div className="mb-6 flex items-center justify-between gap-2 px-1">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 -z-10 overflow-hidden"
+      >
+        <div className="absolute -left-10 top-0 h-40 w-40 rounded-full bg-copper/10 blur-3xl" />
+        <div className="absolute -right-8 bottom-24 h-36 w-36 rounded-full bg-deep-burgundy/50 blur-3xl" />
+      </div>
+
+      <div className="mb-5 flex items-center justify-between gap-2 px-1">
         <NavLink to={paths.ask} aria-label="Cyklos Ask" className="w-fit rounded-xs">
           <Logo size="md" />
         </NavLink>
@@ -232,20 +239,20 @@ export function SideNav({
       </div>
 
       <nav aria-label="Primary" className="min-h-0 flex-1 overflow-y-auto no-scrollbar">
-        <div className="flex flex-col gap-0.5">
+        <div className="flex flex-col gap-1 rounded-card border border-border/50 bg-surface-sunken/35 p-1.5">
           <NavLink
             to={paths.ask}
             end
             className={() =>
               cn(
-                'flex items-center gap-3 rounded-control px-3 py-2.5 transition-colors duration-150',
+                'flex items-center gap-3 rounded-control px-3 py-2.5 transition-[background-color,color,box-shadow] duration-150',
                 onAsk
-                  ? 'bg-navy-soft font-semibold text-ink'
+                  ? 'bg-gradient-to-r from-copper/25 via-copper/10 to-transparent font-semibold text-ink shadow-[inset_3px_0_0_0_var(--color-copper)]'
                   : 'font-medium text-purple hover:bg-navy-soft/70 hover:text-ink',
               )
             }
           >
-            <MessageCircleHeart
+            <WandSparkles
               className={cn('size-5 shrink-0', onAsk ? 'text-gold-deep' : 'text-muted')}
               strokeWidth={onAsk ? 2.25 : 1.75}
               aria-hidden
@@ -253,7 +260,7 @@ export function SideNav({
             <span className="truncate text-sm">Ask</span>
           </NavLink>
 
-          <div className="flex flex-col gap-0.5 pl-3">
+          <div className="flex flex-col gap-0.5 pl-2">
             <button
               type="button"
               onClick={() => navigate(`${paths.ask}?new=1`)}
@@ -263,7 +270,7 @@ export function SideNav({
                 'hover:bg-navy-soft/70 hover:text-ink',
               )}
             >
-              <MessageCirclePlus className="size-4 shrink-0 text-gold-deep" aria-hidden />
+              <SquarePen className="size-4 shrink-0 text-gold-deep" aria-hidden />
               New chat
             </button>
           </div>
@@ -272,16 +279,16 @@ export function SideNav({
             to={paths.askHistory}
             className={({ isActive }) =>
               cn(
-                'flex items-center gap-3 rounded-control px-3 py-2.5 transition-colors duration-150',
+                'flex items-center gap-3 rounded-control px-3 py-2.5 transition-[background-color,color,box-shadow] duration-150',
                 isActive
-                  ? 'bg-navy-soft font-semibold text-ink'
+                  ? 'bg-gradient-to-r from-copper/25 via-copper/10 to-transparent font-semibold text-ink shadow-[inset_3px_0_0_0_var(--color-copper)]'
                   : 'font-medium text-purple hover:bg-navy-soft/70 hover:text-ink',
               )
             }
           >
             {({ isActive }) => (
               <>
-                <History
+                <ScrollText
                   className={cn('size-5 shrink-0', isActive ? 'text-gold-deep' : 'text-muted')}
                   strokeWidth={isActive ? 2.25 : 1.75}
                   aria-hidden
@@ -295,16 +302,16 @@ export function SideNav({
             to={paths.yourPast}
             className={({ isActive }) =>
               cn(
-                'flex items-center gap-3 rounded-control px-3 py-2.5 transition-colors duration-150',
+                'flex items-center gap-3 rounded-control px-3 py-2.5 transition-[background-color,color,box-shadow] duration-150',
                 isActive
-                  ? 'bg-navy-soft font-semibold text-ink'
+                  ? 'bg-gradient-to-r from-copper/25 via-copper/10 to-transparent font-semibold text-ink shadow-[inset_3px_0_0_0_var(--color-copper)]'
                   : 'font-medium text-purple hover:bg-navy-soft/70 hover:text-ink',
               )
             }
           >
             {({ isActive }) => (
               <>
-                <Hourglass
+                <BookMarked
                   className={cn('size-5 shrink-0', isActive ? 'text-gold-deep' : 'text-muted')}
                   strokeWidth={isActive ? 2.25 : 1.75}
                   aria-hidden
@@ -315,12 +322,12 @@ export function SideNav({
           </NavLink>
         </div>
 
-        <div className="mt-5 border-t border-border pt-4">
-          <p className="mb-2 px-3 text-[10px] font-semibold uppercase tracking-[0.12em] text-faint">
+        <div className="mt-5">
+          <p className="mb-2.5 px-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-faint">
             Features
           </p>
           <ul className="flex flex-col gap-0.5">
-            {primaryProductFeatures.map((feature) => {
+            {livePrimaryFeatures.map((feature) => {
               const href = featureHref(feature.to, feature.slug)
               const active = isFeatureActive(location.pathname, feature.to, feature.slug)
               const Icon = feature.icon
@@ -330,33 +337,24 @@ export function SideNav({
                     to={href}
                     title={feature.title}
                     className={cn(
-                      'flex items-center gap-2.5 rounded-control px-3 py-2 transition-colors duration-150',
+                      'group flex items-center gap-3 rounded-control px-3 py-2.5 transition-[background-color,color,box-shadow] duration-150',
                       active
-                        ? 'bg-navy-soft font-semibold text-ink'
+                        ? 'bg-gradient-to-r from-copper/22 via-copper/8 to-transparent font-semibold text-ink shadow-[inset_3px_0_0_0_var(--color-copper)]'
                         : 'font-medium text-purple hover:bg-navy-soft/70 hover:text-ink',
                     )}
                   >
-                    {feature.glyph ? (
-                      <span
-                        aria-hidden
-                        className={cn(
-                          'inline-flex size-4 shrink-0 items-center justify-center text-sm leading-none',
-                          active ? 'text-gold-deep' : 'text-muted',
-                        )}
-                      >
-                        {feature.glyph}
-                      </span>
-                    ) : (
-                      <Icon
-                        className={cn(
-                          'size-4 shrink-0',
-                          active ? 'text-gold-deep' : 'text-muted',
-                        )}
-                        strokeWidth={active ? 2.25 : 1.75}
-                        aria-hidden
-                      />
-                    )}
-                    <span className="min-w-0 truncate text-sm leading-snug">{feature.title}</span>
+                    <span
+                      aria-hidden
+                      className={cn(
+                        'inline-flex size-8 shrink-0 items-center justify-center rounded-control border transition-colors',
+                        active
+                          ? 'border-copper/35 bg-copper/15 text-gold-deep'
+                          : 'border-border/70 bg-surface-sunken/50 text-muted group-hover:border-border-strong group-hover:text-ink',
+                      )}
+                    >
+                      <Icon className="size-4" strokeWidth={active ? 2.25 : 1.75} />
+                    </span>
+                    <span className="min-w-0 text-sm leading-snug text-pretty">{feature.title}</span>
                   </NavLink>
                 </li>
               )
@@ -368,23 +366,26 @@ export function SideNav({
             end
             className={({ isActive }) =>
               cn(
-                'mt-2 flex items-center gap-2.5 rounded-control px-3 py-2.5 transition-colors duration-150',
+                'mt-2 flex items-center gap-3 rounded-control px-3 py-2.5 transition-[background-color,color,box-shadow] duration-150',
                 isActive
-                  ? 'bg-navy-soft font-semibold text-ink'
+                  ? 'bg-gradient-to-r from-copper/22 via-copper/8 to-transparent font-semibold text-ink shadow-[inset_3px_0_0_0_var(--color-copper)]'
                   : 'font-medium text-purple hover:bg-navy-soft/70 hover:text-ink',
               )
             }
           >
             {({ isActive }) => (
               <>
-                <Telescope
-                  className={cn(
-                    'size-4 shrink-0',
-                    isActive ? 'text-gold-deep' : 'text-muted',
-                  )}
-                  strokeWidth={isActive ? 2.25 : 1.75}
+                <span
                   aria-hidden
-                />
+                  className={cn(
+                    'inline-flex size-8 shrink-0 items-center justify-center rounded-control border',
+                    isActive
+                      ? 'border-copper/35 bg-copper/15 text-gold-deep'
+                      : 'border-border/70 bg-surface-sunken/50 text-muted',
+                  )}
+                >
+                  <Sparkles className="size-4" strokeWidth={isActive ? 2.25 : 1.75} />
+                </span>
                 <span className="truncate text-sm">All features</span>
               </>
             )}
@@ -392,9 +393,9 @@ export function SideNav({
         </div>
       </nav>
 
-      <div className="mt-4 flex items-center gap-1 px-1">
-        <ThemeQuickToggle />
+      <div className="mt-4 flex items-center gap-2 rounded-card border border-border/60 bg-surface-sunken/40 px-2 py-2">
         <AvatarMenu user={user} placement="up" />
+        <ThemeQuickToggle />
       </div>
     </aside>
   )

@@ -104,17 +104,24 @@ export default function CompatibilityPage() {
                 onChange={(event) => { setBId(event.target.value); setResult(null) }}
               />
             </Field>
-          </div>
 
-          <Button
-            onClick={() => void check()}
-            disabled={sameChart}
-            loading={isChecking}
-            iconLeft={<Heart className="size-4" />}
-            className="w-full sm:w-fit sm:px-8"
-          >
-            {isChecking ? 'Reading both charts' : 'Check compatibility'}
-          </Button>
+            <Button
+              onClick={() => void check()}
+              disabled={sameChart}
+              loading={isChecking}
+              fullWidth
+              size="lg"
+              iconLeft={
+                <Heart
+                  className={cn('size-4', !isChecking && 'motion-safe:animate-pulse-soft')}
+                  aria-hidden
+                />
+              }
+              className="sm:col-span-2 shadow-glow"
+            >
+              {isChecking ? 'Reading both charts' : 'Check compatibility'}
+            </Button>
+          </div>
         </Card>
 
         {error && <ErrorState className="mt-6" variant="inline" error={error} onRetry={() => void check()} />}
