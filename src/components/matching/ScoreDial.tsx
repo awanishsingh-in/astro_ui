@@ -22,6 +22,8 @@ export function ScoreDial({ value, max, caption, size = 160, className }: ScoreD
   const radius = 46
   const circumference = 2 * Math.PI * radius
   const fraction = Math.max(0, Math.min(1, value / max))
+  const display =
+    Number.isInteger(value) ? String(value) : value.toFixed(1).replace(/\.0$/, '')
 
   return (
     <svg
@@ -33,17 +35,25 @@ export function ScoreDial({ value, max, caption, size = 160, className }: ScoreD
       aria-labelledby={titleId}
     >
       <title id={titleId}>
-        {value} out of {max} — {caption}
+        {display} out of {max} - {caption}
       </title>
 
-      <circle cx="60" cy="60" r={radius} fill="none" stroke="var(--color-border)" strokeWidth="7" />
       <circle
         cx="60"
         cy="60"
         r={radius}
         fill="none"
-        stroke="var(--color-gold)"
-        strokeWidth="7"
+        stroke="var(--color-border-strong)"
+        strokeWidth="8"
+        opacity="0.55"
+      />
+      <circle
+        cx="60"
+        cy="60"
+        r={radius}
+        fill="none"
+        stroke="var(--color-copper)"
+        strokeWidth="8"
         strokeLinecap="round"
         strokeDasharray={circumference}
         strokeDashoffset={circumference * (1 - fraction)}
@@ -53,21 +63,22 @@ export function ScoreDial({ value, max, caption, size = 160, className }: ScoreD
 
       <text
         x="60"
-        y="58"
+        y="56"
         textAnchor="middle"
-        fontFamily="var(--font-mono)"
-        fontSize="26"
+        fontFamily="var(--font-display, var(--font-sans))"
+        fontSize="28"
+        fontWeight="600"
         fill="var(--color-ink)"
       >
-        {value}
+        {display}
       </text>
       <text
         x="60"
-        y="74"
+        y="72"
         textAnchor="middle"
         fontFamily="var(--font-mono)"
         fontSize="8"
-        letterSpacing="0.6"
+        letterSpacing="1.2"
         fill="var(--color-muted)"
       >
         OF {max}

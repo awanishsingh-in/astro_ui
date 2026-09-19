@@ -10,7 +10,7 @@ export interface GunaMilanChartProps {
  * The eight kootas, each as a proportion of the points it carries.
  *
  * Bar width is the koota's *weight* in the total, so Nadi's eight points look
- * eight times Varna's one — which is the thing a single number hides.
+ * eight times Varna's one - which is the thing a single number hides.
  */
 export function GunaMilanChart({ kootas, className }: GunaMilanChartProps) {
   const totalMax = kootas.reduce((sum, k) => sum + k.max, 0)
@@ -45,7 +45,7 @@ export function GunaMilanChart({ kootas, className }: GunaMilanChartProps) {
                 <div
                   className={cn(
                     'h-full rounded-full transition-[width] duration-700 ease-out-soft',
-                    empty ? 'bg-critical/40' : full ? 'bg-gold' : 'bg-navy',
+                    empty ? 'bg-critical/40' : full ? 'bg-copper' : 'bg-copper/55',
                   )}
                   style={{ width: `${(koota.score / koota.max) * 100}%` }}
                 />

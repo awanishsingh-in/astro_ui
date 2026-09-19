@@ -31,7 +31,7 @@ export interface FullPageChromeProps {
 }
 
 /**
- * Top bar for immersive routes (My Chart, Your Past, Profile): back + Cyklos mark,
+ * Top bar for immersive routes (My Chart, Matching, Your Past, Profile): back + Cyklos mark,
  * no side nav. On Profile, the name pills and dashed + sit beside the logo.
  */
 export function FullPageChrome({ user, action, className }: FullPageChromeProps) {

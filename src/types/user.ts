@@ -2,7 +2,7 @@
  * Birth details are the whole account. They are entered once, and every
  * answer in the product is calculated from them.
  */
-export type Gender = 'male' | 'female' | 'undisclosed'
+export type Gender = 'male' | 'female' | 'other'
 
 export interface BirthDetails {
   fullName: string
@@ -20,7 +20,17 @@ export interface BirthDetails {
 export const GENDER_LABEL: Record<Gender, string> = {
   male: 'Male',
   female: 'Female',
-  undisclosed: 'Prefer not to disclose',
+  other: 'Other',
+}
+
+/** All gender choices shown in forms — Male, Female, Other. */
+export const GENDER_OPTIONS: Gender[] = ['male', 'female', 'other']
+
+/** Map legacy stored values (e.g. undisclosed) onto the current Gender union. */
+export function normalizeGender(value: string | undefined | null): Gender | undefined {
+  if (value === 'male' || value === 'female' || value === 'other') return value
+  if (value === 'undisclosed') return 'other'
+  return undefined
 }
 
 export interface BirthPlace {

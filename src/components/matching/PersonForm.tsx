@@ -1,15 +1,15 @@
-import { Users } from 'lucide-react'
-import { useId } from 'react'
+import { Users, X } from 'lucide-react'
+import { Button } from '@/components/common/Button'
 import { Field } from '@/components/forms/Field'
 import { Input } from '@/components/forms/Input'
 import { PlaceField } from '@/components/forms/PlaceField'
-import { Select } from '@/components/forms/Select'
-import type { ChartProfile } from '@/data/profiles'
-import type { BirthDetails, BirthPlace } from '@/types/user'
+import type { BirthDetails, BirthPlace, Gender } from '@/types/user'
+import { GENDER_LABEL, GENDER_OPTIONS } from '@/types/user'
 import { cn } from '@/utils/cn'
 
 export interface PersonDraft {
   name: string
+  gender: Gender | ''
   date: string
   time: string
   place: BirthPlace | null
@@ -19,16 +19,24 @@ export interface PersonDraft {
 
 export interface PersonErrors {
   name?: string
+  gender?: string
   date?: string
   time?: string
   place?: string
 }
 
-export const emptyPerson: PersonDraft = { name: '', date: '', time: '', place: null }
+export const emptyPerson: PersonDraft = {
+  name: '',
+  gender: '',
+  date: '',
+  time: '',
+  place: null,
+}
 
 export function validatePerson(person: PersonDraft): PersonErrors {
   const errors: PersonErrors = {}
   if (person.name.trim().length < 2) errors.name = 'Enter a name.'
+  if (!person.gender) errors.gender = 'Choose male, female, or other.'
   if (!person.date) errors.date = 'Enter a date of birth.'
   else if (new Date(person.date) > new Date()) errors.date = 'That date is in the future.'
   if (!person.time) errors.time = 'Enter a time of birth.'
@@ -42,6 +50,7 @@ export function toBirthDetails(person: PersonDraft): BirthDetails {
     date: person.date,
     time: person.time,
     place: person.place as BirthPlace,
+    gender: person.gender || undefined,
   }
 }
 
@@ -50,41 +59,34 @@ export interface PersonFormProps {
   person: PersonDraft
   errors: PersonErrors
   onChange: (next: PersonDraft) => void
-  /** Saved charts that can fill the form in one step. */
-  profiles: ChartProfile[]
+  /** Opens the saved-profile picker page for this person. */
+  onUseSavedProfile?: () => void
+  /** Whether any saved profiles exist (hides the button when none). */
+  hasSavedProfiles?: boolean
   className?: string
 }
 
+const GENDER_CHOICES = GENDER_OPTIONS.map((id) => ({
+  id,
+  label: GENDER_LABEL[id],
+}))
+
 /**
- * One person's birth details.
- *
- * Saved charts fill it in one step, because matching almost always involves at
- * least one chart the user already has — retyping it would be busywork.
+ * One person's birth details - manual entry by default; saved profiles open on a separate page.
  */
 export function PersonForm({
   label,
   person,
   errors,
   onChange,
-  profiles,
+  onUseSavedProfile,
+  hasSavedProfiles = false,
   className,
 }: PersonFormProps) {
-  const selectId = useId()
   const set = (patch: Partial<PersonDraft>) => onChange({ ...person, ...patch })
 
-  const fillFrom = (id: string) => {
-    const profile = profiles.find((p) => p.id === id)
-    if (!profile) {
-      onChange({ ...emptyPerson })
-      return
-    }
-    onChange({
-      name: profile.name,
-      date: profile.birthDetails.date,
-      time: profile.birthDetails.timeUnknown ? '12:00' : profile.birthDetails.time,
-      place: profile.birthDetails.place,
-      profileId: profile.id,
-    })
+  const clearSaved = () => {
+    onChange({ ...emptyPerson })
   }
 
   return (
@@ -92,32 +94,44 @@ export function PersonForm({
       aria-label={label}
       className={cn('space-y-5 rounded-panel border border-border bg-surface p-5', className)}
     >
-      <header className="flex items-center justify-between gap-3">
+      <header className="flex flex-wrap items-center justify-between gap-2">
         <h2 className="font-mono text-label uppercase text-gold-deep">{label}</h2>
-        {person.profileId && (
-          <span className="inline-flex items-center gap-1.5 font-mono text-label uppercase text-muted">
-            <Users aria-hidden className="size-3.5" />
-            From saved
-          </span>
+        {hasSavedProfiles && onUseSavedProfile && (
+          <div className="flex flex-wrap items-center gap-2">
+            {person.profileId ? (
+              <button
+                type="button"
+                onClick={clearSaved}
+                className={cn(
+                  'inline-flex items-center gap-1.5 rounded-full border border-border px-2.5 py-1',
+                  'font-mono text-label uppercase text-muted transition-colors',
+                  'hover:border-border-strong hover:bg-navy-soft hover:text-ink',
+                )}
+              >
+                <X className="size-3" aria-hidden />
+                Clear saved
+              </button>
+            ) : (
+              <Button
+                type="button"
+                variant="secondary"
+                size="sm"
+                onClick={onUseSavedProfile}
+                iconLeft={<Users className="size-3.5" />}
+                className="rounded-full"
+              >
+                Use saved profile
+              </Button>
+            )}
+          </div>
         )}
       </header>
 
-      {profiles.length > 0 && (
-        <div>
-          <label htmlFor={selectId} className="mb-2 block font-mono text-label uppercase text-muted">
-            Use a saved chart
-          </label>
-          <Select
-            id={selectId}
-            inputSize="md"
-            value={person.profileId ?? ''}
-            onChange={(event) => fillFrom(event.target.value)}
-            options={[
-              { value: '', label: 'Enter details manually' },
-              ...profiles.map((p) => ({ value: p.id, label: `${p.name}${p.note ? ` · ${p.note}` : ''}` })),
-            ]}
-          />
-        </div>
+      {person.profileId && (
+        <p className="inline-flex items-center gap-1.5 font-mono text-label uppercase text-muted">
+          <Users aria-hidden className="size-3.5" />
+          Filled from saved profile
+        </p>
       )}
 
       <Field label="Name" error={errors.name}>
@@ -127,6 +141,32 @@ export function PersonForm({
           value={person.name}
           onChange={(event) => set({ name: event.target.value, profileId: undefined })}
         />
+      </Field>
+
+      <Field label="Gender" error={errors.gender}>
+        <div className="grid grid-cols-3 gap-2" role="radiogroup" aria-label="Gender">
+          {GENDER_CHOICES.map((option) => {
+            const active = person.gender === option.id
+            return (
+              <button
+                key={option.id}
+                type="button"
+                role="radio"
+                aria-checked={active}
+                onClick={() => set({ gender: option.id, profileId: undefined })}
+                className={cn(
+                  'relative flex items-center justify-center gap-2 rounded-control border px-2 py-2.5 sm:px-3',
+                  'text-sm font-medium transition-colors duration-150',
+                  active
+                    ? 'border-copper/55 bg-copper/12 text-ink'
+                    : 'border-border bg-surface text-purple hover:border-border-strong hover:bg-navy-soft/70',
+                )}
+              >
+                {option.label}
+              </button>
+            )
+          })}
+        </div>
       </Field>
 
       <div className="grid gap-5 sm:grid-cols-2">

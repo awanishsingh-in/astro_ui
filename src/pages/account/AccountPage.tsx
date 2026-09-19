@@ -27,6 +27,7 @@ import { AccountSection, DetailList, DetailRow } from '@/components/account/Acco
 import { AstroMetadata } from '@/components/celestial/AstroMetadata'
 import { CelestialCard } from '@/components/celestial/CelestialCard'
 import { BirthDetailsSheet } from '@/components/account/BirthDetailsSheet'
+import { LanguagePicker } from '@/components/account/LanguagePicker'
 import { ProfileSheet } from '@/components/account/ProfileSheet'
 import { ChatPaywall } from '@/components/ask/ChatPaywall'
 import { ThemePicker } from '@/components/account/ThemePicker'
@@ -45,7 +46,7 @@ import { hasActivePlan, unlockPlan } from '@/onboarding/past-intro'
 import { useProfiles } from '@/profiles/profiles-context'
 import { paths } from '@/routes/paths'
 import { toAppError } from '@/services/client'
-import { GENDER_LABEL, type BirthDetails } from '@/types/user'
+import { GENDER_LABEL, normalizeGender, type BirthDetails } from '@/types/user'
 import { cn } from '@/utils/cn'
 import { formatDateLong, formatDateShort, formatPhone, formatTime12 } from '@/utils/format'
 
@@ -325,7 +326,7 @@ export default function AccountPage() {
                   label="Gender"
                   value={
                     user.birthDetails.gender
-                      ? GENDER_LABEL[user.birthDetails.gender]
+                      ? GENDER_LABEL[normalizeGender(user.birthDetails.gender) ?? 'other']
                       : 'Not set'
                   }
                 />
@@ -695,37 +696,27 @@ export default function AccountPage() {
             <AccountSection
               id="language"
               title="Languages"
-              description="Regional languages are confirmed in the product plan."
+              description="Choose English or Hindi for the Cyklos interface."
               className={only('language')}
             >
-              <Card padding="lg" className="gap-5">
-                <Field
-                  label="Interface language"
-                  help="Hindi and regional languages are planned. The interface is English only today."
-                >
-                  <Select
-                    options={[
-                      { value: 'en', label: 'English' },
-                      { value: 'hi', label: 'हिन्दी — coming later' },
-                    ]}
-                    value={user.language}
-                    onChange={(event) => {
-                      const language = event.target.value as typeof user.language
-                      updatePreferences({ language })
-                      toast.info(
-                        language === 'hi'
-                          ? 'Hindi is not translated yet'
-                          : 'Interface language set to English',
-                        {
-                          description:
-                            language === 'hi'
-                              ? 'Your preference is saved. The interface stays English until translation ships.'
-                              : undefined,
-                        },
-                      )
-                    }}
-                  />
-                </Field>
+              <Card padding="lg">
+                <LanguagePicker
+                  value={user.language}
+                  onChange={(language) => {
+                    updatePreferences({ language })
+                    toast.info(
+                      language === 'hi'
+                        ? 'Hindi preference saved'
+                        : 'Interface language set to English',
+                      {
+                        description:
+                          language === 'hi'
+                            ? 'The interface stays English until Hindi translation ships.'
+                            : undefined,
+                      },
+                    )
+                  }}
+                />
               </Card>
             </AccountSection>
 

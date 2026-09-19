@@ -24,7 +24,9 @@ function isImmersivePath(pathname: string): boolean {
     pathname === paths.yourPast ||
     pathname.startsWith(`${paths.yourPast}/`) ||
     pathname === paths.profile ||
-    pathname.startsWith(`${paths.profile}/`)
+    pathname.startsWith(`${paths.profile}/`) ||
+    pathname === paths.matching ||
+    pathname.startsWith(`${paths.matching}/`)
   )
 }
 
@@ -32,7 +34,7 @@ function isImmersivePath(pathname: string): boolean {
  * The signed-in shell.
  *
  * Desktop: vertical SideNav + page. Mobile: page + BottomNav.
- * Immersive routes (My Chart, Your Past, Profile) hide both and show a slim back + logo bar.
+ * Immersive routes (My Chart, Matching, Your Past, Profile) hide both and show a slim back + logo bar.
  */
 export function AppLayout() {
   const { user } = useAuth()

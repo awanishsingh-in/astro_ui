@@ -39,6 +39,8 @@ const ReadingDetailPage = lazy(() => import('@/pages/readings/ReadingDetailPage'
 const EverythingPage = lazy(() => import('@/pages/everything/EverythingPage'))
 const FeaturePage = lazy(() => import('@/pages/everything/FeaturePage'))
 const MatchingPage = lazy(() => import('@/pages/matching/MatchingPage'))
+const MatchProfilePickPage = lazy(() => import('@/pages/matching/MatchProfilePickPage'))
+const ManglikDoshaPage = lazy(() => import('@/pages/matching/ManglikDoshaPage'))
 const CompatibilityPage = lazy(() => import('@/pages/matching/CompatibilityPage'))
 const HoroscopePage = lazy(() => import('@/pages/horoscope/HoroscopePage'))
 const CalendarPage = lazy(() => import('@/pages/calendar/CalendarPage'))
@@ -143,6 +145,8 @@ const routes: RouteObject[] = [
       { path: paths.everything, element: page(<EverythingPage />) },
       { path: paths.explore(), element: page(<FeaturePage />) },
       { path: paths.matching, element: page(<MatchingPage />) },
+      { path: paths.matchingProfiles, element: page(<MatchProfilePickPage />) },
+      { path: paths.matchingManglik, element: page(<ManglikDoshaPage />) },
       { path: paths.compatibility, element: page(<CompatibilityPage />) },
       { path: paths.horoscope(), element: page(<HoroscopePage />) },
       { path: paths.calendar, element: page(<CalendarPage />) },

@@ -13,6 +13,7 @@ import { paths } from '@/routes/paths'
 import { toAppError } from '@/services/client'
 import {
   GENDER_LABEL,
+  GENDER_OPTIONS,
   type BirthDetails,
   type BirthPlace,
   type Gender,
@@ -28,8 +29,6 @@ interface Errors {
   place?: string
   gender?: string
 }
-
-const GENDER_OPTIONS: Gender[] = ['male', 'female', 'undisclosed']
 
 /** A4 / C4 — birth details form. No live chart preview. */
 export default function BirthDetailsPage() {

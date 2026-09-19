@@ -37,6 +37,10 @@ export const paths = {
 
   // Astrology features
   matching: '/matching',
+  /** Pick a saved profile to fill Person 1 or 2 on Matching. */
+  matchingProfiles: '/matching/profiles',
+  /** Standalone Manglik / Kuja dosha calculator. */
+  matchingManglik: '/matching/manglik',
   compatibility: '/compatibility',
   horoscope: (kind = ':kind') => `/horoscope/${kind}`,
   calendar: '/calendar',

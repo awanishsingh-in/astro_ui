@@ -19,7 +19,7 @@ import type { AppError } from '@/types/ui'
 import { cn } from '@/utils/cn'
 
 /**
- * Love compatibility — the lighter read.
+ * Love compatibility - the lighter read.
  *
  * Two saved charts, four dimensions, one sketch. It exists because people ask
  * for a quick answer, and it is honest about being quick: every screen here
@@ -79,7 +79,7 @@ export default function CompatibilityPage() {
           size="lg"
           className="max-lg:[&>div>h1]:sr-only"
           title="Love compatibility"
-          description="A quick read between two saved charts — temperament, pace, mind and distance."
+          description="A quick read between two saved charts - temperament, pace, mind and distance."
         />
 
         <Card padding="lg" className="mt-8 gap-5">
@@ -147,7 +147,7 @@ function CompatibilityReport({
 }) {
   return (
     <div className="mt-8 space-y-6 animate-rise">
-      {/* The two signs facing each other — the whole read, in one band. */}
+      {/* The two signs facing each other - the whole read, in one band. */}
       <Card padding="lg" className="gap-6">
         <div className="flex items-center justify-between gap-4">
           <Side person={result.a} align="start" />

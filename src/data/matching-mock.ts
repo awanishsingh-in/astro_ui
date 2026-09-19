@@ -15,13 +15,14 @@ import {
   YONI_OPPOSED,
   type KootaId,
 } from './kootas'
+import { isManglik } from './manglik-mock'
 import { RASHIS } from '@/utils/astro'
 
 /**
  * Guna Milan.
  *
  * Both charts come from the mock ephemeris, but the scoring itself follows the
- * classical rules against the two Moon positions — so the same pair always
+ * classical rules against the two Moon positions - so the same pair always
  * produces the same score, and the per-koota breakdown can be checked.
  *
  * What it deliberately does not do is claim more than the tradition does. The
@@ -72,12 +73,6 @@ function moonOf(chart: Chart) {
   return { moon, rashiIndex, nakshatraIndex: nakshatraIndex === -1 ? 0 : nakshatraIndex }
 }
 
-/** Mangal in bh 1, 2, 4, 7, 8 or 12 is the common reading of manglik. */
-function isManglik(chart: Chart): boolean {
-  const mars = chart.grahas.find((g) => g.graha === 'Ma')
-  return mars ? [1, 2, 4, 7, 8, 12].includes(mars.bhava) : false
-}
-
 export function buildMatch(
   aName: string,
   aDetails: BirthDetails,
@@ -113,7 +108,7 @@ export function buildMatch(
     vashyaSame ? 'Both fall in the same vashya group' : 'Different vashya groups',
   )
 
-  // ── Tara (3) — counted both ways, remainders 3, 5 and 7 are weak ──
+  // ── Tara (3) - counted both ways, remainders 3, 5 and 7 are weak ──
   const forward = ((B.nakshatraIndex - A.nakshatraIndex + 27) % 27) + 1
   const backward = ((A.nakshatraIndex - B.nakshatraIndex + 27) % 27) + 1
   const weak = (n: number) => [3, 5, 7].includes(n % 9)
@@ -169,7 +164,7 @@ export function buildMatch(
     ganaScore === 0 ? 'Rakshasa against another gana is the classical mismatch.' : undefined,
   )
 
-  // ── Bhakoot (7) — 6/8, 5/9 and 2/12 are the doshas ─────────────
+  // ── Bhakoot (7) - 6/8, 5/9 and 2/12 are the doshas ─────────────
   const gap = ((B.rashiIndex - A.rashiIndex + 12) % 12) + 1
   const reverse = ((A.rashiIndex - B.rashiIndex + 12) % 12) + 1
   const pair = [gap, reverse].sort((x, y) => x - y).join('/')
@@ -181,14 +176,14 @@ export function buildMatch(
     bhakootDosha ? `A ${pair} bhakoot is the classical dosha.` : undefined,
   )
 
-  // ── Nadi (8) — the same nadi is the one the tradition weighs most ──
+  // ── Nadi (8) - the same nadi is the one the tradition weighs most ──
   const nadiA = NADI_BY_NAKSHATRA[A.nakshatraIndex]
   const nadiB = NADI_BY_NAKSHATRA[B.nakshatraIndex]
   add(
     'nadi',
     nadiA === nadiB ? 0 : 8,
     `${NADI_NAMES[nadiA]} and ${NADI_NAMES[nadiB]}`,
-    nadiA === nadiB ? 'Same nadi — the koota the tradition weighs most heavily.' : undefined,
+    nadiA === nadiB ? 'Same nadi - the koota the tradition weighs most heavily.' : undefined,
   )
 
   const total = Math.round(kootas.reduce((sum, k) => sum + k.score, 0) * 10) / 10
@@ -243,7 +238,7 @@ function summarise(total: number, frictions: KootaResult[]): string {
   const friction =
     frictions.length === 0
       ? 'No koota falls badly short.'
-      : `${frictions.length === 1 ? 'One koota falls' : `${frictions.length} kootas fall`} well short — ${frictions.map((f) => f.name).join(', ')}.`
+      : `${frictions.length === 1 ? 'One koota falls' : `${frictions.length} kootas fall`} well short - ${frictions.map((f) => f.name).join(', ')}.`
 
   return `${total} of 36 is ${band}. ${friction}`
 }

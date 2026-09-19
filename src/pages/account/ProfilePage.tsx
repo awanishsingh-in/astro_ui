@@ -33,7 +33,7 @@ import { useProfiles } from '@/profiles/profiles-context'
 import type { NewProfile } from '@/profiles/profiles-context'
 import { paths } from '@/routes/paths'
 import { toAppError } from '@/services/client'
-import { GENDER_LABEL, type BirthDetails } from '@/types/user'
+import { GENDER_LABEL, normalizeGender, type BirthDetails } from '@/types/user'
 import { BottomSheet } from '@/components/sheets/BottomSheet'
 import { PROFILE_PHOTO_ACCEPT, readProfilePhoto } from '@/utils/profile-photo'
 import { formatDateLong, formatDateShort, formatPhone, formatTime12 } from '@/utils/format'
@@ -474,7 +474,9 @@ export default function ProfilePage() {
             <DetailRow
               label="Gender"
               value={
-                user.birthDetails.gender ? GENDER_LABEL[user.birthDetails.gender] : 'Not set'
+                user.birthDetails.gender
+                  ? GENDER_LABEL[normalizeGender(user.birthDetails.gender) ?? 'other']
+                  : 'Not set'
               }
             />
             <DetailRow label="Date of birth" value={formatDateLong(user.birthDetails.date)} />

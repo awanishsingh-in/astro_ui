@@ -3,6 +3,7 @@ import { buildCompatibility, type CompatibilityResult } from '@/data/compatibili
 import { buildDasha } from '@/data/dasha-mock'
 import { buildHoroscope, type Horoscope, type HoroscopeKind } from '@/data/horoscope-mock'
 import { buildMatch, type MatchResult } from '@/data/matching-mock'
+import { buildManglik, type ManglikResult } from '@/data/manglik-mock'
 import type { BirthDetails } from '@/types/user'
 import { mockRequest } from './client'
 
@@ -78,5 +79,18 @@ export function getCompatibility(
         buildChart(chartKeyFor(b), 'D1'),
       ),
     { delay: 800, signal },
+  )
+}
+
+/** POST /manglik — Kuja dosha from a single birth chart. */
+export function getManglik(input: MatchInput, signal?: AbortSignal): Promise<ManglikResult> {
+  return mockRequest(
+    () =>
+      buildManglik(
+        input.name,
+        input.details,
+        buildChart(chartKeyFor(input), 'D1'),
+      ),
+    { delay: 700, signal },
   )
 }

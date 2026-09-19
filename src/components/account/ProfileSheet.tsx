@@ -9,7 +9,7 @@ import { BottomSheet } from '@/components/sheets/BottomSheet'
 import { RELATION_LABEL, type ChartProfile, type ProfileRelation } from '@/data/profiles'
 import { useIsDesktop } from '@/hooks/useMediaQuery'
 import type { NewProfile } from '@/profiles/profiles-context'
-import { GENDER_LABEL, type BirthPlace, type Gender } from '@/types/user'
+import { GENDER_LABEL, GENDER_OPTIONS, normalizeGender, type BirthPlace, type Gender } from '@/types/user'
 import { cn } from '@/utils/cn'
 
 export interface ProfileSheetProps {
@@ -40,8 +40,6 @@ interface Errors {
 
 /** Only the relations a saved chart can have. `self` is the account itself. */
 const RELATIONS: ProfileRelation[] = ['family', 'friend', 'relative', 'other']
-
-const GENDERS: Gender[] = ['male', 'female', 'undisclosed']
 
 /**
  * Adding or editing a saved chart.
@@ -79,7 +77,7 @@ export function ProfileSheet({
         : (editing?.relation ?? defaultRelation),
     )
     setNote(editing?.note ?? '')
-    setGender(editing?.birthDetails.gender ?? '')
+    setGender(normalizeGender(editing?.birthDetails.gender) ?? '')
     setDate(editing?.birthDetails.date ?? '')
     setTime(editing?.birthDetails.time ?? '')
     setTimeUnknown(Boolean(editing?.birthDetails.timeUnknown))
@@ -151,7 +149,7 @@ export function ProfileSheet({
           <Select
             options={[
               { value: '', label: 'Select' },
-              ...GENDERS.map((value) => ({ value, label: GENDER_LABEL[value] })),
+              ...GENDER_OPTIONS.map((value) => ({ value, label: GENDER_LABEL[value] })),
             ]}
             value={gender}
             onChange={(event) => {

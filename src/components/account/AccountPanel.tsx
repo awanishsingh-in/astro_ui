@@ -19,6 +19,7 @@ import { DetailList, DetailRow } from '@/components/account/AccountSection'
 import { AstroMetadata } from '@/components/celestial/AstroMetadata'
 import { CelestialCard } from '@/components/celestial/CelestialCard'
 import { BirthDetailsSheet } from '@/components/account/BirthDetailsSheet'
+import { LanguagePicker } from '@/components/account/LanguagePicker'
 import { ThemePicker } from '@/components/account/ThemePicker'
 import { useToast } from '@/components/feedback/toast-context'
 import { Field } from '@/components/forms/Field'
@@ -30,7 +31,7 @@ import { useDisclosure } from '@/hooks/useDisclosure'
 import { useIsDesktop } from '@/hooks/useMediaQuery'
 import { paths } from '@/routes/paths'
 import { toAppError } from '@/services/client'
-import { GENDER_LABEL, type BirthDetails } from '@/types/user'
+import { GENDER_LABEL, normalizeGender, type BirthDetails } from '@/types/user'
 import { formatDateLong, formatDateShort, formatPhone, formatTime12 } from '@/utils/format'
 
 export type AccountPanelId =
@@ -93,7 +94,7 @@ const SETTINGS_LINKS: {
 const META: Record<AccountPanelId, { title: string; description?: string }> = {
   profile: { title: 'Profile', description: 'You and the birth details your chart is built from.' },
   settings: { title: 'Settings', description: 'Usage, billing, legal and privacy.' },
-  languages: { title: 'Languages', description: 'Interface language for Cyklos.' },
+  languages: { title: 'Languages', description: 'Choose English or Hindi.' },
   help: { title: 'Get help', description: 'Something not making sense?' },
   'upgrade-plan': { title: 'Upgrade plan', description: 'What a plan unlocks, and what stays free.' },
   usage: { title: 'Usage', description: 'What this account has used this month.' },
@@ -222,7 +223,9 @@ export function AccountPanel({ panel, onClose, onOpenPanel }: AccountPanelProps)
             <DetailRow
               label="Gender"
               value={
-                user.birthDetails.gender ? GENDER_LABEL[user.birthDetails.gender] : 'Not set'
+                user.birthDetails.gender
+                  ? GENDER_LABEL[normalizeGender(user.birthDetails.gender) ?? 'other']
+                  : 'Not set'
               }
             />
             <DetailRow label="Date of birth" value={formatDateLong(user.birthDetails.date)} />
@@ -382,33 +385,23 @@ export function AccountPanel({ panel, onClose, onOpenPanel }: AccountPanelProps)
       )}
 
       {panel === 'languages' && (
-        <Field
-          label="Interface language"
-          help="Hindi and regional languages are planned. The interface is English only today."
-        >
-          <Select
-            options={[
-              { value: 'en', label: 'English' },
-              { value: 'hi', label: 'हिन्दी — coming later' },
-            ]}
-            value={user.language}
-            onChange={(event) => {
-              const language = event.target.value as typeof user.language
-              updatePreferences({ language })
-              toast.info(
-                language === 'hi'
-                  ? 'Hindi is not translated yet'
-                  : 'Interface language set to English',
-                {
-                  description:
-                    language === 'hi'
-                      ? 'Your preference is saved. The interface stays English until translation ships.'
-                      : undefined,
-                },
-              )
-            }}
-          />
-        </Field>
+        <LanguagePicker
+          value={user.language}
+          onChange={(language) => {
+            updatePreferences({ language })
+            toast.info(
+              language === 'hi'
+                ? 'Hindi preference saved'
+                : 'Interface language set to English',
+              {
+                description:
+                  language === 'hi'
+                    ? 'The interface stays English until Hindi translation ships.'
+                    : undefined,
+              },
+            )
+          }}
+        />
       )}
 
       {panel === 'help' && (
