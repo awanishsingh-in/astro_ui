@@ -362,6 +362,9 @@ export function buildCalendarDay(year: number, month: number, day: number): Cale
   const date = new Date(year, month, day)
   const seed = daySeed(year, month, day)
   const { label, paksha, isEkadashi } = tithiFor(seed)
+  const hh = (n: number) => String(n).padStart(2, '0')
+  const endHour = 8 + (seed % 14)
+  const endMin = (seed * 7) % 60
 
   return {
     date: toIsoDate(year, month, day),
@@ -372,8 +375,32 @@ export function buildCalendarDay(year: number, month: number, day: number): Cale
     vaar: VAARS[date.getDay()] ?? 'Ravivara',
     paksha,
     events: eventsFor(year, month, day, isEkadashi),
+    hinduMonth: HINDU_MONTH_BY_GREGORIAN[month] ?? 'Chaitra',
+    samvat: `Vikram Samvat ${year + 57}`,
+    tithiEnds: `${hh(endHour)}:${hh(endMin)}`,
+    nakshatraEnds: `${hh((endHour + 1) % 24)}:${hh((endMin + 17) % 60)}`,
+    yogaEnds: `${hh((endHour + 5) % 24)}:${hh((endMin + 31) % 60)}`,
+    karanaEnds: `${hh(endHour)}:${hh(endMin)}`,
+    sunrise: '06:08',
+    sunset: '18:22',
+    rahuKaal: `${hh(9 + (seed % 3))}:12 – ${hh(10 + (seed % 3))}:44`,
   }
 }
+
+const HINDU_MONTH_BY_GREGORIAN = [
+  'Pausha',
+  'Magha',
+  'Phalguna',
+  'Chaitra',
+  'Vaishakha',
+  'Jyeshtha',
+  'Ashadha',
+  'Shravana',
+  'Bhadrapada',
+  'Ashwina',
+  'Kartika',
+  'Margashirsha',
+] as const
 
 /** All days in a month, including leading/trailing padding for the grid. */
 export function buildMonthGrid(year: number, month: number): CalendarDay[] {

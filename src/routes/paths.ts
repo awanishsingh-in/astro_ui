@@ -42,8 +42,16 @@ export const paths = {
   /** Standalone Manglik / Kuja dosha calculator. */
   matchingManglik: '/matching/manglik',
   compatibility: '/compatibility',
+  /** Immersive horoscope hub — signs, period, date strip. */
+  horoscopeRoot: '/horoscope',
+  /** Nine themed readings picker (love, career, …). */
+  horoscopeReadings: '/horoscope/readings',
   horoscope: (kind = ':kind') => `/horoscope/${kind}`,
   calendar: '/calendar',
+  /** Full festival editorial page inside Calendar. */
+  calendarFestival: (id = ':id') => `/calendar/festival/${id}`,
+  /** Daily panchang, timings, muhurat and alerts. */
+  panchang: '/panchang',
   account: '/account',
   /** Full-page profile — identity and birth details. */
   profile: '/profile',

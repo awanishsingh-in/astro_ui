@@ -194,6 +194,8 @@ export type CalendarEventKind = 'festival' | 'vrat' | 'ekadashi'
 export interface CalendarEvent {
   name: string
   kind: CalendarEventKind
+  /** Stable id when the event has a detail page. */
+  id?: string
 }
 
 /** Full panchang for one day in the Hindu calendar view. */
@@ -204,4 +206,47 @@ export interface CalendarDay extends Panchang {
   vaar: string
   paksha: 'Shukla' | 'Krishna'
   events: CalendarEvent[]
+  /** Hindu month name for this day, e.g. Bhadrapada. */
+  hinduMonth?: string
+  /** Vikram Samvat year label. */
+  samvat?: string
+  /** End times shown in the day rail (mock). */
+  tithiEnds?: string
+  nakshatraEnds?: string
+  yogaEnds?: string
+  karanaEnds?: string
+  sunrise?: string
+  sunset?: string
+  rahuKaal?: string
+}
+
+export type FestivalCategory = 'major' | 'gazetted' | 'regional' | 'observance'
+export type VratKind = 'ekadashi' | 'pradosh' | 'purnima' | 'amavasya' | 'sankashti' | 'other'
+
+export interface FestivalEntry {
+  id: string
+  name: string
+  /** ISO date YYYY-MM-DD */
+  date: string
+  hinduDate: string
+  regions: string
+  category: FestivalCategory
+  blurb: string
+  significance: string
+  timings: { label: string; value: string }[]
+  rituals: string
+  relatedIds?: string[]
+}
+
+export interface VratEntry {
+  id: string
+  name: string
+  date: string
+  hinduDate: string
+  kind: VratKind
+  tithiWindow: string
+  parana: string
+  fastType: string
+  involves: string
+  pujaVidhi: string
 }

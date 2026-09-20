@@ -26,7 +26,7 @@ export const primaryNav: NavItem[] = [
   { id: 'ask', label: 'Ask', to: paths.ask, icon: <WandSparkles /> },
   { id: 'kundli', label: 'Kundli', to: paths.chart, icon: <Diamond /> },
   { id: 'match', label: 'Match', to: paths.matching, icon: <HeartHandshake /> },
-  { id: 'horoscope', label: 'Horoscope', to: paths.horoscope('daily'), icon: <MoonStar /> },
+  { id: 'horoscope', label: 'Horoscope', to: paths.horoscopeRoot, icon: <MoonStar /> },
   { id: 'tools', label: 'All', to: paths.everything, icon: <Sparkles /> },
 ]
 

@@ -47,6 +47,9 @@ function isFeatureActive(pathname: string, to: string | undefined, slug: string)
   if (slug === 'calendar') {
     return pathname === paths.calendar || pathname.startsWith(`${paths.calendar}/`)
   }
+  if (slug === 'panchang') {
+    return pathname === paths.panchang || pathname.startsWith(`${paths.panchang}/`)
+  }
   return pathname === paths.explore(slug)
 }
 

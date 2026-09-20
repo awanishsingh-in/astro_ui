@@ -43,7 +43,11 @@ const MatchProfilePickPage = lazy(() => import('@/pages/matching/MatchProfilePic
 const ManglikDoshaPage = lazy(() => import('@/pages/matching/ManglikDoshaPage'))
 const CompatibilityPage = lazy(() => import('@/pages/matching/CompatibilityPage'))
 const HoroscopePage = lazy(() => import('@/pages/horoscope/HoroscopePage'))
+const HoroscopeFlow = lazy(() => import('@/pages/horoscope/HoroscopeFlow'))
+const HoroscopeReadingsPage = lazy(() => import('@/pages/horoscope/HoroscopeReadingsPage'))
 const CalendarPage = lazy(() => import('@/pages/calendar/CalendarPage'))
+const FestivalDetailPage = lazy(() => import('@/pages/calendar/FestivalDetailPage'))
+const PanchangPage = lazy(() => import('@/pages/panchang/PanchangPage'))
 const AccountPage = lazy(() => import('@/pages/account/AccountPage'))
 const ProfilePage = lazy(() => import('@/pages/account/ProfilePage'))
 const FoundationPage = lazy(() => import('@/pages/foundation/FoundationPage'))
@@ -148,8 +152,12 @@ const routes: RouteObject[] = [
       { path: paths.matchingProfiles, element: page(<MatchProfilePickPage />) },
       { path: paths.matchingManglik, element: page(<ManglikDoshaPage />) },
       { path: paths.compatibility, element: page(<CompatibilityPage />) },
+      { path: paths.horoscopeRoot, element: page(<HoroscopeFlow />) },
+      { path: paths.horoscopeReadings, element: page(<HoroscopeReadingsPage />) },
       { path: paths.horoscope(), element: page(<HoroscopePage />) },
       { path: paths.calendar, element: page(<CalendarPage />) },
+      { path: paths.calendarFestival(), element: page(<FestivalDetailPage />) },
+      { path: paths.panchang, element: page(<PanchangPage />) },
       { path: paths.account, element: page(<AccountPage />) },
       { path: paths.profile, element: page(<ProfilePage />) },
     ],

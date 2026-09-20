@@ -6,7 +6,7 @@ import { RASHIS } from '@/utils/astro'
 interface BaseProps {
   rashi: RashiName
   selected?: boolean
-  size?: 'sm' | 'md'
+  size?: 'sm' | 'md' | 'lg'
 }
 
 export type ZodiacChipProps = BaseProps &
@@ -31,21 +31,40 @@ export function ZodiacChip({
       type={type}
       aria-pressed={selected}
       className={cn(
-        'inline-flex shrink-0 items-center gap-2 rounded-control border whitespace-nowrap',
+        'inline-flex shrink-0 items-center whitespace-nowrap border',
         'transition-[background-color,border-color,color,transform] duration-150 ease-out-soft',
         'active:scale-[0.97]',
-        size === 'sm' ? 'h-9 px-3' : 'h-11 px-3.5',
+        size === 'sm' && 'h-9 gap-2 rounded-control px-3',
+        size === 'md' && 'h-11 gap-2 rounded-control px-3.5',
+        size === 'lg' && 'h-14 gap-2.5 rounded-xl px-5 sm:h-16 sm:gap-3 sm:px-6',
         selected
-          ? 'border-gold bg-gold-soft font-semibold text-gold-deep'
-          : 'border-border bg-surface text-purple hover:border-border-strong hover:bg-navy-soft',
+          ? 'border-copper bg-copper/15 font-semibold text-copper shadow-[0_0_0_1px_rgba(220,132,79,0.35)]'
+          : 'border-border bg-surface text-ink hover:border-border-strong hover:bg-navy-soft',
         className,
       )}
       {...rest}
     >
-      <span aria-hidden className={cn('text-base', selected ? 'text-gold-deep' : 'text-gold')}>
+      <span
+        aria-hidden
+        className={cn(
+          selected ? 'text-copper' : 'text-gold',
+          size === 'sm' && 'text-base',
+          size === 'md' && 'text-lg',
+          size === 'lg' && 'text-2xl sm:text-3xl',
+        )}
+      >
         {meta?.glyph}
       </span>
-      <span className={size === 'sm' ? 'text-xs font-medium' : 'text-sm font-medium'}>{rashi}</span>
+      <span
+        className={cn(
+          'font-medium',
+          size === 'sm' && 'text-xs',
+          size === 'md' && 'text-sm',
+          size === 'lg' && 'text-base sm:text-lg',
+        )}
+      >
+        {rashi}
+      </span>
       <span className="sr-only">{meta?.english}</span>
     </button>
   )

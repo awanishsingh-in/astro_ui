@@ -8,7 +8,6 @@ import { SectionHeader } from '@/components/common/SectionHeader'
 import { CelestialCard } from '@/components/celestial/CelestialCard'
 import { Skeleton, SkeletonText } from '@/components/common/Skeleton'
 import { PlanetGlyph } from '@/components/astrology/PlanetGlyph'
-import { MobileHeader } from '@/components/navigation/MobileHeader'
 import { useAuth } from '@/auth/auth-context'
 import { chartSeedFor } from '@/data/profiles'
 import { useProfiles } from '@/profiles/profiles-context'
@@ -21,15 +20,8 @@ import { bhavaRef, BHAVA_SIGNIFIES } from '@/utils/astro'
 import { cn } from '@/utils/cn'
 
 /**
- * Every horoscope in the product, from one page.
- *
- * The nine kinds differ only in the data `buildHoroscope` returns — span,
- * bhavas, whether lucky information applies. The layout below never branches
- * on kind, which is what keeps them consistent and stops this becoming nine
- * near-identical files.
- *
- * Mobile is one readable column; desktop widens into an editorial two-column
- * body with the citation rail alongside.
+ * Full reading for one horoscope kind — opened from the immersive hub.
+ * Layout stays kind-agnostic; only the data from `buildHoroscope` changes.
  */
 export default function HoroscopePage() {
   const { kind } = useParams<{ kind: string }>()
@@ -45,22 +37,18 @@ export default function HoroscopePage() {
   )
 
   if (!user) return null
-  if (!valid) return <Navigate to={paths.everything} replace />
+  if (!valid) return <Navigate to={paths.horoscopeRoot} replace />
 
   return (
-    <>
-      <MobileHeader title="Horoscope" titleAs="p" showBack user={user} />
-
-      <PageContainer width="content">
-        {status === 'error' ? (
-          <ErrorState error={error} onRetry={retry} title="This horoscope did not load" />
-        ) : status === 'loading' || status === 'idle' || !data ? (
-          <HoroscopeSkeleton />
-        ) : (
-          <HoroscopeBody horoscope={data} />
-        )}
-      </PageContainer>
-    </>
+    <PageContainer width="content">
+      {status === 'error' ? (
+        <ErrorState error={error} onRetry={retry} title="This horoscope did not load" />
+      ) : status === 'loading' || status === 'idle' || !data ? (
+        <HoroscopeSkeleton />
+      ) : (
+        <HoroscopeBody horoscope={data} />
+      )}
+    </PageContainer>
   )
 }
 

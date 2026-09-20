@@ -26,7 +26,9 @@ function isImmersivePath(pathname: string): boolean {
     pathname === paths.profile ||
     pathname.startsWith(`${paths.profile}/`) ||
     pathname === paths.matching ||
-    pathname.startsWith(`${paths.matching}/`)
+    pathname.startsWith(`${paths.matching}/`) ||
+    pathname === paths.horoscopeRoot ||
+    pathname.startsWith(`${paths.horoscopeRoot}/`)
   )
 }
 
