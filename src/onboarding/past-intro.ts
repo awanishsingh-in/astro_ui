@@ -138,3 +138,38 @@ export function unlockChat(userId: string): void {
 /** Plan unlock — same storage as chat unlock for this demo. */
 export const hasActivePlan = hasChatUnlocked
 export const unlockPlan = unlockChat
+
+const YEARLY_HOROSCOPE_KEY = 'cyklos_yearly_horoscope_unlocked'
+
+/** Yearly personalised horoscope — unlocked after demo checkout pay. */
+export function hasYearlyHoroscopeUnlocked(userId: string): boolean {
+  if (!userId) return false
+  try {
+    const raw = window.localStorage.getItem(YEARLY_HOROSCOPE_KEY)
+    if (!raw) return false
+    if (raw === 'true') return true
+    const parsed = JSON.parse(raw) as SeenMap
+    return Boolean(parsed?.[userId])
+  } catch {
+    return false
+  }
+}
+
+export function unlockYearlyHoroscope(userId: string): void {
+  if (!userId) return
+  try {
+    const raw = window.localStorage.getItem(YEARLY_HOROSCOPE_KEY)
+    let map: SeenMap = {}
+    if (raw && raw !== 'true') {
+      try {
+        map = JSON.parse(raw) as SeenMap
+      } catch {
+        map = {}
+      }
+    }
+    map[userId] = true
+    window.localStorage.setItem(YEARLY_HOROSCOPE_KEY, JSON.stringify(map))
+  } catch {
+    // noop
+  }
+}

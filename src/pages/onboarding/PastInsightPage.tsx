@@ -7,6 +7,7 @@ import { ChatPaywall } from '@/components/ask/ChatPaywall'
 import { QuestionComposer } from '@/components/ask/QuestionComposer'
 import { Button } from '@/components/common/Button'
 import { GalaxyBackdrop } from '@/components/celestial/GalaxyBackdrop'
+import { PastAeroSky } from '@/components/celestial/PastAeroSky'
 import { useAuth } from '@/auth/auth-context'
 import {
   insightsByIds,
@@ -104,8 +105,7 @@ export default function PastInsightPage() {
   }
 
   return (
-    <GalaxyBackdrop
-      intensity="quiet"
+    <PastAeroSky
       className="h-dvh max-h-dvh overflow-hidden"
       contentClassName="relative flex h-dvh max-h-dvh flex-col overflow-hidden"
     >
@@ -184,7 +184,7 @@ export default function PastInsightPage() {
           </Button>
         </div>
       </div>
-    </GalaxyBackdrop>
+    </PastAeroSky>
   )
 }
 

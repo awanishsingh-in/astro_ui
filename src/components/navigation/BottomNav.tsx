@@ -22,6 +22,12 @@ function isNavActive(id: string, pathname: string, isActive: boolean): boolean {
   if (id === 'horoscope') {
     return pathname.startsWith('/horoscope')
   }
+  if (id === 'calculator') {
+    return pathname === paths.calculatorRoot || pathname.startsWith(`${paths.calculatorRoot}/`)
+  }
+  if (id === 'reports') {
+    return pathname === paths.reportsRoot || pathname.startsWith(`${paths.reportsRoot}/`)
+  }
   if (id === 'tools') {
     return (
       pathname === paths.everything ||

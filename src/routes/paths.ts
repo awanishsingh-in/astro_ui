@@ -29,6 +29,14 @@ export const paths = {
   /** Full list of past Ask chats — View or Continue each thread. */
   askHistory: '/ask/history',
   chart: '/chart',
+  /** Detailed kundli report preview + Get detailed report. */
+  chartDetail: '/chart/detail',
+  /** Payment required card before the gateway. */
+  chartDetailUnlock: '/chart/detail/unlock',
+  /** Demo payment gateway for detailed kundli. */
+  chartDetailPay: '/chart/detail/pay',
+  /** Book-style unlocked detailed kundli. */
+  chartDetailView: '/chart/detail/view',
   readings: '/readings',
   reading: (id = ':id') => `/readings/${id}`,
   everything: '/everything',
@@ -47,6 +55,22 @@ export const paths = {
   /** Nine themed readings picker (love, career, …). */
   horoscopeReadings: '/horoscope/readings',
   horoscope: (kind = ':kind') => `/horoscope/${kind}`,
+  /** Calculator hub — six chart tools. */
+  calculatorRoot: '/calculator',
+  /** One calculator birth form. */
+  calculator: (kind = ':kind') => `/calculator/${kind}`,
+  /** Calculator result detail. */
+  calculatorResult: (kind = ':kind') => `/calculator/${kind}/result`,
+  /** Paid reports hub — topic cards with Get / Download. */
+  reportsRoot: '/reports',
+  /** Payment intro for one report. */
+  reportIntro: (reportId = ':reportId') => `/reports/${reportId}`,
+  /** Birth form before paying for a report. */
+  reportForm: (reportId = ':reportId') => `/reports/${reportId}/form`,
+  /** Demo payment gateway for a report. */
+  reportPay: (reportId = ':reportId') => `/reports/${reportId}/pay`,
+  /** Book-style unlocked report. */
+  reportView: (reportId = ':reportId') => `/reports/${reportId}/view`,
   calendar: '/calendar',
   /** Full festival editorial page inside Calendar. */
   calendarFestival: (id = ':id') => `/calendar/festival/${id}`,

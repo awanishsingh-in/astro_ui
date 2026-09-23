@@ -95,7 +95,10 @@ export function PanchangDownloadsFlow({
   if (phase === 'ready') {
     return (
       <div className="mx-auto w-full max-w-xl">
-        <Card padding="lg" className="gap-6 border-border/80 sm:gap-7 sm:p-7">
+        <Card
+          padding="none"
+          className="flex flex-col gap-6 border-border/80 p-6 sm:gap-7 sm:p-8"
+        >
           <div className="flex items-start justify-between gap-4">
             <h2 className="text-heading font-semibold text-ink">Your panchang is ready</h2>
             <button
@@ -167,7 +170,10 @@ export function PanchangDownloadsFlow({
 
   return (
     <div className="mx-auto w-full max-w-xl">
-      <Card padding="lg" className="gap-7 border-border/80 sm:gap-8 sm:p-7">
+      <Card
+        padding="none"
+        className="flex flex-col gap-8 border-border/80 p-6 sm:gap-9 sm:p-8"
+      >
         <div className="flex items-start justify-between gap-4">
           <h2 className="text-heading font-semibold text-ink">Download panchang</h2>
           <button
@@ -180,11 +186,11 @@ export function PanchangDownloadsFlow({
           </button>
         </div>
 
-        <section className="space-y-3">
+        <section className="space-y-3.5">
           <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-muted">
             Format
           </p>
-          <div className="grid gap-3 sm:grid-cols-2">
+          <div className="grid gap-3.5 sm:grid-cols-2">
             <ChoiceCard
               active={format === 'pdf'}
               title="PDF"
@@ -200,11 +206,11 @@ export function PanchangDownloadsFlow({
           </div>
         </section>
 
-        <section className="space-y-3">
+        <section className="space-y-3.5">
           <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-muted">
             Range
           </p>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 gap-3.5">
             {RANGES.map((r) => (
               <ChoiceCard
                 key={r.id}
@@ -218,7 +224,7 @@ export function PanchangDownloadsFlow({
         </section>
 
         {!isStandard && (
-          <div className="flex flex-col gap-4 rounded-2xl border border-copper/40 bg-gold-soft px-5 py-5 sm:flex-row sm:items-center sm:justify-between sm:gap-6 sm:px-6 sm:py-5">
+          <div className="flex flex-col gap-4 rounded-2xl border border-copper/40 bg-gold-soft px-5 py-5 sm:flex-row sm:items-center sm:justify-between sm:gap-6 sm:px-6 sm:py-6">
             <div className="min-w-0 space-y-3">
               <Badge tone="gold" mono className="w-fit">
                 <Lock className="mr-1 size-3" aria-hidden />
@@ -270,14 +276,14 @@ function ChoiceCard({
       type="button"
       onClick={onClick}
       className={cn(
-        'rounded-2xl border px-4 py-4 text-left transition sm:px-5 sm:py-4',
+        'rounded-2xl border px-4 py-4 text-left transition sm:px-5 sm:py-5',
         active
           ? 'border-copper bg-copper/15 text-ink'
           : 'border-border/80 bg-surface-sunken/40 text-muted hover:border-copper/40 hover:text-ink',
       )}
     >
       <p className="text-sm font-semibold leading-snug">{title}</p>
-      <p className="mt-1.5 text-xs leading-relaxed opacity-80">{sub}</p>
+      <p className="mt-2 text-xs leading-relaxed opacity-80">{sub}</p>
     </button>
   )
 }

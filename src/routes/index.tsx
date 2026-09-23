@@ -34,6 +34,10 @@ const YourPastPage = lazy(() => import('@/pages/onboarding/YourPastPage'))
 const AskPage = lazy(() => import('@/pages/ask/AskPage'))
 const ChatHistoryPage = lazy(() => import('@/pages/ask/ChatHistoryPage'))
 const ChartPage = lazy(() => import('@/pages/chart/ChartPage'))
+const ChartDetailPage = lazy(() => import('@/pages/chart/ChartDetailPage'))
+const ChartDetailUnlockPage = lazy(() => import('@/pages/chart/ChartDetailUnlockPage'))
+const ChartDetailPayPage = lazy(() => import('@/pages/chart/ChartDetailPayPage'))
+const ChartDetailViewPage = lazy(() => import('@/pages/chart/ChartDetailViewPage'))
 const ReadingsPage = lazy(() => import('@/pages/readings/ReadingsPage'))
 const ReadingDetailPage = lazy(() => import('@/pages/readings/ReadingDetailPage'))
 const EverythingPage = lazy(() => import('@/pages/everything/EverythingPage'))
@@ -45,6 +49,14 @@ const CompatibilityPage = lazy(() => import('@/pages/matching/CompatibilityPage'
 const HoroscopePage = lazy(() => import('@/pages/horoscope/HoroscopePage'))
 const HoroscopeFlow = lazy(() => import('@/pages/horoscope/HoroscopeFlow'))
 const HoroscopeReadingsPage = lazy(() => import('@/pages/horoscope/HoroscopeReadingsPage'))
+const CalculatorHubPage = lazy(() => import('@/pages/calculator/CalculatorHubPage'))
+const CalculatorFormPage = lazy(() => import('@/pages/calculator/CalculatorFormPage'))
+const CalculatorResultPage = lazy(() => import('@/pages/calculator/CalculatorResultPage'))
+const ReportsHubPage = lazy(() => import('@/pages/reports/ReportsHubPage'))
+const ReportIntroPage = lazy(() => import('@/pages/reports/ReportIntroPage'))
+const ReportFormPage = lazy(() => import('@/pages/reports/ReportFormPage'))
+const ReportPayPage = lazy(() => import('@/pages/reports/ReportPayPage'))
+const ReportViewPage = lazy(() => import('@/pages/reports/ReportViewPage'))
 const CalendarPage = lazy(() => import('@/pages/calendar/CalendarPage'))
 const FestivalDetailPage = lazy(() => import('@/pages/calendar/FestivalDetailPage'))
 const PanchangPage = lazy(() => import('@/pages/panchang/PanchangPage'))
@@ -143,6 +155,10 @@ const routes: RouteObject[] = [
       { path: paths.ask, element: page(<AskPage />) },
       { path: paths.askHistory, element: page(<ChatHistoryPage />) },
       { path: paths.yourPast, element: page(<YourPastPage />) },
+      { path: paths.chartDetailView, element: page(<ChartDetailViewPage />) },
+      { path: paths.chartDetailPay, element: page(<ChartDetailPayPage />) },
+      { path: paths.chartDetailUnlock, element: page(<ChartDetailUnlockPage />) },
+      { path: paths.chartDetail, element: page(<ChartDetailPage />) },
       { path: paths.chart, element: page(<ChartPage />) },
       { path: paths.readings, element: page(<ReadingsPage />) },
       { path: paths.reading(), element: page(<ReadingDetailPage />) },
@@ -155,6 +171,14 @@ const routes: RouteObject[] = [
       { path: paths.horoscopeRoot, element: page(<HoroscopeFlow />) },
       { path: paths.horoscopeReadings, element: page(<HoroscopeReadingsPage />) },
       { path: paths.horoscope(), element: page(<HoroscopePage />) },
+      { path: paths.calculatorRoot, element: page(<CalculatorHubPage />) },
+      { path: paths.calculatorResult(), element: page(<CalculatorResultPage />) },
+      { path: paths.calculator(), element: page(<CalculatorFormPage />) },
+      { path: paths.reportsRoot, element: page(<ReportsHubPage />) },
+      { path: paths.reportView(), element: page(<ReportViewPage />) },
+      { path: paths.reportPay(), element: page(<ReportPayPage />) },
+      { path: paths.reportForm(), element: page(<ReportFormPage />) },
+      { path: paths.reportIntro(), element: page(<ReportIntroPage />) },
       { path: paths.calendar, element: page(<CalendarPage />) },
       { path: paths.calendarFestival(), element: page(<FestivalDetailPage />) },
       { path: paths.panchang, element: page(<PanchangPage />) },

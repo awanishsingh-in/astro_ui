@@ -3,7 +3,7 @@ import { Modal } from '@/components/modals/Modal'
 import { BottomSheet } from '@/components/sheets/BottomSheet'
 import { useDisclosure } from '@/hooks/useDisclosure'
 import { useIsDesktop } from '@/hooks/useMediaQuery'
-import { primaryVargas, secondaryVargas, vargas } from '@/data/vargas'
+import { primaryVargas, vargas } from '@/data/vargas'
 import type { Varga, VargaCode } from '@/types/astrology'
 import { cn } from '@/utils/cn'
 
@@ -40,29 +40,13 @@ export function VargaSelector({ value, onChange, className }: VargaSelectorProps
   }
 
   const grid = (
-    <div className="space-y-6">
-      <section className="space-y-2.5">
-        <h3 className="font-mono text-label uppercase text-muted">Used most</h3>
-        <ul className="space-y-2">
-          {primaryVargas.map((varga) => (
-            <li key={varga.code}>
-              <VargaRow varga={varga} active={varga.code === value} onSelect={choose} />
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      <section className="space-y-2.5">
-        <h3 className="font-mono text-label uppercase text-muted">All divisional charts</h3>
-        <ul className="space-y-2">
-          {secondaryVargas.map((varga) => (
-            <li key={varga.code}>
-              <VargaRow varga={varga} active={varga.code === value} onSelect={choose} />
-            </li>
-          ))}
-        </ul>
-      </section>
-    </div>
+    <ul className="grid grid-cols-2 gap-2 sm:grid-cols-4 sm:gap-2.5" aria-label="Divisional charts">
+      {vargas.map((varga) => (
+        <li key={varga.code}>
+          <VargaRow varga={varga} active={varga.code === value} onSelect={choose} />
+        </li>
+      ))}
+    </ul>
   )
 
   return (
@@ -96,7 +80,8 @@ export function VargaSelector({ value, onChange, className }: VargaSelectorProps
           onClose={picker.close}
           title="Choose a chart"
           description="The rashi chart first; the divisionals refine what it already shows."
-          size="sm"
+          size="lg"
+          className="max-w-3xl"
         >
           {grid}
         </Modal>
@@ -129,7 +114,7 @@ function VargaRow({
       onClick={() => onSelect(varga.code)}
       aria-current={active ? 'true' : undefined}
       className={cn(
-        'flex min-h-14 w-full items-center justify-between gap-3 rounded-card border p-3 text-left',
+        'flex h-full min-h-[4.75rem] w-full flex-col items-start gap-1 rounded-2xl border p-3 text-left',
         'transition-[border-color,background-color,transform] duration-150 ease-out-soft',
         'active:scale-[0.99]',
         active
@@ -137,15 +122,17 @@ function VargaRow({
           : 'border-border bg-surface hover:border-border-strong hover:bg-navy-soft',
       )}
     >
-      <span className="min-w-0">
-        <span className="block font-mono text-data text-ink">
+      <span className="flex w-full items-start justify-between gap-2">
+        <span className="font-mono text-data text-ink">
           {vargaLabel(varga.code)} {varga.name}
         </span>
-        <span className="block truncate text-sm text-muted">{varga.signifies}</span>
+        {active && (
+          <span className="shrink-0 font-mono text-label uppercase text-copper">On</span>
+        )}
       </span>
-      {active && (
-        <span className="shrink-0 font-mono text-label uppercase text-copper">On</span>
-      )}
+      <span className="line-clamp-2 text-xs leading-snug text-muted text-pretty">
+        {varga.signifies}
+      </span>
     </button>
   )
 }

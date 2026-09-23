@@ -115,7 +115,7 @@ export interface Drishti {
   by: string[]
 }
 
-export type DashaLevel = 'maha' | 'antar' | 'pratyantar'
+export type DashaLevel = 'maha' | 'antar' | 'pratyantar' | 'sookshma' | 'prana'
 
 export interface DashaPeriod {
   level: DashaLevel

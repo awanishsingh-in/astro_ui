@@ -1,15 +1,20 @@
 import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { LayoutGrid, Sparkles } from 'lucide-react'
+import { useAuth } from '@/auth/auth-context'
 import { Badge } from '@/components/common/Badge'
 import { Button } from '@/components/common/Button'
 import { Card } from '@/components/common/Card'
+import { RubberSegment } from '@/components/common/RubberSegment'
 import {
   buildHoroscopeDateChips,
   buildSignHoroscopeSummary,
   type HoroscopePeriod,
 } from '@/data/horoscope-hub'
 import { PageContainer } from '@/layouts/PageContainer'
+import { hasYearlyHoroscopeUnlocked } from '@/onboarding/past-intro'
+import { YearlyHoroscopeCheckout } from '@/pages/horoscope/YearlyHoroscopeCheckout'
+import { useProfiles } from '@/profiles/profiles-context'
 import { paths } from '@/routes/paths'
 import type { RashiName } from '@/types/astrology'
 import { RASHIS } from '@/utils/astro'
@@ -21,6 +26,12 @@ import { cn } from '@/utils/cn'
  */
 export default function HoroscopeFlow() {
   const navigate = useNavigate()
+  const { user } = useAuth()
+  const { profiles } = useProfiles()
+  const [checkout, setCheckout] = useState(false)
+  const [yearlyUnlocked, setYearlyUnlocked] = useState(() =>
+    user ? hasYearlyHoroscopeUnlocked(user.id) : false,
+  )
   const [period, setPeriod] = useState<HoroscopePeriod>('daily')
   const [rashi, setRashi] = useState<RashiName>('Simha')
   const chips = buildHoroscopeDateChips(period)
@@ -32,6 +43,14 @@ export default function HoroscopeFlow() {
   const [selectedChipId, setSelectedChipId] = useState(
     () => todayIso ?? chips[3]?.id ?? chips[0]?.id ?? '',
   )
+
+  useEffect(() => {
+    if (!user) {
+      setYearlyUnlocked(false)
+      return
+    }
+    setYearlyUnlocked(hasYearlyHoroscopeUnlocked(user.id))
+  }, [user])
 
   useEffect(() => {
     const next = buildHoroscopeDateChips(period)
@@ -47,11 +66,25 @@ export default function HoroscopeFlow() {
     : null
 
   function openPersonal() {
-    navigate(paths.horoscope('daily-personal'))
+    if (yearlyUnlocked) {
+      navigate(paths.horoscope('yearly-personal'))
+      return
+    }
+    setCheckout(true)
   }
 
   function openFullReading() {
     navigate(paths.horoscope(period))
+  }
+
+  if (checkout) {
+    return (
+      <YearlyHoroscopeCheckout
+        profiles={profiles}
+        onClose={() => setCheckout(false)}
+        onUnlocked={() => setYearlyUnlocked(true)}
+      />
+    )
   }
 
   return (
@@ -66,7 +99,9 @@ export default function HoroscopeFlow() {
               What’s written for you
             </h1>
             <p className="max-w-2xl text-sm leading-relaxed text-muted text-pretty sm:text-base">
-              Pick your sign, a span, and a date. Personalise when you want it from your chart.
+              {yearlyUnlocked
+                ? 'Pick a span and a date. Your personalised reading opens from the button below.'
+                : 'Pick your sign, a span, and a date. Personalise when you want it from your chart.'}
             </p>
           </div>
           <Button
@@ -80,77 +115,71 @@ export default function HoroscopeFlow() {
           </Button>
         </header>
 
-        {/* All 12 rashis — full-width grid, no scroll */}
-        <section className="space-y-4">
-          <div className="flex flex-wrap items-baseline justify-between gap-2">
-            <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-muted">
-              Moon sign / rashi
-            </p>
-            <p className="text-sm text-muted">
-              {RASHIS.find((r) => r.name === rashi)?.english} · {rashi}
-            </p>
-          </div>
-          <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 lg:gap-3">
-            {RASHIS.map((r) => {
-              const active = rashi === r.name
-              return (
-                <button
-                  key={r.name}
-                  type="button"
-                  aria-pressed={active}
-                  onClick={() => setRashi(r.name)}
-                  className={cn(
-                    'flex min-h-[4.5rem] flex-col items-center justify-center gap-1.5 rounded-2xl border px-3 py-3.5 transition sm:min-h-[5rem] sm:gap-2 sm:py-4',
-                    active
-                      ? 'border-copper bg-copper/15 text-copper shadow-[0_0_0_1px_rgba(220,132,79,0.4)]'
-                      : 'border-border/80 bg-surface/90 text-ink hover:border-copper/40',
-                  )}
-                >
-                  <span
-                    aria-hidden
-                    className={cn('text-2xl sm:text-3xl', active ? 'text-copper' : 'text-gold')}
+        {/* Sign grid is for the free hub only — hidden after personalised unlock. */}
+        {!yearlyUnlocked && (
+          <section className="space-y-4">
+            <div className="flex flex-wrap items-baseline justify-between gap-2">
+              <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-muted">
+                Moon sign / rashi
+              </p>
+              <p className="text-sm text-muted">
+                {RASHIS.find((r) => r.name === rashi)?.english} · {rashi}
+              </p>
+            </div>
+            <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 lg:gap-3">
+              {RASHIS.map((r) => {
+                const active = rashi === r.name
+                return (
+                  <button
+                    key={r.name}
+                    type="button"
+                    aria-pressed={active}
+                    onClick={() => setRashi(r.name)}
+                    className={cn(
+                      'flex min-h-[4.5rem] flex-col items-center justify-center gap-1.5 rounded-2xl border px-3 py-3.5 transition sm:min-h-[5rem] sm:gap-2 sm:py-4',
+                      active
+                        ? 'border-copper bg-copper/15 text-copper shadow-[0_0_0_1px_rgba(220,132,79,0.4)]'
+                        : 'border-border/80 bg-surface/90 text-ink hover:border-copper/40',
+                    )}
                   >
-                    {r.glyph}
-                  </span>
-                  <span className="text-sm font-semibold sm:text-base">{r.name}</span>
-                  <span className="text-[10px] text-muted sm:text-xs">{r.english}</span>
-                </button>
-              )
-            })}
-          </div>
-        </section>
+                    <span
+                      aria-hidden
+                      className={cn('text-2xl sm:text-3xl', active ? 'text-copper' : 'text-gold')}
+                    >
+                      {r.glyph}
+                    </span>
+                    <span className="text-sm font-semibold sm:text-base">{r.name}</span>
+                    <span className="text-[10px] text-muted sm:text-xs">{r.english}</span>
+                  </button>
+                )
+              })}
+            </div>
+          </section>
+        )}
 
         {/* Daily / Weekly / Monthly */}
         <section className="space-y-3">
           <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-muted">
             Span
           </p>
-          <div
-            role="tablist"
+          <RubberSegment
+            className="max-w-lg border border-border/70"
             aria-label="Horoscope period"
-            className="flex w-full max-w-lg gap-1 rounded-full border border-border/80 bg-surface-sunken/60 p-1.5"
-          >
-            {(['daily', 'weekly', 'monthly'] as const).map((p) => {
-              const active = period === p
-              return (
-                <button
-                  key={p}
-                  type="button"
-                  role="tab"
-                  aria-selected={active}
-                  onClick={() => setPeriod(p)}
-                  className={cn(
-                    'flex-1 rounded-full px-4 py-2.5 text-sm font-medium capitalize transition-colors',
-                    active
-                      ? 'bg-copper text-midnight shadow-sm'
-                      : 'text-muted hover:bg-navy-soft hover:text-ink',
-                  )}
-                >
-                  {p}
-                </button>
-              )
-            })}
-          </div>
+            items={[
+              { value: 'daily', label: 'Daily' },
+              { value: 'weekly', label: 'Weekly' },
+              { value: 'monthly', label: 'Monthly' },
+            ]}
+            value={period}
+            onChange={(next) => setPeriod(next as HoroscopePeriod)}
+            size="lg"
+            radius={22}
+            inset={4}
+            trackColor="var(--color-surface-sunken)"
+            thumbColor="var(--color-copper)"
+            textColor="var(--color-muted)"
+            activeTextColor="var(--color-midnight)"
+          />
         </section>
 
         {/* Dates — horizontal strip, drag to scroll */}
@@ -212,11 +241,21 @@ export default function HoroscopeFlow() {
           </Card>
         )}
 
-        <div className="flex flex-col items-center gap-3 pb-4 pt-2">
+        {/* Spacer so content clears the fixed CTA */}
+        <div className="h-32" aria-hidden />
+      </article>
+
+      <div
+        className={cn(
+          'fixed inset-x-0 bottom-0 z-30 border-t border-border/80',
+          'bg-canvas/95 backdrop-blur-md pb-safe',
+        )}
+      >
+        <div className="mx-auto flex w-full max-w-lg flex-col items-center gap-2 px-5 py-3.5 sm:px-6">
           <Button
             variant="primary"
             size="lg"
-            className="w-full max-w-lg rounded-full"
+            className="w-full rounded-full"
             iconLeft={<Sparkles className="size-4" />}
             onClick={openPersonal}
           >
@@ -226,7 +265,7 @@ export default function HoroscopeFlow() {
             Uses your birth chart — dasha, transits, and the houses this reading cares about.
           </p>
         </div>
-      </article>
+      </div>
     </PageContainer>
   )
 }
@@ -243,9 +282,18 @@ function DateStrip({
   onSelect: (id: string) => void
 }) {
   const ref = useRef<HTMLDivElement>(null)
-  const drag = useRef<{ active: boolean; moved: boolean; startX: number; scrollLeft: number }>({
+  const drag = useRef<{
+    active: boolean
+    moved: boolean
+    capturing: boolean
+    pointerId: number | null
+    startX: number
+    scrollLeft: number
+  }>({
     active: false,
     moved: false,
+    capturing: false,
+    pointerId: null,
     startX: 0,
     scrollLeft: 0,
   })
@@ -261,31 +309,40 @@ function DateStrip({
 
   function onPointerDown(e: ReactPointerEvent<HTMLDivElement>) {
     const el = ref.current
-    if (!el) return
+    if (!el || e.button !== 0) return
     drag.current = {
       active: true,
       moved: false,
+      capturing: false,
+      pointerId: e.pointerId,
       startX: e.clientX,
       scrollLeft: el.scrollLeft,
     }
-    el.setPointerCapture(e.pointerId)
-    el.style.cursor = 'grabbing'
   }
 
   function onPointerMove(e: ReactPointerEvent<HTMLDivElement>) {
     if (!drag.current.active || !ref.current) return
     const dx = e.clientX - drag.current.startX
-    if (Math.abs(dx) > 4) drag.current.moved = true
+    if (Math.abs(dx) <= 6) return
+    drag.current.moved = true
+    if (!drag.current.capturing) {
+      drag.current.capturing = true
+      try {
+        ref.current.setPointerCapture(e.pointerId)
+      } catch {
+        /* ignore */
+      }
+      ref.current.style.cursor = 'grabbing'
+    }
     ref.current.scrollLeft = drag.current.scrollLeft - dx
   }
 
-  function onPointerUp(e: ReactPointerEvent<HTMLDivElement>) {
+  function onPointerUp() {
     drag.current.active = false
+    drag.current.capturing = false
+    drag.current.pointerId = null
     const el = ref.current
-    if (el) {
-      el.releasePointerCapture(e.pointerId)
-      el.style.cursor = 'grab'
-    }
+    if (el) el.style.cursor = 'grab'
   }
 
   return (
@@ -313,7 +370,7 @@ function DateStrip({
               onSelect(chip.id)
             }}
             className={cn(
-              'flex size-[4.75rem] shrink-0 flex-col items-center justify-center rounded-full border transition sm:size-[5.25rem]',
+              'relative z-[1] flex size-[4.75rem] shrink-0 flex-col items-center justify-center rounded-full border transition sm:size-[5.25rem]',
               active
                 ? 'border-copper bg-copper text-midnight shadow-[0_0_24px_-8px_rgba(220,132,79,0.65)]'
                 : 'border-border-strong bg-surface text-ink hover:border-copper/50',

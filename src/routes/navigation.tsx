@@ -1,13 +1,15 @@
 import {
   Bell,
+  Calculator,
   CircleHelp,
   CircleUserRound,
-  Diamond,
+  FileStack,
   Gift,
   HeartHandshake,
   Languages,
   LogOut,
   MoonStar,
+  Orbit,
   Settings2,
   Sparkles,
   UserPlus,
@@ -24,10 +26,11 @@ import { paths } from './paths'
  */
 export const primaryNav: NavItem[] = [
   { id: 'ask', label: 'Ask', to: paths.ask, icon: <WandSparkles /> },
-  { id: 'kundli', label: 'Kundli', to: paths.chart, icon: <Diamond /> },
+  { id: 'kundli', label: 'Kundli', to: paths.chart, icon: <Orbit /> },
   { id: 'match', label: 'Match', to: paths.matching, icon: <HeartHandshake /> },
   { id: 'horoscope', label: 'Horoscope', to: paths.horoscopeRoot, icon: <MoonStar /> },
-  { id: 'tools', label: 'All', to: paths.everything, icon: <Sparkles /> },
+  { id: 'calculator', label: 'Calc', to: paths.calculatorRoot, icon: <Calculator /> },
+  { id: 'reports', label: 'Reports', to: paths.reportsRoot, icon: <FileStack /> },
 ]
 
 /** Profile stays under the avatar on desktop; on mobile it lives in Account. */

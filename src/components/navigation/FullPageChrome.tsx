@@ -41,6 +41,9 @@ export function FullPageChrome({ user, action, className }: FullPageChromeProps)
   const toast = useToast()
   const profiles = useProfiles()
   const onProfile = location.pathname === paths.profile
+  const onReportsHub = location.pathname === paths.reportsRoot
+  const onReportNested =
+    location.pathname.startsWith(`${paths.reportsRoot}/`) && !onReportsHub
   const [highlightAdd, setHighlightAdd] = useState(false)
   const [hideProfiles, setHideProfiles] = useState(false)
 
@@ -84,6 +87,12 @@ export function FullPageChrome({ user, action, className }: FullPageChromeProps)
 
   const goBack = () => {
     if (onProfile) requestAvatarMenuReopen()
+
+    // Never use history.back() on reports — hub ↔ topic loops reopen Career/etc.
+    if (onReportsHub || onReportNested) {
+      navigate(paths.ask, { replace: true })
+      return
+    }
 
     if (typeof window !== 'undefined' && window.history.length > 1) {
       navigate(-1)

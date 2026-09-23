@@ -1,8 +1,7 @@
 import {
   BookMarked,
+  History,
   LayoutGrid,
-  ScrollText,
-  Sparkles,
   SquarePen,
   WandSparkles,
   PanelLeftClose,
@@ -43,6 +42,12 @@ function isFeatureActive(pathname: string, to: string | undefined, slug: string)
   }
   if (slug === 'horoscope') {
     return pathname.startsWith('/horoscope')
+  }
+  if (slug === 'calculator' || slug === 'dosha') {
+    return pathname === paths.calculatorRoot || pathname.startsWith(`${paths.calculatorRoot}/`)
+  }
+  if (slug === 'reports') {
+    return pathname === paths.reportsRoot || pathname.startsWith(`${paths.reportsRoot}/`)
   }
   if (slug === 'calendar') {
     return pathname === paths.calendar || pathname.startsWith(`${paths.calendar}/`)
@@ -139,7 +144,7 @@ export function SideNav({
             }
           >
             {({ isActive }) => (
-              <ScrollText className="size-5" strokeWidth={isActive ? 2.25 : 1.75} aria-hidden />
+              <History className="size-5" strokeWidth={isActive ? 2.25 : 1.75} aria-hidden />
             )}
           </NavLink>
 
@@ -291,7 +296,7 @@ export function SideNav({
           >
             {({ isActive }) => (
               <>
-                <ScrollText
+                <History
                   className={cn('size-5 shrink-0', isActive ? 'text-gold-deep' : 'text-muted')}
                   strokeWidth={isActive ? 2.25 : 1.75}
                   aria-hidden
@@ -387,7 +392,7 @@ export function SideNav({
                       : 'border-border/70 bg-surface-sunken/50 text-muted',
                   )}
                 >
-                  <Sparkles className="size-4" strokeWidth={isActive ? 2.25 : 1.75} />
+                  <LayoutGrid className="size-4" strokeWidth={isActive ? 2.25 : 1.75} />
                 </span>
                 <span className="truncate text-sm">All features</span>
               </>
