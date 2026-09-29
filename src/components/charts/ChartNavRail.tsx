@@ -67,7 +67,7 @@ export function ChartNavRail({
                   'relative shrink-0 rounded-full px-3.5 py-2 text-sm transition-all duration-200',
                   'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-copper',
                   active
-                    ? 'bg-copper/20 font-semibold text-copper shadow-[inset_0_0_0_1px_rgba(232,168,78,0.45)]'
+                    ? 'bg-copper/20 font-semibold text-copper shadow-[inset_0_0_0_1px_rgba(196, 160, 255,0.45)]'
                     : 'font-medium text-muted hover:bg-navy-soft/60 hover:text-ink',
                 )}
               >

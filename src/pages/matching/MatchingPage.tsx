@@ -302,7 +302,7 @@ export default function MatchingPage() {
                       'transition-[border-color,background-color,transform] duration-150 ease-out-soft',
                       'active:scale-[0.99]',
                       active
-                        ? 'border-copper/55 bg-copper/12 shadow-[0_0_24px_-12px_rgba(220,132,79,0.45)]'
+                        ? 'border-copper/55 bg-copper/12 shadow-[0_0_24px_-12px_rgba(124, 77, 255,0.45)]'
                         : 'border-border bg-surface hover:border-border-strong hover:bg-navy-soft/70',
                     )}
                   >
@@ -643,7 +643,7 @@ function Person({
     <div
       className={cn(
         'rounded-card border border-copper/40 bg-copper/10 p-3.5 sm:p-4',
-        'shadow-[0_0_28px_-14px_rgba(220,132,79,0.45)]',
+        'shadow-[0_0_28px_-14px_rgba(124, 77, 255,0.45)]',
       )}
     >
       <div className="flex items-start gap-3">

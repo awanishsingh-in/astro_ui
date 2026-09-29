@@ -26,15 +26,15 @@ export interface ButtonProps
 
 const VARIANTS: Record<ButtonVariant, string> = {
   primary:
-    'bg-gradient-to-b from-light-copper to-copper text-midnight shadow-glow hover:from-pale-copper hover:to-light-copper active:from-copper active:to-copper-shadow active:text-warm-white disabled:bg-none disabled:bg-border-strong disabled:text-muted disabled:shadow-none',
+    'bg-gradient-to-r from-[#7c4dff] to-[#3a7bd5] text-white shadow-[0_12px_32px_-12px_rgba(124,77,255,0.75)] hover:from-[#8b5cff] hover:to-[#4a8be5] active:from-[#6b3de8] active:to-[#2f6bc0] disabled:bg-none disabled:bg-border-strong disabled:text-muted disabled:shadow-none',
   secondary:
     'bg-surface-raised/80 text-ink border border-border-strong/80 backdrop-blur-sm hover:border-copper/50 hover:bg-nebula-plum hover:shadow-card active:bg-navy-soft disabled:border-border disabled:text-faint',
   ghost: 'bg-transparent text-ink hover:bg-navy-soft/80 active:bg-navy-soft disabled:text-faint',
-  gold: 'bg-gold-soft text-light-copper border border-copper/40 hover:border-copper hover:bg-copper-shadow/40 hover:shadow-glow active:bg-copper-shadow/55 disabled:text-faint',
+  gold: 'bg-gold-soft text-[#c4a0ff] border border-copper/40 hover:border-copper hover:bg-copper/15 hover:shadow-glow active:bg-copper/25 disabled:text-faint',
   danger:
     'bg-transparent text-critical border border-critical/35 hover:bg-critical-soft disabled:text-faint',
   celestial:
-    'bg-gradient-to-b from-light-copper to-copper text-midnight shadow-glow hover:from-pale-copper hover:to-light-copper active:from-copper active:to-copper-shadow disabled:bg-none disabled:bg-celestial-line disabled:text-on-celestial-faint disabled:shadow-none focus-visible:outline-gold-soft-line',
+    'bg-gradient-to-r from-[#7c4dff] to-[#3a7bd5] text-white shadow-[0_12px_32px_-12px_rgba(124,77,255,0.75)] hover:from-[#8b5cff] hover:to-[#4a8be5] active:from-[#6b3de8] active:to-[#2f6bc0] disabled:bg-none disabled:bg-celestial-line disabled:text-on-celestial-faint disabled:shadow-none focus-visible:outline-gold-soft-line',
   celestialGhost:
     'bg-transparent text-on-celestial border border-light-copper/40 hover:border-light-copper hover:bg-copper/10 hover:shadow-glow disabled:text-on-celestial-faint focus-visible:outline-gold-soft-line',
 }
@@ -46,8 +46,8 @@ const SIZES: Record<ButtonSize, string> = {
 }
 
 /**
- * The product's one button. Primary is copper; gold/copper soft is reserved
- * for accent actions and never becomes the dominant colour on a screen.
+ * The product's one button. Primary is violet→blue (adventure); gold soft is
+ * reserved for accent actions and never becomes the dominant colour on a screen.
  */
 export function Button({
   variant = 'primary',

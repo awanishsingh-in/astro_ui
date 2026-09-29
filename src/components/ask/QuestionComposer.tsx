@@ -8,8 +8,8 @@ export interface QuestionComposerProps {
   placeholder?: string
   /** `hero` is the prominent panel; `bar` is the compact sticky variant. */
   variant?: 'hero' | 'bar'
-  /** Light sits on canvas pages; dark is for celestial / midnight surfaces. */
-  tone?: 'light' | 'dark'
+  /** Light sits on canvas pages; dark is for celestial / midnight surfaces; adventure matches login violet/cyan. */
+  tone?: 'light' | 'dark' | 'adventure'
   /** Textarea rows for the hero variant. */
   rows?: number
   autoFocus?: boolean
@@ -57,6 +57,8 @@ export function QuestionComposer({
   const canSend = value.trim().length > 0
   const hero = variant === 'hero'
   const dark = tone === 'dark'
+  const adventure = tone === 'adventure'
+  const night = dark || adventure
   const textareaRows = rows ?? (hero ? 3 : 1)
 
   const requestUnlock = () => {
@@ -98,32 +100,41 @@ export function QuestionComposer({
           'group relative isolate overflow-hidden rounded-card border',
           'transition-[border-color,box-shadow,transform] duration-300 ease-out-soft',
           locked && 'cursor-pointer',
-          dark
+          adventure
             ? cn(
-                'border-gold-soft-line/80 bg-indigo-royal/55 shadow-raised backdrop-blur-md',
-                'focus-within:border-gold-soft-line focus-within:shadow-overlay',
+                'border-[#c4a0ff]/40 bg-[#0e0820] shadow-[0_0_32px_-14px_rgba(124,77,255,0.45)]',
+                'focus-within:border-[#c4a0ff]/70 focus-within:shadow-[0_0_40px_-10px_rgba(94,215,242,0.35)]',
               )
-            : cn(
-                'border-copper/40 bg-surface shadow-[0_0_40px_-14px_rgba(220,132,79,0.4)]',
-                'focus-within:border-copper focus-within:shadow-[0_0_48px_-10px_rgba(220,132,79,0.55)]',
-                hero ? '' : 'border-border shadow-card',
-              ),
+            : dark
+              ? cn(
+                  'border-gold-soft-line/80 bg-indigo-royal/55 shadow-raised backdrop-blur-md',
+                  'focus-within:border-gold-soft-line focus-within:shadow-overlay',
+                )
+              : cn(
+                  'border-[#7c4dff]/45 bg-surface shadow-[0_0_40px_-14px_rgba(124,77,255,0.4)]',
+                  'focus-within:border-[#7c4dff] focus-within:shadow-[0_0_48px_-10px_rgba(94,215,242,0.35)]',
+                  hero ? '' : 'border-border shadow-card',
+                ),
         )}
       >
-        {/* Soft gold wash behind the zodiac — depth without a glow effect. */}
+        {/* Soft wash behind the zodiac — depth without a glow effect. */}
         {hero && (
           <div
             aria-hidden
             className={cn(
               'pointer-events-none absolute inset-x-0 top-0 h-16 bg-linear-to-b to-transparent',
-              dark ? 'from-gold-soft/20 opacity-80' : 'from-gold-soft/50 opacity-70',
+              adventure
+                ? 'from-[#7c4dff]/25 opacity-90'
+                : dark
+                  ? 'from-gold-soft/20 opacity-80'
+                  : 'from-[#7c4dff]/22 opacity-85',
             )}
           />
         )}
 
         {/*
           The twelve signs along the top edge. Faint at rest; on focus they lift
-          to a legible gold and the hairline under them draws across.
+          to a legible accent and the hairline under them draws across.
         */}
         {hero && (
           <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 z-10">
@@ -133,9 +144,11 @@ export function QuestionComposer({
                   key={rashi.name}
                   className={cn(
                     'text-[12px] leading-none transition-[color,opacity,transform] duration-300 ease-out-soft',
-                    dark
-                      ? 'text-gold-soft-line opacity-75 group-focus-within:opacity-100'
-                      : 'text-faint opacity-40 group-focus-within:text-gold group-focus-within:opacity-95',
+                    adventure
+                      ? 'text-[#c4a0ff]/70 opacity-80 group-focus-within:opacity-100'
+                      : dark
+                        ? 'text-gold-soft-line opacity-75 group-focus-within:opacity-100'
+                        : 'text-[#7c4dff]/55 opacity-60 group-focus-within:text-[#7c4dff] group-focus-within:opacity-100',
                     'group-focus-within:translate-y-0',
                   )}
                   style={{ transitionDelay: `${i * 18}ms` }}
@@ -146,9 +159,10 @@ export function QuestionComposer({
             </div>
             <span
               className={cn(
-                'mt-2 block h-px origin-left bg-linear-to-r from-transparent via-gold to-transparent',
+                'mt-2 block h-px origin-left bg-linear-to-r from-transparent to-transparent',
+                adventure || !dark ? 'via-[#5ed7f2]' : 'via-gold',
                 'transition-transform duration-500 ease-out-soft',
-                dark ? 'scale-x-100 opacity-50' : 'scale-x-0 group-focus-within:scale-x-100',
+                night || !dark ? 'scale-x-100 opacity-50' : 'scale-x-0 group-focus-within:scale-x-100',
               )}
             />
           </div>
@@ -183,8 +197,8 @@ export function QuestionComposer({
             className={cn(
               'min-w-0 flex-1 resize-none bg-transparent outline-none',
               hero ? 'px-1 text-body leading-relaxed lg:text-[1.05rem]' : 'px-2 py-1.5 text-sub',
-              dark
-                ? 'text-on-celestial placeholder:text-on-celestial-faint'
+              night
+                ? 'text-white placeholder:text-white/35'
                 : 'text-ink placeholder:text-faint',
               locked && 'cursor-pointer',
             )}
@@ -199,12 +213,14 @@ export function QuestionComposer({
               'transition-[background-color,transform,box-shadow] duration-200 ease-out-soft',
               hero ? 'size-12' : 'size-9 rounded-control',
               locked || canSend
-                ? dark
-                  ? 'bg-indigo-royal text-on-celestial shadow-card hover:bg-indigo-deep hover:scale-[1.03] active:scale-100'
-                  : 'bg-copper text-on-celestial shadow-[0_0_24px_-4px_rgba(220,132,79,0.7)] hover:bg-light-copper hover:scale-[1.03] active:bg-copper-shadow active:scale-100'
-                : dark
-                  ? 'bg-midnight/70 text-on-celestial-faint'
-                  : 'bg-surface-sunken text-faint',
+                ? adventure || !dark
+                  ? 'bg-gradient-to-br from-[#7c4dff] to-[#3a7bd5] text-white shadow-[0_0_20px_-4px_rgba(124,77,255,0.7)] hover:scale-[1.03] active:scale-100'
+                  : 'bg-indigo-royal text-on-celestial shadow-card hover:bg-indigo-deep hover:scale-[1.03] active:scale-100'
+                : adventure
+                  ? 'bg-white/10 text-white/35'
+                  : dark
+                    ? 'bg-midnight/70 text-on-celestial-faint'
+                    : 'bg-surface-sunken text-faint',
             )}
           >
             <ArrowUp className={hero ? 'size-5' : 'size-4'} strokeWidth={2.25} />
@@ -215,12 +231,19 @@ export function QuestionComposer({
           <p
             className={cn(
               'flex items-center gap-2 border-t px-5 py-2.5 font-mono text-label uppercase tracking-wide',
-              dark
-                ? 'border-celestial-line/50 bg-midnight/35 text-on-celestial-muted'
-                : 'border-gold-border/60 bg-gold-soft/40 text-navy/70',
+              adventure
+                ? 'border-white/10 bg-[#07041a]/55 text-white/45'
+                : dark
+                  ? 'border-celestial-line/50 bg-midnight/35 text-on-celestial-muted'
+                  : 'border-[#7c4dff]/25 bg-[#7c4dff]/10 text-[#c4a0ff]',
             )}
           >
-            <span aria-hidden className={dark ? 'text-gold-soft-line' : 'text-gold'}>
+            <span
+              aria-hidden
+              className={
+                adventure ? 'text-[#c4a0ff]' : dark ? 'text-gold-soft-line' : 'text-[#7c4dff]'
+              }
+            >
               ✦
             </span>
             Read from your birth chart · never from a generic horoscope
@@ -232,7 +255,7 @@ export function QuestionComposer({
         <p
           className={cn(
             'mt-2 font-mono text-label uppercase tracking-[0.12em]',
-            dark ? 'text-on-celestial-faint' : 'text-muted',
+            night ? 'text-white/35' : 'text-muted',
           )}
         >
           {status}

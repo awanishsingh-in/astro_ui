@@ -34,7 +34,7 @@ export function ChartBasicPanel({ birth, className }: ChartBasicPanelProps) {
       <article
         className={cn(
           'relative overflow-hidden rounded-3xl border border-copper/30',
-          'bg-[radial-gradient(120%_90%_at_10%_0%,rgba(232,168,78,0.22),transparent_55%),linear-gradient(160deg,color-mix(in_oklab,var(--color-surface)_85%,#2a1a12)_0%,var(--color-surface)_100%)]',
+          'bg-[radial-gradient(120%_90%_at_10%_0%,rgba(196, 160, 255,0.22),transparent_55%),linear-gradient(160deg,color-mix(in_oklab,var(--color-surface)_85%,#1a0f3d)_0%,var(--color-surface)_100%)]',
           'px-5 py-8 text-center sm:px-8 sm:py-10',
         )}
       >

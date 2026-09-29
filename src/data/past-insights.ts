@@ -34,7 +34,8 @@ export const PAST_INSIGHTS: PastInsight[] = [
   {
     id: 'love',
     category: 'Love',
-    blurb: 'Patterns in love and emotional connection from your past.',
+    blurb:
+      'How you fell for people, what made bonds stick, and the emotional patterns your chart held in romance.',
     period: '2016 – 2018',
     verdict: 'A chapter of opening and learning how you attach.',
     points: [
@@ -49,7 +50,8 @@ export const PAST_INSIGHTS: PastInsight[] = [
   {
     id: 'career',
     category: 'Career',
-    blurb: 'Work phases, changes and turning points your chart carried.',
+    blurb:
+      'Job shifts, ambition, and turning points — the work chapters where your chart pushed growth or change.',
     period: '2019 – 2021',
     verdict: 'A period of change and greater responsibility.',
     points: [
@@ -64,7 +66,8 @@ export const PAST_INSIGHTS: PastInsight[] = [
   {
     id: 'relationships',
     category: 'Relationships',
-    blurb: 'Patterns in close relationships and partnerships.',
+    blurb:
+      'Partnerships, close ties, and how you showed up for others when connection was tested.',
     period: '2014 – 2017',
     verdict: 'Partnerships asked for honesty before comfort.',
     points: [
@@ -79,7 +82,8 @@ export const PAST_INSIGHTS: PastInsight[] = [
   {
     id: 'family',
     category: 'Family',
-    blurb: 'Family dynamics and meaningful phases from your past.',
+    blurb:
+      'Home, roots, and family roles — the phases that shaped belonging, duty, and support.',
     period: '2012 – 2015',
     verdict: 'Family roles shifted; support and duty traded places.',
     points: [
@@ -94,7 +98,8 @@ export const PAST_INSIGHTS: PastInsight[] = [
   {
     id: 'money',
     category: 'Money',
-    blurb: 'Times of financial growth, pressure and change.',
+    blurb:
+      'Income, spending, and pressure around resources — when money grew, tightened, or taught discipline.',
     period: '2020 – 2022',
     verdict: 'Resources expanded, then asked for discipline.',
     points: [
@@ -109,7 +114,8 @@ export const PAST_INSIGHTS: PastInsight[] = [
   {
     id: 'health',
     category: 'Health & Wellbeing',
-    blurb: 'Past patterns around energy, balance and wellbeing.',
+    blurb:
+      'Energy, rest, and balance — past rhythms in body and mind that your chart still echoes.',
     period: '2018 – 2020',
     verdict: 'Energy asked for rhythm more than intensity.',
     points: [

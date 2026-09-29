@@ -20,8 +20,9 @@ interface BaseProps {
    * `surface` — default lifted panel.
    * `sunken` — recessed search / nested chrome.
    * `celestial` — soft indigo glass with gold focus for birth / chart forms.
+   * `adventure` — purple/cyan auth forms.
    */
-  tone?: 'surface' | 'sunken' | 'celestial'
+  tone?: 'surface' | 'sunken' | 'celestial' | 'adventure'
 }
 
 export type InputProps = BaseProps & Omit<InputHTMLAttributes<HTMLInputElement>, 'prefix' | 'size'>
@@ -39,6 +40,8 @@ const TONE_SHELL: Record<NonNullable<BaseProps['tone']>, string> = {
     'bg-surface-sunken border-border focus-within:border-copper focus-within:shadow-focus',
   celestial:
     'bg-[var(--color-field)] border-[var(--color-field-border)] shadow-[inset_0_1px_0_var(--color-field-inset)] focus-within:border-copper focus-within:shadow-focus',
+  adventure:
+    'border-white/10 bg-[#0e0820] focus-within:border-[#c4a0ff]/50 focus-within:shadow-[0_0_0_3px_rgba(124,77,255,0.2)]',
 }
 
 /** One control, three heights. `lg` is what the birth-details form uses. */
@@ -84,7 +87,7 @@ export function Input({
           aria-hidden
           className={cn(
             'flex shrink-0 items-center pl-3.5 [&_svg]:size-4',
-            tone === 'celestial' ? 'text-gold/70' : 'text-muted',
+            tone === 'celestial' ? 'text-gold/70' : tone === 'adventure' ? 'text-[#c4a0ff]/70' : 'text-muted',
           )}
         >
           {icon}
@@ -95,8 +98,10 @@ export function Input({
         aria-describedby={field?.describedBy}
         aria-invalid={hasError || undefined}
         className={cn(
-          'h-full min-w-0 flex-1 bg-transparent text-ink outline-none',
-          'placeholder:text-faint',
+          'h-full min-w-0 flex-1 bg-transparent outline-none',
+          tone === 'adventure'
+            ? 'text-white placeholder:text-white/35'
+            : 'text-ink placeholder:text-faint',
           size.pad,
           mono ? 'font-mono' : size.text,
           mono && (inputSize === 'sm' ? 'text-data' : 'text-data-lg'),
@@ -110,7 +115,7 @@ export function Input({
         <span
           className={cn(
             'flex h-full items-center pr-3.5 [&_svg]:size-5',
-            tone === 'celestial' ? 'text-gold/70' : 'text-muted',
+            tone === 'celestial' ? 'text-gold/70' : tone === 'adventure' ? 'text-[#c4a0ff]/70' : 'text-muted',
           )}
         >
           {suffix}

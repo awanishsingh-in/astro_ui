@@ -51,7 +51,7 @@ function FolderGrid({
               className={cn(
                 'flex h-full min-h-[15rem] w-full flex-col items-center justify-center gap-5 rounded-card border border-border',
                 'bg-surface/90 px-3 py-6 text-center transition-[border-color,background-color,box-shadow]',
-                'hover:border-copper/45 hover:bg-copper/10 hover:shadow-[0_0_28px_-10px_rgba(220,132,79,0.5)]',
+                'hover:border-copper/45 hover:bg-copper/10 hover:shadow-[0_0_28px_-10px_rgba(124, 77, 255,0.5)]',
                 'active:scale-[0.99] sm:min-h-[17.5rem] sm:gap-6 sm:px-4 sm:py-8',
               )}
             >

@@ -92,14 +92,28 @@ export function formatRelativeDay(iso: string, now = new Date()): string {
   return `${d.getDate()} ${MONTHS_LONG[d.getMonth()]}`
 }
 
-/** `+91 98765 43210` from E.164. Indian numbers only for now. */
+/** Display E.164 nicely — Indian spacing when +91, otherwise `+code number`. */
 export function formatPhone(e164: string): string {
   const digits = e164.replace(/\D/g, '')
   if (digits.length === 12 && digits.startsWith('91')) {
     return `+91 ${digits.slice(2, 7)} ${digits.slice(7)}`
   }
-  if (digits.length === 10) return `${digits.slice(0, 5)} ${digits.slice(5)}`
-  return e164
+  if (digits.length === 10 && !e164.startsWith('+')) {
+    return `${digits.slice(0, 5)} ${digits.slice(5)}`
+  }
+  // Match longest known dial prefix for spacing
+  const known = ['1684', '1264', '1268', '1242', '1246', '1441', '1345', '1767', '1809', '1876', '1473', '1671', '1664', '1869', '1758', '1784', '1721', '1868', '1649', '1340', '1284']
+  for (const code of known) {
+    if (digits.startsWith(code) && digits.length > code.length) {
+      return `+${code} ${digits.slice(code.length)}`
+    }
+  }
+  for (const len of [3, 2, 1]) {
+    if (digits.length > len) {
+      return `+${digits.slice(0, len)} ${digits.slice(len)}`
+    }
+  }
+  return e164.startsWith('+') ? e164 : `+${digits}`
 }
 
 /** `22.08°N 82.15°E` */

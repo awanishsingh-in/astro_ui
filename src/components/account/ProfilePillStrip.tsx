@@ -59,7 +59,7 @@ export function ProfilePillStrip({
               'transition-[border-color,background-color,box-shadow] duration-150',
               compact ? 'py-1 pl-1 pr-2' : 'py-1.5 pl-1.5 pr-2.5',
               active
-                ? 'border-copper/55 bg-copper/15 shadow-[0_0_20px_-10px_rgba(232,168,78,0.55)]'
+                ? 'border-copper/55 bg-copper/15 shadow-[0_0_20px_-10px_rgba(196, 160, 255,0.55)]'
                 : 'border-border bg-surface/80 hover:border-copper/35 hover:bg-navy-soft/60',
             )}
           >
@@ -112,7 +112,7 @@ export function ProfilePillStrip({
           'hover:border-copper/50 hover:bg-copper/10 hover:text-copper',
           compact ? 'size-9' : 'size-11',
           highlightAdd &&
-            'border-copper/60 text-copper shadow-[0_0_22px_-8px_rgba(232,168,78,0.65)]',
+            'border-copper/60 text-copper shadow-[0_0_22px_-8px_rgba(196, 160, 255,0.65)]',
         )}
       >
         <Plus className={compact ? 'size-4' : 'size-5'} strokeWidth={1.75} aria-hidden />

@@ -17,7 +17,7 @@ export type CardProps = BaseProps & Omit<HTMLAttributes<HTMLDivElement>, keyof B
 const TONES: Record<CardTone, string> = {
   default:
     'bg-surface/90 border border-border/90 shadow-card backdrop-blur-[2px] [background-image:linear-gradient(165deg,rgba(92,71,80,0.22)_0%,transparent_42%)]',
-  gold: 'bg-gold-soft border border-copper/35 shadow-card [box-shadow:0_0_28px_-12px_rgba(220,132,79,0.35)]',
+  gold: 'bg-gold-soft border border-copper/35 shadow-card [box-shadow:0_0_28px_-12px_rgba(124,77,255,0.4)]',
   sunken: 'bg-surface-sunken/80 border border-transparent',
   outline: 'bg-surface/80 border border-border',
   elevated:

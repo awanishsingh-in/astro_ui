@@ -199,7 +199,7 @@ export function ChartPlanetsPanel({
                 className={cn(
                   'rounded-full px-3.5 py-1.5 text-sm transition',
                   active
-                    ? 'bg-copper/20 font-semibold text-copper shadow-[inset_0_0_0_1px_rgba(232,168,78,0.45)]'
+                    ? 'bg-copper/20 font-semibold text-copper shadow-[inset_0_0_0_1px_rgba(196, 160, 255,0.45)]'
                     : 'font-medium text-muted hover:text-ink',
                 )}
               >

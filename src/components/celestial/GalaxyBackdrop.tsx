@@ -69,8 +69,8 @@ export function GalaxyBackdrop({
         )}
         style={{
           background: quiet
-            ? 'radial-gradient(90% 70% at 50% 0%, rgba(46, 22, 35, 0.55) 0%, transparent 58%), radial-gradient(70% 55% at 85% 75%, rgba(125, 72, 53, 0.28) 0%, transparent 60%)'
-            : 'radial-gradient(120% 90% at 18% 0%, rgba(46, 22, 35, 0.9) 0%, transparent 62%), radial-gradient(80% 60% at 88% 20%, rgba(220, 132, 79, 0.18) 0%, transparent 55%)',
+            ? 'radial-gradient(90% 70% at 50% 0%, rgba(26, 15, 61, 0.55) 0%, transparent 58%), radial-gradient(70% 55% at 85% 75%, rgba(125, 72, 53, 0.28) 0%, transparent 60%)'
+            : 'radial-gradient(120% 90% at 18% 0%, rgba(26, 15, 61, 0.9) 0%, transparent 62%), radial-gradient(80% 60% at 88% 20%, rgba(124, 77, 255, 0.18) 0%, transparent 55%)',
         }}
       />
 

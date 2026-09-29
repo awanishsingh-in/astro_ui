@@ -138,7 +138,7 @@ export default function HoroscopeFlow() {
                     className={cn(
                       'flex min-h-[4.5rem] flex-col items-center justify-center gap-1.5 rounded-2xl border px-3 py-3.5 transition sm:min-h-[5rem] sm:gap-2 sm:py-4',
                       active
-                        ? 'border-copper bg-copper/15 text-copper shadow-[0_0_0_1px_rgba(220,132,79,0.4)]'
+                        ? 'border-copper bg-copper/15 text-copper shadow-[0_0_0_1px_rgba(124, 77, 255,0.4)]'
                         : 'border-border/80 bg-surface/90 text-ink hover:border-copper/40',
                     )}
                   >
@@ -372,7 +372,7 @@ function DateStrip({
             className={cn(
               'relative z-[1] flex size-[4.75rem] shrink-0 flex-col items-center justify-center rounded-full border transition sm:size-[5.25rem]',
               active
-                ? 'border-copper bg-copper text-midnight shadow-[0_0_24px_-8px_rgba(220,132,79,0.65)]'
+                ? 'border-copper bg-copper text-midnight shadow-[0_0_24px_-8px_rgba(124, 77, 255,0.65)]'
                 : 'border-border-strong bg-surface text-ink hover:border-copper/50',
             )}
           >

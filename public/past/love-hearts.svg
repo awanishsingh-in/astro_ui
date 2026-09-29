@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 170" fill="none" aria-hidden="true">
+  <!-- Classic interlocking hearts, transparent bg -->
+  <path
+    d="M70 30c-16 0-30 12-30 30 0 28 30 52 50 68 20-16 50-40 50-68 0-18-14-30-30-30-10 0-18 5-20 12C88 35 80 30 70 30Z"
+    stroke="#ff5a7a"
+    stroke-width="6"
+    stroke-linejoin="round"
+  />
+  <path
+    d="M120 38c-13 0-24 10-24 24 0 22 24 42 40 54 16-12 40-32 40-54 0-14-11-24-24-24-8 0-14 4-16 10-2-6-8-10-16-10Z"
+    stroke="#ff8aa0"
+    stroke-width="5.5"
+    stroke-linejoin="round"
+  />
+</svg>

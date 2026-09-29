@@ -48,7 +48,7 @@ export function LanguagePicker({ value, onChange, className }: LanguagePickerPro
                 'transition-[border-color,background-color,transform] duration-150 ease-out-soft',
                 'active:scale-[0.99]',
                 active
-                  ? 'border-copper/55 bg-copper/12 text-ink shadow-[0_0_24px_-12px_rgba(220,132,79,0.45)]'
+                  ? 'border-copper/55 bg-copper/12 text-ink shadow-[0_0_24px_-12px_rgba(124, 77, 255,0.45)]'
                   : 'border-border bg-surface text-purple hover:border-border-strong hover:bg-navy-soft/60',
               )}
             >

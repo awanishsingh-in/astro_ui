@@ -28,7 +28,7 @@ export function applyResolvedTheme(resolved: ResolvedTheme) {
 
   const meta = document.querySelector('meta[name="theme-color"]')
   if (meta) {
-    meta.setAttribute('content', resolved === 'dark' ? '#0F0B19' : '#FDF8F4')
+    meta.setAttribute('content', resolved === 'dark' ? '#07041a' : '#F5F2FF')
   }
 }
 

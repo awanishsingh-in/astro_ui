@@ -92,7 +92,7 @@ export function ChartKundaliPanel({
           className={cn(
             'overflow-hidden rounded-3xl border bg-surface/90 shadow-[0_18px_40px_-30px_rgba(20,12,8,0.55)]',
             premium
-              ? 'border-copper/50 shadow-[0_0_40px_-18px_rgba(232,168,78,0.45)]'
+              ? 'border-copper/50 shadow-[0_0_40px_-18px_rgba(196, 160, 255,0.45)]'
               : 'border-border/80',
           )}
         >
@@ -218,7 +218,7 @@ function ModeCard({
       className={cn(
         'relative flex items-start gap-3 rounded-2xl border px-4 py-4 text-left transition',
         active
-          ? 'border-copper/55 bg-copper/15 shadow-[0_0_28px_-14px_rgba(232,168,78,0.55)]'
+          ? 'border-copper/55 bg-copper/15 shadow-[0_0_28px_-14px_rgba(196, 160, 255,0.55)]'
           : 'border-border/80 bg-surface/80 hover:border-copper/35 hover:bg-copper/8',
       )}
     >

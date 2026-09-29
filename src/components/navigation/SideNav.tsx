@@ -115,7 +115,7 @@ export function SideNav({
             className={() =>
               cn(
                 'inline-flex size-9 items-center justify-center rounded-control transition-colors',
-                onAsk ? 'bg-copper/20 text-copper' : 'text-muted hover:bg-navy-soft/70 hover:text-ink',
+                onAsk ? 'bg-[#7c4dff]/20 text-[#7c4dff]' : 'text-muted hover:bg-navy-soft/70 hover:text-ink',
               )
             }
           >
@@ -127,7 +127,7 @@ export function SideNav({
             title="New chat"
             aria-label="New chat"
             onClick={() => navigate(`${paths.ask}?new=1`)}
-            className="inline-flex size-9 items-center justify-center rounded-control text-gold-deep transition-colors hover:bg-navy-soft/70"
+            className="inline-flex size-9 items-center justify-center rounded-control text-[#7c4dff] transition-colors hover:bg-navy-soft/70"
           >
             <SquarePen className="size-4" aria-hidden />
           </button>
@@ -139,7 +139,7 @@ export function SideNav({
             className={({ isActive }) =>
               cn(
                 'inline-flex size-9 items-center justify-center rounded-control transition-colors',
-                isActive ? 'bg-navy-soft text-gold-deep' : 'text-muted hover:bg-navy-soft/70 hover:text-ink',
+                isActive ? 'bg-navy-soft text-[#7c4dff]' : 'text-muted hover:bg-navy-soft/70 hover:text-ink',
               )
             }
           >
@@ -155,7 +155,7 @@ export function SideNav({
             className={({ isActive }) =>
               cn(
                 'inline-flex size-9 items-center justify-center rounded-control transition-colors',
-                isActive ? 'bg-navy-soft text-gold-deep' : 'text-muted hover:bg-navy-soft/70 hover:text-ink',
+                isActive ? 'bg-navy-soft text-[#7c4dff]' : 'text-muted hover:bg-navy-soft/70 hover:text-ink',
               )
             }
           >
@@ -178,7 +178,7 @@ export function SideNav({
                 aria-label={feature.title}
                 className={cn(
                   'inline-flex size-9 items-center justify-center rounded-control transition-colors',
-                  active ? 'bg-navy-soft text-gold-deep' : 'text-muted hover:bg-navy-soft/70 hover:text-ink',
+                  active ? 'bg-navy-soft text-[#7c4dff]' : 'text-muted hover:bg-navy-soft/70 hover:text-ink',
                 )}
               >
                 <Icon className="size-4" strokeWidth={active ? 2.25 : 1.75} aria-hidden />
@@ -193,7 +193,7 @@ export function SideNav({
             className={({ isActive }) =>
               cn(
                 'inline-flex size-9 items-center justify-center rounded-control transition-colors',
-                isActive ? 'bg-navy-soft text-gold-deep' : 'text-muted hover:bg-navy-soft/70 hover:text-ink',
+                isActive ? 'bg-navy-soft text-[#7c4dff]' : 'text-muted hover:bg-navy-soft/70 hover:text-ink',
               )
             }
           >
@@ -217,7 +217,7 @@ export function SideNav({
         'sticky top-0 z-30 hidden h-dvh w-60 shrink-0 flex-col',
         'border-r border-border/60 bg-surface/80 px-3.5 py-5 backdrop-blur-xl',
         'lg:flex xl:w-64',
-        'shadow-[inset_-1px_0_0_0_rgba(232,168,78,0.06)]',
+        'shadow-[inset_-1px_0_0_0_rgba(124,77,255,0.12)]',
         className,
       )}
     >
@@ -225,7 +225,7 @@ export function SideNav({
         aria-hidden
         className="pointer-events-none absolute inset-0 -z-10 overflow-hidden"
       >
-        <div className="absolute -left-10 top-0 h-40 w-40 rounded-full bg-copper/10 blur-3xl" />
+        <div className="absolute -left-10 top-0 h-40 w-40 rounded-full bg-[#7c4dff]/10 blur-3xl" />
         <div className="absolute -right-8 bottom-24 h-36 w-36 rounded-full bg-deep-burgundy/50 blur-3xl" />
       </div>
 
@@ -255,13 +255,13 @@ export function SideNav({
               cn(
                 'flex items-center gap-3 rounded-control px-3 py-2.5 transition-[background-color,color,box-shadow] duration-150',
                 onAsk
-                  ? 'bg-gradient-to-r from-copper/25 via-copper/10 to-transparent font-semibold text-ink shadow-[inset_3px_0_0_0_var(--color-copper)]'
+                  ? 'bg-gradient-to-r from-[#7c4dff]/25 via-[#7c4dff]/10 to-transparent font-semibold text-ink shadow-[inset_3px_0_0_0_#7c4dff]'
                   : 'font-medium text-purple hover:bg-navy-soft/70 hover:text-ink',
               )
             }
           >
             <WandSparkles
-              className={cn('size-5 shrink-0', onAsk ? 'text-gold-deep' : 'text-muted')}
+              className={cn('size-5 shrink-0', onAsk ? 'text-[#7c4dff]' : 'text-muted')}
               strokeWidth={onAsk ? 2.25 : 1.75}
               aria-hidden
             />
@@ -278,7 +278,7 @@ export function SideNav({
                 'hover:bg-navy-soft/70 hover:text-ink',
               )}
             >
-              <SquarePen className="size-4 shrink-0 text-gold-deep" aria-hidden />
+              <SquarePen className="size-4 shrink-0 text-[#7c4dff]" aria-hidden />
               New chat
             </button>
           </div>
@@ -289,7 +289,7 @@ export function SideNav({
               cn(
                 'flex items-center gap-3 rounded-control px-3 py-2.5 transition-[background-color,color,box-shadow] duration-150',
                 isActive
-                  ? 'bg-gradient-to-r from-copper/25 via-copper/10 to-transparent font-semibold text-ink shadow-[inset_3px_0_0_0_var(--color-copper)]'
+                  ? 'bg-gradient-to-r from-[#7c4dff]/25 via-[#7c4dff]/10 to-transparent font-semibold text-ink shadow-[inset_3px_0_0_0_#7c4dff]'
                   : 'font-medium text-purple hover:bg-navy-soft/70 hover:text-ink',
               )
             }
@@ -297,7 +297,7 @@ export function SideNav({
             {({ isActive }) => (
               <>
                 <History
-                  className={cn('size-5 shrink-0', isActive ? 'text-gold-deep' : 'text-muted')}
+                  className={cn('size-5 shrink-0', isActive ? 'text-[#7c4dff]' : 'text-muted')}
                   strokeWidth={isActive ? 2.25 : 1.75}
                   aria-hidden
                 />
@@ -312,7 +312,7 @@ export function SideNav({
               cn(
                 'flex items-center gap-3 rounded-control px-3 py-2.5 transition-[background-color,color,box-shadow] duration-150',
                 isActive
-                  ? 'bg-gradient-to-r from-copper/25 via-copper/10 to-transparent font-semibold text-ink shadow-[inset_3px_0_0_0_var(--color-copper)]'
+                  ? 'bg-gradient-to-r from-[#7c4dff]/25 via-[#7c4dff]/10 to-transparent font-semibold text-ink shadow-[inset_3px_0_0_0_#7c4dff]'
                   : 'font-medium text-purple hover:bg-navy-soft/70 hover:text-ink',
               )
             }
@@ -320,7 +320,7 @@ export function SideNav({
             {({ isActive }) => (
               <>
                 <BookMarked
-                  className={cn('size-5 shrink-0', isActive ? 'text-gold-deep' : 'text-muted')}
+                  className={cn('size-5 shrink-0', isActive ? 'text-[#7c4dff]' : 'text-muted')}
                   strokeWidth={isActive ? 2.25 : 1.75}
                   aria-hidden
                 />
@@ -347,7 +347,7 @@ export function SideNav({
                     className={cn(
                       'group flex items-center gap-3 rounded-control px-3 py-2.5 transition-[background-color,color,box-shadow] duration-150',
                       active
-                        ? 'bg-gradient-to-r from-copper/22 via-copper/8 to-transparent font-semibold text-ink shadow-[inset_3px_0_0_0_var(--color-copper)]'
+                        ? 'bg-gradient-to-r from-[#7c4dff]/22 via-[#7c4dff]/8 to-transparent font-semibold text-ink shadow-[inset_3px_0_0_0_#7c4dff]'
                         : 'font-medium text-purple hover:bg-navy-soft/70 hover:text-ink',
                     )}
                   >
@@ -356,7 +356,7 @@ export function SideNav({
                       className={cn(
                         'inline-flex size-8 shrink-0 items-center justify-center rounded-control border transition-colors',
                         active
-                          ? 'border-copper/35 bg-copper/15 text-gold-deep'
+                          ? 'border-[#7c4dff]/35 bg-[#7c4dff]/15 text-[#7c4dff]'
                           : 'border-border/70 bg-surface-sunken/50 text-muted group-hover:border-border-strong group-hover:text-ink',
                       )}
                     >
@@ -376,7 +376,7 @@ export function SideNav({
               cn(
                 'mt-2 flex items-center gap-3 rounded-control px-3 py-2.5 transition-[background-color,color,box-shadow] duration-150',
                 isActive
-                  ? 'bg-gradient-to-r from-copper/22 via-copper/8 to-transparent font-semibold text-ink shadow-[inset_3px_0_0_0_var(--color-copper)]'
+                  ? 'bg-gradient-to-r from-[#7c4dff]/22 via-[#7c4dff]/8 to-transparent font-semibold text-ink shadow-[inset_3px_0_0_0_#7c4dff]'
                   : 'font-medium text-purple hover:bg-navy-soft/70 hover:text-ink',
               )
             }
@@ -388,7 +388,7 @@ export function SideNav({
                   className={cn(
                     'inline-flex size-8 shrink-0 items-center justify-center rounded-control border',
                     isActive
-                      ? 'border-copper/35 bg-copper/15 text-gold-deep'
+                      ? 'border-[#7c4dff]/35 bg-[#7c4dff]/15 text-[#7c4dff]'
                       : 'border-border/70 bg-surface-sunken/50 text-muted',
                   )}
                 >

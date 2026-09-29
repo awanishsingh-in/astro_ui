@@ -546,7 +546,7 @@ function AskEmpty({
           className="pointer-events-none absolute inset-0 z-0"
           style={{
             background:
-              'radial-gradient(90% 80% at 12% -10%, color-mix(in srgb, var(--color-indigo-royal) 28%, transparent) 0%, transparent 55%), radial-gradient(70% 60% at 88% 10%, color-mix(in srgb, var(--color-gold) 14%, transparent) 0%, transparent 50%)',
+              'radial-gradient(90% 80% at 12% -10%, color-mix(in srgb, #7c4dff 22%, transparent) 0%, transparent 55%), radial-gradient(70% 60% at 88% 10%, color-mix(in srgb, #3a7bd5 16%, transparent) 0%, transparent 50%), radial-gradient(60% 50% at 50% 100%, color-mix(in srgb, #5ed7f2 10%, transparent) 0%, transparent 55%)',
           }}
         />
         <CelestialScene
@@ -559,7 +559,7 @@ function AskEmpty({
         <PageContainer width="content" className="relative z-10 flex flex-1 flex-col">
           <div className="mx-auto flex w-full max-w-reading flex-1 flex-col justify-end pb-5 pt-4 sm:justify-center sm:py-8 lg:py-10">
             <div className="relative rounded-2xl bg-canvas/40 px-3 py-4 backdrop-blur-[3px] sm:bg-transparent sm:px-0 sm:py-0 sm:backdrop-blur-none">
-              <p className="animate-rise font-mono text-label uppercase tracking-[0.14em] text-gold-deep">
+              <p className="animate-rise font-mono text-label uppercase tracking-[0.14em] text-[#7c4dff]">
                 Ask your chart
               </p>
 

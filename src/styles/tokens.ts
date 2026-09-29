@@ -6,27 +6,27 @@
  * cannot take a Tailwind class. Keep the two in step; nothing else should
  * reach for a raw hex.
  *
- * Palette: Astrovate (deep space + copper + warm white).
+ * Palette: Adventure (deep indigo + violet/blue + cool white).
  */
 
-/** Raw Astrovate swatches — prefer semantic `color.*` aliases in UI code. */
+/** Raw Adventure swatches — prefer semantic `color.*` aliases in UI code. */
 export const astrovate = {
-  deepSpace: '#0F0B19',
-  darkPurple: '#1B101D',
-  deepBurgundy: '#2E1623',
-  nebulaPlum: '#36232E',
-  darkMauve: '#44333C',
-  mutedPlum: '#5C4750',
+  deepSpace: '#07041A',
+  darkPurple: '#0F0C24',
+  deepBurgundy: '#1A0F3D',
+  nebulaPlum: '#221A48',
+  darkMauve: '#3A3270',
+  mutedPlum: '#6B6298',
 
-  copperShadow: '#7D4835',
-  copper: '#DC844F',
-  lightCopper: '#E3B08A',
-  paleCopper: '#F2D7C7',
+  copperShadow: '#3A7BD5',
+  copper: '#7C4DFF',
+  lightCopper: '#C4A0FF',
+  paleCopper: '#2A2155',
 
-  warmWhite: '#FDF8F4',
-  paleRose: '#D2C1C4',
-  lavenderGray: '#A097A7',
-  grayPurple: '#7A6E74',
+  warmWhite: '#F5F2FF',
+  paleRose: '#C8C0E0',
+  lavenderGray: '#9B93B8',
+  grayPurple: '#6F6888',
 } as const
 
 export const color = {
@@ -35,7 +35,7 @@ export const color = {
   navySoft: astrovate.deepBurgundy,
 
   gold: astrovate.copper,
-  goldDeep: astrovate.copper,
+  goldDeep: astrovate.copperShadow,
   goldSoft: astrovate.deepBurgundy,
   goldBorder: astrovate.copperShadow,
 
@@ -52,7 +52,7 @@ export const color = {
   borderStrong: astrovate.mutedPlum,
 
   positive: '#8FBF9A',
-  caution: astrovate.copper,
+  caution: astrovate.lightCopper,
   critical: '#D4848A',
 
   chartLine: astrovate.paleRose,

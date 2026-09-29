@@ -66,7 +66,7 @@ export function BottomNav({ className }: { className?: string }) {
                   return cn(
                     'relative flex h-full flex-col items-center justify-center gap-1 px-0.5',
                     'transition-colors duration-150',
-                    active ? 'text-copper' : 'text-muted',
+                    active ? 'text-[#7c4dff]' : 'text-muted',
                   )
                 }}
               >
@@ -77,7 +77,7 @@ export function BottomNav({ className }: { className?: string }) {
                       <span
                         aria-hidden
                         className={cn(
-                          'absolute inset-x-[28%] top-0 h-0.5 rounded-full bg-gold transition-opacity duration-200',
+                          'absolute inset-x-[28%] top-0 h-0.5 rounded-full bg-[#7c4dff] transition-opacity duration-200',
                           active ? 'opacity-100' : 'opacity-0',
                         )}
                       />

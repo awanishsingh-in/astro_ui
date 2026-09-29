@@ -172,9 +172,6 @@ export default function YourPastPage() {
                           <span className="mt-2 line-clamp-2 font-serif text-base text-ink">
                             {insight.category}
                           </span>
-                          <span className="mt-1 text-[10px] uppercase tracking-[0.12em] text-muted">
-                            {insight.period}
-                          </span>
                         </button>
                       )
                     })}
@@ -184,24 +181,33 @@ export default function YourPastPage() {
                 <section
                   role="tabpanel"
                   aria-label={active.category}
-                  className="rounded-panel border border-border bg-surface p-5 sm:p-7"
+                  className="space-y-4"
                 >
-                  <PastReadingDetail
-                    insight={active}
-                    onAsk={(question) =>
-                      navigate(`${paths.ask}?q=${encodeURIComponent(question)}`)
-                    }
-                    onLookCalculation={() => navigate(paths.chart)}
-                    onDownloadReport={() => {
-                      if (!planUnlocked) {
-                        setPaywallOpen(true)
-                        return
+                  <div className="rounded-panel border border-border bg-surface p-5 sm:p-7">
+                    <PastReadingDetail
+                      insight={active}
+                      onLookCalculation={() => navigate(paths.chart)}
+                      onDownloadReport={() => {
+                        if (!planUnlocked) {
+                          setPaywallOpen(true)
+                          return
+                        }
+                        setDownloadReady(true)
+                      }}
+                      reportPaid={!planUnlocked}
+                      downloadReady={downloadReady}
+                    />
+                  </div>
+                  <div className="rounded-panel border border-border bg-surface p-3.5 sm:p-4">
+                    <QuestionComposer
+                      key={active.id}
+                      variant="bar"
+                      placeholder={`Ask about your past in ${active.category.toLowerCase()}…`}
+                      onAsk={(question) =>
+                        navigate(`${paths.ask}?q=${encodeURIComponent(question)}`)
                       }
-                      setDownloadReady(true)
-                    }}
-                    reportPaid={!planUnlocked}
-                    downloadReady={downloadReady}
-                  />
+                    />
+                  </div>
                 </section>
               </div>
             </PageContainer>
@@ -218,19 +224,7 @@ export default function YourPastPage() {
         <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain no-scrollbar">
           <PageContainer width="wide" className="flex min-h-full flex-col py-5 sm:py-6 lg:py-8">
             <header className="relative shrink-0 text-center lg:text-left">
-              <p
-                className={cn(
-                  'absolute top-0 right-0 font-mono text-[11px] uppercase tracking-[0.16em] lg:static lg:mb-2',
-                  atLimit || selectionsLocked ? 'text-gold-deep' : 'text-muted',
-                )}
-                aria-live="polite"
-              >
-                {selectionsLocked && !planUnlocked
-                  ? 'Locked'
-                  : `${picked.length} / ${MAX_PAST_SELECTIONS}`}
-              </p>
-
-              <p className="font-mono text-label uppercase tracking-[0.14em] text-gold-deep">
+              <p className="font-mono text-label uppercase tracking-[0.14em] text-[#7c4dff]">
                 Chart history
               </p>
               <h1 className="mt-1 font-serif text-[1.85rem] leading-tight text-ink text-balance sm:text-title lg:text-title-lg">
@@ -255,14 +249,6 @@ export default function YourPastPage() {
                 : `Choose up to ${MAX_PAST_SELECTIONS} past areas`
             }
           >
-            <p className="mb-3 text-center text-[10px] font-medium uppercase tracking-[0.16em] text-muted lg:text-left">
-              {selectionsLocked && !planUnlocked
-                ? 'Selections locked · tap a lock to upgrade'
-                : slotsLeft > 0 && stored.length > 0
-                  ? `${slotsLeft} left · up to ${MAX_PAST_SELECTIONS}`
-                  : `Choose up to ${MAX_PAST_SELECTIONS}`}
-            </p>
-
               <div className="grid grid-cols-2 gap-2.5 overflow-visible pt-1.5 sm:gap-3 lg:grid-cols-3">
                 {PAST_INSIGHTS.map((insight, index) => {
                   const isOn = picked.includes(insight.id)
@@ -287,13 +273,18 @@ export default function YourPastPage() {
 
             <div className="mt-6 flex shrink-0 items-center justify-end gap-4 border-t border-border pt-4">
               <Button
-                variant="primary"
+                variant="ghost"
                 size="md"
                 onClick={openReveal}
                 disabled={!canContinue}
-                className="rounded-full px-6"
+                className={cn(
+                  'px-7',
+                  canContinue
+                    ? 'rounded-full border-0 bg-gradient-to-r from-[#7c4dff] to-[#3a7bd5] text-white shadow-[0_12px_32px_-12px_rgba(124,77,255,0.75)] hover:from-[#8b5cff] hover:to-[#4a8be5]'
+                    : 'rounded-full border-0 bg-navy-soft text-muted',
+                )}
               >
-                {selectionsLocked && !planUnlocked ? 'Continue →' : 'Lock and continue'}
+                {selectionsLocked && !planUnlocked ? 'Open my past →' : 'Save and continue'}
               </Button>
             </div>
           </PageContainer>
@@ -326,37 +317,36 @@ function PastOptionCard({
       disabled={disabled}
       aria-pressed={selected}
       className={cn(
-        'group relative flex min-h-[9.5rem] flex-col overflow-hidden rounded-card border px-3.5 py-3 text-left sm:min-h-[10.5rem]',
-        'transition-[border-color,transform,background-color,box-shadow,opacity] duration-200 ease-out-soft',
-        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold/55 focus-visible:ring-offset-2 focus-visible:ring-offset-canvas',
-        'animate-rise hover:-translate-y-0.5',
+        'past-option-card group relative flex min-h-[10.5rem] flex-col overflow-hidden rounded-[18px] border px-4 py-3.5 text-left sm:min-h-[11.5rem] sm:py-4',
+        'transition-[border-color,transform,background-color,opacity] duration-300 ease-out-soft',
+        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7c4dff]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-canvas',
+        'hover:-translate-y-1 hover:scale-[1.015] active:scale-[0.99]',
         selected
-          ? 'border-gold/55 bg-gold-soft/35 shadow-[0_0_0_1px_rgba(220,132,79,0.12)]'
+          ? 'border-[#7c4dff]/55 bg-[#7c4dff]/12'
           : showLock
-            ? 'border-border bg-surface opacity-70 hover:border-gold/40 hover:opacity-100 hover:bg-navy-soft'
-            : 'border-border bg-surface hover:border-border-strong hover:bg-navy-soft',
+            ? 'border-border bg-surface opacity-70 hover:border-[#7c4dff]/40 hover:opacity-100 hover:bg-navy-soft'
+            : 'border-border bg-surface hover:border-[#7c4dff]/35 hover:bg-navy-soft',
         disabled &&
-          'cursor-not-allowed opacity-100 hover:translate-y-0 hover:border-gold/55 hover:bg-gold-soft/35',
+          'cursor-not-allowed opacity-100 hover:translate-y-0 hover:scale-100 hover:border-[#7c4dff]/55 hover:bg-[#7c4dff]/12',
       )}
-      style={{ animationDelay: `${80 + index * 40}ms` }}
+      style={{ animationDelay: `${80 + index * 60}ms` }}
     >
-      <div className="flex items-start gap-2">
-        <span className="flex items-center gap-1 text-gold-deep/90">
+      <span className="past-option-card__sheen" aria-hidden />
+
+      <div className="relative z-[1] flex items-start gap-2">
+        <span className="past-option-card__glyphs flex items-center gap-1.5 text-[#7c4dff]/90">
           {insight.planets.map((code) => (
             <PlanetGlyph key={code} code={code} size="sm" />
           ))}
         </span>
-        <span className="ml-0.5 text-[9px] font-medium uppercase tracking-[0.12em] text-muted">
-          {insight.period}
-        </span>
         <span
           className={cn(
-            'ml-auto inline-flex size-4 shrink-0 items-center justify-center rounded-full border transition-colors duration-200',
+            'ml-auto inline-flex size-5 shrink-0 items-center justify-center rounded-full border transition-all duration-300',
             selected
-              ? 'border-gold bg-gold text-midnight'
+              ? 'past-option-card__check--on border-[#7c4dff] bg-[#7c4dff] text-white shadow-[0_0_12px_rgba(124,77,255,0.4)]'
               : showLock
-                ? 'border-gold/35 bg-gold-soft text-gold-deep'
-                : 'border-border text-transparent',
+                ? 'border-[#7c4dff]/35 bg-[#7c4dff]/15 text-[#7c4dff]'
+                : 'border-border text-transparent group-hover:border-[#7c4dff]/35',
           )}
           aria-hidden
         >
@@ -368,10 +358,15 @@ function PastOptionCard({
         </span>
       </div>
 
-      <h2 className="mt-2 font-serif text-[1.05rem] leading-tight tracking-[-0.01em] text-ink">
+      <h2
+        className={cn(
+          'past-option-card__title relative z-[1] mt-3 font-serif font-semibold leading-[1.05] tracking-[-0.03em] text-ink',
+          'text-[1.65rem] sm:text-[1.85rem] lg:text-[2rem]',
+        )}
+      >
         {insight.category}
       </h2>
-      <p className="mt-1 line-clamp-2 text-[12px] leading-snug text-purple lg:line-clamp-3">
+      <p className="relative z-[1] mt-2 flex-1 text-[13px] leading-relaxed text-purple">
         {insight.blurb}
       </p>
     </button>
@@ -380,14 +375,12 @@ function PastOptionCard({
 
 function PastReadingDetail({
   insight,
-  onAsk,
   onLookCalculation,
   onDownloadReport,
   reportPaid = false,
   downloadReady = false,
 }: {
   insight: PastInsight
-  onAsk: (question: string) => void
   onLookCalculation: () => void
   onDownloadReport: () => void
   reportPaid?: boolean
@@ -397,17 +390,17 @@ function PastReadingDetail({
     <article className="animate-fade-in space-y-5">
       <div className="space-y-3">
         <div className="flex flex-wrap items-start justify-between gap-2.5">
-          <p className="pt-1 text-[11px] font-medium uppercase tracking-[0.16em] text-gold-deep">
-            {insight.category} · {insight.period}
+          <p className="pt-1 text-[11px] font-medium uppercase tracking-[0.16em] text-[#7c4dff]">
+            {insight.category}
           </p>
 
           <div className="ml-auto flex flex-wrap items-center justify-end gap-2">
             <Button
-              variant="primary"
+              variant="ghost"
               size="sm"
               onClick={onLookCalculation}
               iconLeft={<Orbit className="size-3.5" strokeWidth={2} />}
-              className="rounded-full"
+              className="rounded-full border-0 bg-gradient-to-r from-[#7c4dff] to-[#3a7bd5] text-white hover:from-[#8b5cff] hover:to-[#4a8be5]"
             >
               Look your calculation
             </Button>
@@ -422,11 +415,11 @@ function PastReadingDetail({
                   <Download className="size-3.5" strokeWidth={2} />
                 )
               }
-              className="rounded-full"
+              className="rounded-full border border-border"
             >
               {downloadReady && !reportPaid ? 'Report ready' : 'Download report'}
               {reportPaid && (
-                <span className="ml-1 font-mono text-[9px] uppercase tracking-[0.12em] text-gold-deep">
+                <span className="ml-1 font-mono text-[9px] uppercase tracking-[0.12em] text-[#7c4dff]">
                   Plus
                 </span>
               )}
@@ -446,7 +439,7 @@ function PastReadingDetail({
         <ul className="mt-3 space-y-2">
           {insight.points.map((point) => (
             <li key={point} className="flex gap-2 text-body text-ink text-pretty">
-              <span className="mt-2 size-1 shrink-0 rounded-full bg-gold" aria-hidden />
+              <span className="mt-2 size-1.5 shrink-0 rounded-full bg-[#3a7bd5]" aria-hidden />
               <span>{point}</span>
             </li>
           ))}
@@ -475,15 +468,6 @@ function PastReadingDetail({
       <p className="border-t border-border pt-4 text-[10px] font-medium uppercase tracking-[0.14em] text-muted">
         Source · {bhavaRef(insight.bhava)} · {insight.source}
       </p>
-
-      <div className="border-t border-border pt-5">
-        <QuestionComposer
-          key={insight.id}
-          variant="bar"
-          placeholder={`Ask about your past in ${insight.category.toLowerCase()}…`}
-          onAsk={onAsk}
-        />
-      </div>
     </article>
   )
 }

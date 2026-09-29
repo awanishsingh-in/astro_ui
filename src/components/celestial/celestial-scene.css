@@ -5,7 +5,7 @@
 .celestial-scene {
   --orbit-tempo: 1;
   --orbit-line: rgba(255, 255, 255, 0.07);
-  --orbit-line-gold: rgba(220, 132, 79, 0.09);
+  --orbit-line-gold: rgba(124, 77, 255, 0.16);
   --scene-bright: 1;
   --squash: 1;
   pointer-events: none;
@@ -15,7 +15,7 @@
 .celestial-scene[data-attentive='true'] {
   --orbit-tempo: 1.35;
   --orbit-line: rgba(255, 255, 255, 0.1);
-  --orbit-line-gold: rgba(220, 132, 79, 0.14);
+  --orbit-line-gold: rgba(94, 215, 242, 0.2);
   --scene-bright: 1.08;
 }
 
@@ -337,7 +337,7 @@
   transform: translateX(-50%);
   font-size: 9px;
   line-height: 1;
-  color: rgba(220, 132, 79, 0.42);
+  color: rgba(196, 160, 255, 0.5);
   letter-spacing: 0.02em;
   white-space: nowrap;
   pointer-events: none;
@@ -352,9 +352,9 @@
   transform: translateX(-50%);
   padding: 0.45rem 0.6rem;
   border-radius: 0.4rem;
-  border: 1px solid rgba(220, 132, 79, 0.22);
-  background: rgba(21, 19, 63, 0.92);
-  color: #faf8f1;
+  border: 1px solid rgba(124, 77, 255, 0.28);
+  background: rgba(15, 12, 36, 0.92);
+  color: #f5f2ff;
   text-align: center;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
   pointer-events: none;
@@ -366,7 +366,7 @@
   font-size: 9px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: rgba(220, 132, 79, 0.9);
+  color: rgba(196, 160, 255, 0.95);
 }
 
 .planet-tip-deg {

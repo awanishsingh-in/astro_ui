@@ -91,7 +91,7 @@ export function ChartProfilePicker({
                       'transition-[border-color,background-color,box-shadow,transform] duration-150 ease-out-soft',
                       'active:scale-[0.99]',
                       active
-                        ? 'border-copper/55 bg-copper/12 shadow-[0_0_24px_-12px_rgba(232,168,78,0.55)]'
+                        ? 'border-copper/55 bg-copper/12 shadow-[0_0_24px_-12px_rgba(196, 160, 255,0.55)]'
                         : 'border-border bg-surface/90 hover:border-border-strong hover:bg-navy-soft/80',
                     )}
                   >

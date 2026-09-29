@@ -1,0 +1,130 @@
+/* Know Your Past — interactive option cards */
+
+@keyframes past-card-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes past-card-glow {
+  0%,
+  100% {
+    box-shadow:
+      0 0 0 1px rgba(124, 77, 255, 0.22),
+      0 12px 36px -16px rgba(124, 77, 255, 0.55),
+      inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  }
+  50% {
+    box-shadow:
+      0 0 0 1px rgba(196, 160, 255, 0.4),
+      0 16px 42px -14px rgba(94, 215, 242, 0.35),
+      inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  }
+}
+
+@keyframes past-card-sheen {
+  0% {
+    transform: translateX(-120%) skewX(-18deg);
+    opacity: 0;
+  }
+  35% {
+    opacity: 0.45;
+  }
+  100% {
+    transform: translateX(220%) skewX(-18deg);
+    opacity: 0;
+  }
+}
+
+@keyframes past-check-pop {
+  0% {
+    transform: scale(0.55);
+  }
+  55% {
+    transform: scale(1.18);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.past-option-card {
+  animation: past-card-in 520ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.past-option-card__sheen {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: inherit;
+}
+
+.past-option-card__sheen::after {
+  content: '';
+  position: absolute;
+  top: -20%;
+  left: 0;
+  width: 42%;
+  height: 140%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(196, 160, 255, 0.18) 45%,
+    rgba(94, 215, 242, 0.12) 55%,
+    transparent 100%
+  );
+  opacity: 0;
+}
+
+.past-option-card:hover:not(:disabled) .past-option-card__sheen::after,
+.past-option-card[aria-pressed='true'] .past-option-card__sheen::after {
+  animation: past-card-sheen 900ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.past-option-card[aria-pressed='true'] {
+  animation:
+    past-card-in 520ms cubic-bezier(0.22, 1, 0.36, 1) both,
+    past-card-glow 2.8s ease-in-out infinite;
+}
+
+.past-option-card__check--on {
+  animation: past-check-pop 320ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.past-option-card__title {
+  transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1), color 220ms ease;
+}
+
+.past-option-card:hover:not(:disabled) .past-option-card__title,
+.past-option-card[aria-pressed='true'] .past-option-card__title {
+  transform: translateY(-1px);
+}
+
+.past-option-card__glyphs {
+  transition: transform 280ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.past-option-card:hover:not(:disabled) .past-option-card__glyphs {
+  transform: scale(1.08);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .past-option-card,
+  .past-option-card[aria-pressed='true'],
+  .past-option-card__check--on,
+  .past-option-card__sheen::after {
+    animation: none !important;
+  }
+
+  .past-option-card__title,
+  .past-option-card__glyphs {
+    transition: none !important;
+    transform: none !important;
+  }
+}

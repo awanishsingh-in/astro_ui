@@ -79,7 +79,7 @@ export default function LandingPage() {
       className="min-h-dvh"
       style={{ minHeight: '100dvh' }}
       enabled={glowEnabled}
-      color="#DC844F"
+      color="#7C4DFF"
       secondaryColor="#E3B08A"
       trailLength={40}
       trailWidth={8}

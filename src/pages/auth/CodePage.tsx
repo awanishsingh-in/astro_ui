@@ -8,7 +8,6 @@ import { AuthLayout } from '@/layouts/AuthLayout'
 import { paths } from '@/routes/paths'
 import { toAppError } from '@/services/client'
 import { formatCountdown, formatPhone } from '@/utils/format'
-import { PANEL_BODY, SIGNIN_PANEL_TITLE, SIGNIN_STEPS, SIGNUP_PANEL_TITLE, SIGNUP_STEPS } from './flow'
 
 const RESEND_SECONDS = 30
 /** How long the "SMS" takes to arrive, so autofill feels like a real message. */
@@ -127,21 +126,22 @@ export default function CodePage() {
 
   return (
     <AuthLayout
-      steps={isSignUp ? SIGNUP_STEPS : SIGNIN_STEPS}
-      currentStep={1}
-      panelTitle={isSignUp ? SIGNUP_PANEL_TITLE : SIGNIN_PANEL_TITLE}
-      panelBody={<p>{PANEL_BODY}</p>}
+      variant="adventure"
       backTo={isSignUp ? paths.signUp : paths.signIn}
+      adventureHeadline="Your journey"
+      adventureAccent="continues"
     >
-      <form onSubmit={handleSubmit} noValidate className="space-y-7">
+      <form onSubmit={handleSubmit} noValidate className="flex w-full flex-col gap-7">
         <header className="space-y-2">
-          <h1 className="text-title font-semibold text-ink text-balance lg:text-title-lg">Enter the code</h1>
-          <p className="text-sub text-muted text-pretty">
-            Sent to <span className="font-mono text-data text-purple">{phone}</span>{' '}
-            ·{' '}
+          <h1 className="text-3xl font-bold uppercase tracking-tight text-white sm:text-4xl">
+            Enter code
+          </h1>
+          <p className="text-sm text-white/55 text-pretty">
+            Sent to <span className="font-mono text-white">{phone}</span>
+            {' · '}
             <Link
               to={isSignUp ? paths.signUp : paths.signIn}
-              className="font-semibold text-navy hover:text-gold-deep"
+              className="font-semibold text-[#c4a0ff] hover:text-white"
             >
               Change
             </Link>
@@ -160,6 +160,7 @@ export default function CodePage() {
             disabled={isVerifying}
             autoFocus
             label="6-digit verification code"
+            className="[&_input]:border-[#5b3d9a]/70 [&_input]:bg-[#140d2c] [&_input]:text-white [&_input]:focus:border-[#c4a0ff] [&_input]:focus:shadow-[0_0_0_3px_rgba(124,77,255,0.25)]"
           />
 
           {error ? (
@@ -167,19 +168,21 @@ export default function CodePage() {
               {error}
             </p>
           ) : (
-            <p className="text-xs text-muted">
+            <p className="text-xs text-white/45">
               Auto-filled from SMS ·{' '}
               {secondsLeft > 0 ? (
                 <>
                   resend in{' '}
-                  <span className="font-mono text-data">{formatCountdown(secondsLeft)}</span>
+                  <span className="font-mono text-data text-white">
+                    {formatCountdown(secondsLeft)}
+                  </span>
                 </>
               ) : (
                 <button
                   type="button"
                   onClick={handleResend}
                   disabled={isResending}
-                  className="font-semibold text-navy hover:text-gold-deep disabled:text-faint"
+                  className="font-semibold text-[#c4a0ff] hover:text-white disabled:text-white/30"
                 >
                   {isResending ? 'Sending…' : 'Resend code'}
                 </button>
@@ -188,7 +191,14 @@ export default function CodePage() {
           )}
         </div>
 
-        <Button type="submit" fullWidth loading={isVerifying} disabled={code.length !== 6}>
+        <Button
+          type="submit"
+          fullWidth
+          size="lg"
+          loading={isVerifying}
+          disabled={code.length !== 6}
+          className="mt-4 rounded-2xl border-0 bg-gradient-to-r from-[#7c4dff] to-[#3a7bd5] text-white shadow-[0_12px_32px_-12px_rgba(124,77,255,0.75)] hover:from-[#8b5cff] hover:to-[#4a8be5] focus-visible:outline-[#c4a0ff] sm:mt-6"
+        >
           {isVerifying ? 'Verifying' : 'Verify'}
         </Button>
       </form>

@@ -11,20 +11,33 @@ import { ApiError, mockRequest } from './client'
  * for `request` is the whole migration.
  */
 
-/** Indian mobile numbers: ten digits starting 6–9. */
-export function normalisePhone(input: string): string | null {
-  const digits = input.replace(/\D/g, '')
-  const local = digits.length === 12 && digits.startsWith('91') ? digits.slice(2) : digits
-  if (!/^[6-9]\d{9}$/.test(local)) return null
-  return `+91${local}`
+/** National number digits only, then E.164 with dial code. */
+export function normalisePhone(input: string, dialCode = '91'): string | null {
+  const local = input.replace(/\D/g, '')
+  if (dialCode === '91') {
+    if (!/^[6-9]\d{9}$/.test(local)) return null
+    return `+91${local}`
+  }
+  // E.164: country code + national number ≤ 15 digits total
+  if (local.length < 6 || local.length > 12) return null
+  if (dialCode.length + local.length > 15) return null
+  return `+${dialCode}${local}`
 }
 
-export function validatePhone(input: string): string | null {
+export function validatePhone(input: string, dialCode = '91'): string | null {
   const digits = input.replace(/\D/g, '')
   if (digits.length === 0) return 'Enter your mobile number.'
-  if (digits.length < 10) return 'That is too short — an Indian number has 10 digits.'
-  if (digits.length > 10) return 'That is too long — an Indian number has 10 digits.'
-  if (!/^[6-9]/.test(digits)) return 'Indian mobile numbers start with 6, 7, 8 or 9.'
+
+  if (dialCode === '91') {
+    if (digits.length < 10) return 'That is too short — an Indian number has 10 digits.'
+    if (digits.length > 10) return 'That is too long — an Indian number has 10 digits.'
+    if (!/^[6-9]/.test(digits)) return 'Indian mobile numbers start with 6, 7, 8 or 9.'
+    return null
+  }
+
+  if (digits.length < 6) return 'That number looks too short.'
+  if (digits.length > 12) return 'That number looks too long.'
+  if (dialCode.length + digits.length > 15) return 'That number is longer than E.164 allows.'
   return null
 }
 

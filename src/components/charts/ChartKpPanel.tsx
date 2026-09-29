@@ -32,7 +32,7 @@ export function ChartKpPanel({ chart, className }: ChartKpPanelProps) {
       <article
         className={cn(
           'relative overflow-hidden rounded-3xl border border-copper/35',
-          'bg-[radial-gradient(100%_80%_at_0%_0%,rgba(232,168,78,0.18),transparent_55%),var(--color-surface)]',
+          'bg-[radial-gradient(100%_80%_at_0%_0%,rgba(196, 160, 255,0.18),transparent_55%),var(--color-surface)]',
           'px-5 py-6 sm:px-7 sm:py-7',
         )}
       >

@@ -38,7 +38,7 @@ export function ZodiacChip({
         size === 'md' && 'h-11 gap-2 rounded-control px-3.5',
         size === 'lg' && 'h-14 gap-2.5 rounded-xl px-5 sm:h-16 sm:gap-3 sm:px-6',
         selected
-          ? 'border-copper bg-copper/15 font-semibold text-copper shadow-[0_0_0_1px_rgba(220,132,79,0.35)]'
+          ? 'border-copper bg-copper/15 font-semibold text-copper shadow-[0_0_0_1px_rgba(124, 77, 255,0.35)]'
           : 'border-border bg-surface text-ink hover:border-border-strong hover:bg-navy-soft',
         className,
       )}

@@ -65,9 +65,9 @@ export function AppLayout() {
           aria-hidden
           className="pointer-events-none absolute inset-0 -z-10 overflow-hidden"
         >
-          <div className="absolute -left-24 top-[-10%] h-[55vmin] w-[55vmin] rounded-full bg-deep-burgundy/40 blur-3xl" />
-          <div className="absolute -right-16 top-[20%] h-[42vmin] w-[42vmin] rounded-full bg-copper-shadow/25 blur-3xl" />
-          <div className="absolute bottom-[-15%] left-[30%] h-[48vmin] w-[48vmin] rounded-full bg-nebula-plum/35 blur-3xl" />
+          <div className="absolute -left-24 top-[-10%] h-[55vmin] w-[55vmin] rounded-full bg-[#7c4dff]/25 blur-3xl" />
+          <div className="absolute -right-16 top-[20%] h-[42vmin] w-[42vmin] rounded-full bg-[#3a7bd5]/20 blur-3xl" />
+          <div className="absolute bottom-[-15%] left-[30%] h-[48vmin] w-[48vmin] rounded-full bg-[#5ed7f2]/12 blur-3xl" />
         </div>
 
         <FullPageChrome user={user} />
@@ -84,14 +84,14 @@ export function AppLayout() {
 
   return (
     <div className="relative flex min-h-dvh bg-transparent lg:h-dvh lg:max-h-dvh lg:overflow-hidden">
-      {/* Ambient nebula wash behind the signed-in shell */}
+      {/* Ambient adventure wash behind the signed-in shell */}
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 -z-10 overflow-hidden"
       >
-        <div className="absolute -left-24 top-[-10%] h-[55vmin] w-[55vmin] rounded-full bg-deep-burgundy/40 blur-3xl" />
-        <div className="absolute -right-16 top-[20%] h-[42vmin] w-[42vmin] rounded-full bg-copper-shadow/25 blur-3xl" />
-        <div className="absolute bottom-[-15%] left-[30%] h-[48vmin] w-[48vmin] rounded-full bg-nebula-plum/35 blur-3xl" />
+        <div className="absolute -left-24 top-[-10%] h-[55vmin] w-[55vmin] rounded-full bg-[#7c4dff]/25 blur-3xl" />
+        <div className="absolute -right-16 top-[20%] h-[42vmin] w-[42vmin] rounded-full bg-[#3a7bd5]/20 blur-3xl" />
+        <div className="absolute bottom-[-15%] left-[30%] h-[48vmin] w-[48vmin] rounded-full bg-[#5ed7f2]/12 blur-3xl" />
       </div>
 
       <SideNav user={user} collapsed={collapsed} onToggleCollapse={toggleCollapse} />

@@ -12,8 +12,8 @@ export interface PlaceFieldProps {
   onChange: (place: BirthPlace | null) => void
   invalid?: boolean
   placeholder?: string
-  /** Matches Input — birth forms use `celestial`. */
-  tone?: 'surface' | 'sunken' | 'celestial'
+  /** Matches Input — birth forms use `celestial` / auth uses `adventure`. */
+  tone?: 'surface' | 'sunken' | 'celestial' | 'adventure'
   className?: string
 }
 
@@ -93,6 +93,7 @@ export function PlaceField({
   }
 
   const celestial = tone === 'celestial'
+  const adventure = tone === 'adventure'
   const showPanel = searching
 
   return (
@@ -113,7 +114,12 @@ export function PlaceField({
         icon={<MapPin strokeWidth={1.75} />}
         suffix={
           value ? (
-            <span className="inline-flex size-5 items-center justify-center rounded-full bg-gold/20 text-gold">
+            <span
+              className={cn(
+                'inline-flex size-5 items-center justify-center rounded-full',
+                adventure ? 'bg-[#7c4dff]/25 text-[#c4a0ff]' : 'bg-gold/20 text-gold',
+              )}
+            >
               <Check className="size-3" strokeWidth={2.5} />
             </span>
           ) : undefined
@@ -138,28 +144,36 @@ export function PlaceField({
             /* Open upward — birth place sits low on the form; a drop-down was clipped. */
             'absolute inset-x-0 bottom-[calc(100%+0.5rem)] z-50',
             'animate-scale-in origin-bottom rounded-card border shadow-overlay',
-            celestial
-              ? 'border-[var(--color-field-border)] bg-[var(--color-field)] backdrop-blur-md'
-              : 'border-border bg-surface',
+            adventure
+              ? 'border-white/10 bg-[#0e0820]'
+              : celestial
+                ? 'border-[var(--color-field-border)] bg-[var(--color-field)] backdrop-blur-md'
+                : 'border-border bg-surface',
           )}
         >
           <div
             className={cn(
               'flex items-center gap-2 border-b px-3.5 py-2',
-              celestial ? 'border-[var(--color-field-border)]' : 'border-border',
+              adventure
+                ? 'border-white/10'
+                : celestial
+                  ? 'border-[var(--color-field-border)]'
+                  : 'border-border',
             )}
           >
             <span
               className={cn(
                 'font-mono text-[10px] uppercase tracking-[0.14em]',
-                celestial ? 'text-copper' : 'text-muted',
+                adventure ? 'text-[#c4a0ff]' : celestial ? 'text-copper' : 'text-muted',
               )}
             >
               {results.length > 0
                 ? `${results.length} match${results.length === 1 ? '' : 'es'}`
                 : 'No matches'}
             </span>
-            <span className="text-[11px] text-muted">Pick the nearest listed town</span>
+            <span className={cn('text-[11px]', adventure ? 'text-white/45' : 'text-muted')}>
+              Pick the nearest listed town
+            </span>
           </div>
 
           {results.length > 0 ? (
@@ -183,10 +197,14 @@ export function PlaceField({
                         'flex w-full items-start gap-3 rounded-control px-3 py-2.5 text-left',
                         'transition-colors duration-150 ease-out-soft',
                         active
-                          ? celestial
-                            ? 'bg-gold-soft/50'
-                            : 'bg-navy-soft'
-                          : 'bg-transparent hover:bg-navy-soft/60',
+                          ? adventure
+                            ? 'bg-[#7c4dff]/20'
+                            : celestial
+                              ? 'bg-gold-soft/50'
+                              : 'bg-navy-soft'
+                          : adventure
+                            ? 'bg-transparent hover:bg-white/5'
+                            : 'bg-transparent hover:bg-navy-soft/60',
                       )}
                     >
                       <span
@@ -194,10 +212,14 @@ export function PlaceField({
                         className={cn(
                           'mt-0.5 inline-flex size-8 shrink-0 items-center justify-center rounded-full border',
                           active
-                            ? 'border-gold/45 bg-gold/15 text-gold'
-                            : celestial
-                              ? 'border-[var(--color-field-border)] text-copper/70'
-                              : 'border-border text-muted',
+                            ? adventure
+                              ? 'border-[#c4a0ff]/45 bg-[#7c4dff]/20 text-[#c4a0ff]'
+                              : 'border-gold/45 bg-gold/15 text-gold'
+                            : adventure
+                              ? 'border-white/10 text-[#c4a0ff]/70'
+                              : celestial
+                                ? 'border-[var(--color-field-border)] text-copper/70'
+                                : 'border-border text-muted',
                         )}
                       >
                         <MapPin className="size-3.5" strokeWidth={1.75} />
@@ -206,7 +228,7 @@ export function PlaceField({
                         <span
                           className={cn(
                             'block truncate text-sub font-medium',
-                            celestial ? 'text-on-celestial' : 'text-ink',
+                            adventure ? 'text-white' : celestial ? 'text-on-celestial' : 'text-ink',
                           )}
                         >
                           {city}
@@ -214,11 +236,15 @@ export function PlaceField({
                         <span
                           className={cn(
                             'mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs',
-                            celestial ? 'text-on-celestial-muted' : 'text-muted',
+                            adventure
+                              ? 'text-white/45'
+                              : celestial
+                                ? 'text-on-celestial-muted'
+                                : 'text-muted',
                           )}
                         >
                           {region && <span>{region}</span>}
-                          <span aria-hidden className="text-faint">
+                          <span aria-hidden className={adventure ? 'text-white/25' : 'text-faint'}>
                             ·
                           </span>
                           <span className="font-mono text-[10px] uppercase tracking-[0.08em]">
@@ -232,7 +258,12 @@ export function PlaceField({
               })}
             </ul>
           ) : (
-            <p className="px-4 py-5 text-center text-sm text-muted text-pretty">
+            <p
+              className={cn(
+                'px-4 py-5 text-center text-sm text-pretty',
+                adventure ? 'text-white/45' : 'text-muted',
+              )}
+            >
               No towns matched “{trimmed}”. Try another spelling or a nearby city.
             </p>
           )}

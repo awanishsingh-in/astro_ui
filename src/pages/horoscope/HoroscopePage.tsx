@@ -176,7 +176,7 @@ function YearlyPersonalBody({
                   className={cn(
                     'relative z-[1] mt-1 flex size-7 shrink-0 items-center justify-center rounded-full border font-mono text-[10px] font-semibold sm:size-9 sm:text-xs',
                     ch.tone === 'push'
-                      ? 'border-copper bg-copper text-midnight shadow-[0_0_20px_-4px_rgba(220,132,79,0.7)]'
+                      ? 'border-copper bg-copper text-midnight shadow-[0_0_20px_-4px_rgba(124, 77, 255,0.7)]'
                       : 'border-celestial-line bg-midnight text-light-copper',
                   )}
                 >
@@ -278,7 +278,7 @@ function YearlyPersonalBody({
                   className={cn(
                     'flex w-[9.5rem] shrink-0 flex-col gap-3 rounded-2xl border px-4 py-4',
                     m.peak
-                      ? 'border-copper/50 bg-copper/15 shadow-[0_0_28px_-10px_rgba(220,132,79,0.55)]'
+                      ? 'border-copper/50 bg-copper/15 shadow-[0_0_28px_-10px_rgba(124, 77, 255,0.55)]'
                       : 'border-celestial-line/70 bg-indigo-deep/40',
                   )}
                 >

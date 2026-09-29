@@ -57,14 +57,14 @@ export function ChartDiamond({
   const signFill = paper ? '#8B6914' : 'var(--color-light-copper)'
   const planetColor = paper ? '#1B2A4A' : 'var(--color-ink)'
   const lagnaFill = paper ? '#8B4513' : 'var(--color-copper)'
-  const highlight = paper ? 'rgba(184, 142, 88, 0.18)' : 'rgba(220, 132, 79, 0.18)'
+  const highlight = paper ? 'rgba(184, 142, 88, 0.18)' : 'rgba(124, 77, 255, 0.18)'
 
   return (
     <svg
       viewBox="-2 -2 304 304"
       className={cn(
         'h-auto w-full select-none',
-        !paper && 'drop-shadow-[0_0_28px_rgba(220,132,79,0.12)]',
+        !paper && 'drop-shadow-[0_0_28px_rgba(124, 77, 255,0.12)]',
         className,
       )}
       role="img"
