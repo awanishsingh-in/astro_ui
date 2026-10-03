@@ -19,8 +19,6 @@ function readCollapsed(): boolean {
 /** Routes that take the full viewport — no side rail, no bottom tabs. */
 function isImmersivePath(pathname: string): boolean {
   return (
-    pathname === paths.chart ||
-    pathname.startsWith(`${paths.chart}/`) ||
     pathname === paths.yourPast ||
     pathname.startsWith(`${paths.yourPast}/`) ||
     pathname === paths.profile ||
@@ -36,7 +34,8 @@ function isImmersivePath(pathname: string): boolean {
  * The signed-in shell.
  *
  * Desktop: vertical SideNav + page. Mobile: page + BottomNav.
- * Immersive routes (My Chart, Matching, Your Past, Profile) hide both and show a slim back + logo bar.
+ * Immersive routes (Matching, Your Past, Profile, Horoscope) hide both and show a slim back + logo bar.
+ * My Chart keeps the main sidebar so it matches Ask and other product tabs.
  */
 export function AppLayout() {
   const { user } = useAuth()

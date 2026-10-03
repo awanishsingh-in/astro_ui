@@ -1,33 +1,20 @@
-import { useMemo, useState } from 'react'
-import { DataTable, type DataColumn } from '@/components/common/DataTable'
-import { DegreeValue } from '@/components/astrology/DegreeValue'
+import { ChevronDown } from 'lucide-react'
+import { useMemo, useState, type ReactNode } from 'react'
 import { PlanetGlyph } from '@/components/astrology/PlanetGlyph'
 import { PlanetaryRelationship } from '@/components/astrology/PlanetaryRelationship'
+import { PlanetDetailSheet } from '@/components/charts/PlanetDetailSheet'
 import { GRAHA_FRIENDS } from '@/data/kootas'
 import type { Chart, Dignity, GrahaCode, GrahaPosition, Motion } from '@/types/astrology'
-import {
-  dignityLabel,
-  dignityToneClass,
-  GRAHAS,
-  GRAHA_ORDER,
-  motionLabel,
-  rashiGlyph,
-} from '@/utils/astro'
+import { GRAHAS, GRAHA_ORDER, motionLabel, RASHIS } from '@/utils/astro'
 import { cn } from '@/utils/cn'
-
-type PlanetsLens = 'positions' | 'chalit' | 'maitri'
-
-const LENSES: { id: PlanetsLens; label: string }[] = [
-  { id: 'positions', label: 'Positions' },
-  { id: 'chalit', label: 'Chalit' },
-  { id: 'maitri', label: 'Maitri' },
-]
 
 interface PlanetRow {
   id: string
   label: string
+  code: string
   graha?: GrahaCode
   rashi: string
+  rashiEnglish: string
   degree: number
   minute: number
   bhava: number
@@ -37,6 +24,8 @@ interface PlanetRow {
   motion: Motion | 'lagna'
 }
 
+type AccordionId = 'chalit' | 'maitri' | 'upagraha'
+
 export interface ChartPlanetsPanelProps {
   chart: Chart
   activeGraha: GrahaCode | null
@@ -45,7 +34,7 @@ export interface ChartPlanetsPanelProps {
 }
 
 /**
- * Planets tab — Positions / Chalit / Maitri lenses on the birth chart.
+ * Planets tab — positions table + Chalit / Maitri / Upagraha accordions.
  */
 export function ChartPlanetsPanel({
   chart,
@@ -53,13 +42,19 @@ export function ChartPlanetsPanel({
   onSelectGraha,
   className,
 }: ChartPlanetsPanelProps) {
-  const [lens, setLens] = useState<PlanetsLens>('positions')
+  const [open, setOpen] = useState<Record<AccordionId, boolean>>({
+    chalit: false,
+    maitri: false,
+    upagraha: false,
+  })
 
   const rows = useMemo<PlanetRow[]>(() => {
     const lagna: PlanetRow = {
       id: 'La',
       label: 'Lagna',
+      code: 'As',
       rashi: chart.lagna.rashi,
+      rashiEnglish: englishSign(chart.lagna.rashi),
       degree: chart.lagna.degree,
       minute: chart.lagna.minute,
       bhava: 1,
@@ -71,249 +66,239 @@ export function ChartPlanetsPanel({
 
     const grahaRows = GRAHA_ORDER.map((code) => {
       const g = chart.grahas.find((row) => row.graha === code)
-      if (!g) return null
-      return toRow(g)
+      return g ? toRow(g) : null
     }).filter(Boolean) as PlanetRow[]
 
     return [lagna, ...grahaRows]
   }, [chart])
 
-  const columns: DataColumn<PlanetRow>[] = [
-    {
-      id: 'planet',
-      header: 'Planet',
-      render: (row) =>
-        row.graha ? (
-          <PlanetGlyph code={row.graha} withName size="sm" />
-        ) : (
-          <span className="font-medium text-ink">Lagna</span>
-        ),
-    },
-    {
-      id: 'sign',
-      header: 'Sign',
-      render: (row) => (
-        <span className="whitespace-nowrap">
-          <span aria-hidden className="mr-1.5 text-muted">
-            {rashiGlyph(row.rashi as never)}
-          </span>
-          {row.rashi}
-        </span>
-      ),
-    },
-    {
-      id: 'degree',
-      header: 'Degree',
-      align: 'right',
-      render: (row) =>
-        row.motion === 'lagna' ? (
-          <span className="font-mono text-data">
-            {String(row.degree).padStart(2, '0')}°{String(row.minute).padStart(2, '0')}′
-          </span>
-        ) : (
-          <DegreeValue degree={row.degree} minute={row.minute} motion={row.motion} />
-        ),
-    },
-    {
-      id: 'house',
-      header: 'House',
-      align: 'right',
-      render: (row) => <span className="font-mono text-data">{row.bhava}</span>,
-    },
-    {
-      id: 'nakshatra',
-      header: 'Nakshatra',
-      hideBelow: 'md',
-      render: (row) => (
-        <span className="font-mono text-data text-purple">
-          {row.nakshatra === '—' ? '—' : row.nakshatra}
-        </span>
-      ),
-    },
-    {
-      id: 'pada',
-      header: 'Pada',
-      align: 'right',
-      hideBelow: 'md',
-      render: (row) => (
-        <span className="font-mono text-data">{row.pada === 0 ? '—' : row.pada}</span>
-      ),
-    },
-    {
-      id: 'dignity',
-      header: 'Dignity',
-      hideBelow: 'lg',
-      render: (row) =>
-        row.dignity === 'lagna' ? (
-          <span className="text-muted">—</span>
-        ) : (
-          <span className={cn('whitespace-nowrap', dignityToneClass(row.dignity))}>
-            {dignityLabel(row.dignity)}
-          </span>
-        ),
-    },
-    {
-      id: 'state',
-      header: 'State',
-      hideBelow: 'lg',
-      render: (row) =>
-        row.motion === 'lagna' ? (
-          <span className="text-muted">Rising</span>
-        ) : (
-          <span className={cn(row.motion === 'retrograde' ? 'text-retrograde' : 'text-muted')}>
-            {motionLabel(row.motion)}
-          </span>
-        ),
-    },
-  ]
+  function toggle(id: AccordionId) {
+    setOpen((prev) => ({ ...prev, [id]: !prev[id] }))
+  }
 
   return (
-    <div className={cn('animate-rise space-y-5', className)}>
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <div className="space-y-1.5">
-          <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-gold-deep">
-            Planets
-          </p>
-          <h2 className="font-serif text-2xl font-semibold tracking-tight text-ink sm:text-3xl">
-            Planets
-          </h2>
-          <p className="text-sm text-muted">
-            {rows.length} rows · click a row to focus it
-          </p>
-        </div>
+    <div className={cn('animate-rise space-y-4', className)}>
+      <div
+        className={cn(
+          'grid gap-4',
+          activeGraha && 'lg:grid-cols-[minmax(0,1fr)_minmax(16rem,22rem)] lg:items-start',
+        )}
+      >
+        <section className="overflow-hidden rounded-[1.75rem] border border-border/70 bg-surface shadow-card">
+          <header className="flex flex-wrap items-end justify-between gap-2 px-5 py-4 sm:px-6">
+            <h2 className="font-serif text-2xl font-semibold tracking-tight text-ink">
+              Planetary positions
+            </h2>
+            <p className="text-sm text-muted">Click a planet for its full reading.</p>
+          </header>
 
-        <div
-          role="tablist"
-          aria-label="Planet lenses"
-          className="inline-flex rounded-full border border-border/80 bg-surface-sunken/40 p-1"
-        >
-          {LENSES.map((item) => {
-            const active = item.id === lens
-            return (
-              <button
-                key={item.id}
-                type="button"
-                role="tab"
-                aria-selected={active}
-                onClick={() => setLens(item.id)}
-                className={cn(
-                  'rounded-full px-3.5 py-1.5 text-sm transition',
-                  active
-                    ? 'bg-copper/20 font-semibold text-copper shadow-[inset_0_0_0_1px_rgba(196, 160, 255,0.45)]'
-                    : 'font-medium text-muted hover:text-ink',
-                )}
-              >
-                {item.label}
-              </button>
-            )
-          })}
-        </div>
-      </div>
-
-      {lens === 'positions' && (
-        <div className="overflow-hidden rounded-3xl border border-border/80 bg-surface/90 shadow-card">
-          <div className="p-3 sm:p-4">
-            <DataTable
-              caption="Planetary positions"
-              columns={columns}
-              rows={rows}
-              rowKey={(row) => row.id}
-              onRowClick={(row) => {
-                if (row.graha) onSelectGraha(row.graha)
-              }}
-              isRowActive={(row) => row.graha === activeGraha}
-            />
-          </div>
-          <p className="border-t border-border/60 px-4 py-2.5 font-mono text-[10px] uppercase tracking-[0.12em] text-faint sm:px-5">
-            Column headers sort · sticky on scroll
-          </p>
-        </div>
-      )}
-
-      {lens === 'chalit' && (
-        <div className="overflow-hidden rounded-3xl border border-border/80 bg-surface/90 shadow-card">
-          <div className="space-y-3 border-b border-border/60 px-4 py-3 sm:px-5">
-            <p className="text-sm text-muted text-pretty">
-              Chalit view — each graha against the house it occupies from the lagna (equal bhava).
-            </p>
-          </div>
-          <div className="p-3 sm:p-4">
-            <DataTable
-              caption="Chalit house placements"
-              columns={columns.filter((c) =>
-                ['planet', 'sign', 'degree', 'house', 'nakshatra', 'state'].includes(c.id),
-              )}
-              rows={rows.filter((r) => r.graha)}
-              rowKey={(row) => row.id}
-              onRowClick={(row) => {
-                if (row.graha) onSelectGraha(row.graha)
-              }}
-              isRowActive={(row) => row.graha === activeGraha}
-            />
-          </div>
-        </div>
-      )}
-
-      {lens === 'maitri' && (
-        <div className="space-y-4">
-          <div className="overflow-hidden rounded-3xl border border-border/80 bg-surface/90 p-4 shadow-card sm:p-5">
-            <p className="mb-4 text-sm text-muted text-pretty">
-              Natural friendship among the seven graha rulers — tap a planet in the table to focus
-              its sightlines below.
-            </p>
-            <ul className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-              {(['Su', 'Mo', 'Ma', 'Me', 'Ju', 'Ve', 'Sa'] as GrahaCode[]).map((code) => {
-                const friends = GRAHA_FRIENDS[code] ?? []
-                const active = activeGraha === code
-                return (
-                  <li key={code}>
-                    <button
-                      type="button"
-                      onClick={() => onSelectGraha(code)}
+          <div className="overflow-x-auto px-3 pb-3 sm:px-4 sm:pb-4">
+            <table className="w-full min-w-[40rem] border-separate border-spacing-y-1.5 text-left">
+              <thead>
+                <tr className="font-mono text-[10px] uppercase tracking-[0.12em] text-muted">
+                  <th className="px-3 py-1 font-semibold">Planet</th>
+                  <th className="px-3 py-1 font-semibold">Sign</th>
+                  <th className="px-3 py-1 font-semibold">Degree</th>
+                  <th className="px-3 py-1 font-semibold">House</th>
+                  <th className="hidden px-3 py-1 font-semibold md:table-cell">Nakshatra · Pada</th>
+                  <th className="px-3 py-1 font-semibold">State</th>
+                </tr>
+              </thead>
+              <tbody>
+                {rows.map((row) => {
+                  const active = row.graha === activeGraha
+                  const state = stateLabel(row)
+                  return (
+                    <tr
+                      key={row.id}
+                      onClick={() => {
+                        if (row.graha) onSelectGraha(row.graha)
+                      }}
                       className={cn(
-                        'flex w-full flex-col gap-2 rounded-2xl border px-3.5 py-3 text-left transition',
-                        active
-                          ? 'border-copper/55 bg-copper/12'
-                          : 'border-border/80 bg-surface-sunken/30 hover:border-copper/35',
+                        'cursor-pointer rounded-xl transition',
+                        active ? 'bg-[#7c4dff]/14' : 'bg-surface-sunken/35 hover:bg-[#7c4dff]/08',
+                        !row.graha && 'cursor-default',
                       )}
                     >
-                      <span className="flex items-center gap-2">
-                        <PlanetGlyph code={code} size="sm" />
-                        <span className="text-sm font-semibold text-ink">{GRAHAS[code].name}</span>
-                      </span>
-                      <span className="text-xs text-muted text-pretty">
-                        Friends:{' '}
-                        {friends.map((f) => GRAHAS[f as GrahaCode]?.name ?? f).join(', ') || '—'}
-                      </span>
-                    </button>
-                  </li>
-                )
-              })}
-            </ul>
+                      <td className="rounded-l-xl px-3 py-3">
+                        <span className="flex items-center gap-2.5">
+                          {row.graha ? (
+                            <PlanetGlyph code={row.graha} size="sm" />
+                          ) : (
+                            <span className="inline-flex size-7 items-center justify-center rounded-full bg-[#7c4dff]/25 text-[10px] font-bold text-[#c4a0ff]">
+                              As
+                            </span>
+                          )}
+                          <span className="text-sm font-semibold text-ink">{row.label}</span>
+                        </span>
+                      </td>
+                      <td className="px-3 py-3 text-sm text-ink">{row.rashiEnglish}</td>
+                      <td className="px-3 py-3 font-mono text-sm text-ink">
+                        {row.degree}°{String(row.minute).padStart(2, '0')}′
+                      </td>
+                      <td className="px-3 py-3 font-mono text-sm text-ink">{row.bhava}</td>
+                      <td className="hidden px-3 py-3 text-sm text-muted md:table-cell">
+                        {row.nakshatra === '—' ? '—' : `${row.nakshatra} ${row.pada}`}
+                      </td>
+                      <td className="rounded-r-xl px-3 py-3">
+                        {state ? (
+                          <StatePill label={state} kind={stateKind(row)} />
+                        ) : (
+                          <span className="text-sm text-muted">—</span>
+                        )}
+                      </td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
           </div>
+        </section>
 
-          <div className="overflow-hidden rounded-3xl border border-border/80 bg-surface/90 p-4 shadow-card sm:p-5">
-            <div className="mx-auto w-full max-w-[420px] sm:max-w-[480px]">
-              <PlanetaryRelationship
-                drishti={chart.drishti}
-                activeGraha={activeGraha}
-                onSelect={onSelectGraha}
-                tone="dark"
-              />
-            </div>
+        {activeGraha && (
+          <PlanetDetailSheet
+            chart={chart}
+            graha={activeGraha}
+            onClose={() => onSelectGraha(activeGraha)}
+            className="lg:sticky lg:top-20"
+          />
+        )}
+      </div>
+
+      <div className="grid gap-3 md:grid-cols-3">
+        <Accordion
+          title="Chalit · bhava madhya"
+          open={open.chalit}
+          onToggle={() => toggle('chalit')}
+        >
+          <ul className="space-y-2">
+            {rows
+              .filter((r) => r.graha)
+              .map((r) => (
+                <li
+                  key={r.id}
+                  className="flex items-center justify-between gap-2 rounded-xl border border-border/50 bg-surface-sunken/30 px-3 py-2 text-sm"
+                >
+                  <span className="font-medium text-ink">{r.label}</span>
+                  <span className="font-mono text-muted">
+                    bh {r.bhava} · {r.rashiEnglish}
+                  </span>
+                </li>
+              ))}
+          </ul>
+        </Accordion>
+
+        <Accordion title="Maitri" open={open.maitri} onToggle={() => toggle('maitri')}>
+          <ul className="space-y-2">
+            {(['Su', 'Mo', 'Ma', 'Me', 'Ju', 'Ve', 'Sa'] as GrahaCode[]).map((code) => {
+              const friends = GRAHA_FRIENDS[code] ?? []
+              return (
+                <li key={code} className="rounded-xl border border-border/50 bg-surface-sunken/30 px-3 py-2">
+                  <p className="text-sm font-semibold text-ink">{GRAHAS[code].name}</p>
+                  <p className="mt-0.5 text-xs text-muted">
+                    Friends:{' '}
+                    {friends.map((f) => GRAHAS[f as GrahaCode]?.name ?? f).join(', ') || '—'}
+                  </p>
+                </li>
+              )
+            })}
+          </ul>
+          <div className="mt-3">
+            <PlanetaryRelationship
+              drishti={chart.drishti}
+              activeGraha={activeGraha}
+              onSelect={onSelectGraha}
+              tone="dark"
+            />
           </div>
-        </div>
-      )}
+        </Accordion>
+
+        <Accordion title="Upagraha" open={open.upagraha} onToggle={() => toggle('upagraha')}>
+          <p className="text-sm leading-relaxed text-muted text-pretty">
+            Gulika, Mandi and other upagrahas will list here from the same birth frame — coming
+            next beside these positions.
+          </p>
+        </Accordion>
+      </div>
     </div>
   )
+}
+
+function Accordion({
+  title,
+  open,
+  onToggle,
+  children,
+}: {
+  title: string
+  open: boolean
+  onToggle: () => void
+  children: ReactNode
+}) {
+  return (
+    <div className="overflow-hidden rounded-[1.35rem] border border-border/70 bg-surface shadow-card">
+      <button
+        type="button"
+        onClick={onToggle}
+        className="flex w-full items-center justify-between gap-2 px-4 py-3.5 text-left"
+        aria-expanded={open}
+      >
+        <span className="text-sm font-semibold text-ink">{title}</span>
+        <ChevronDown
+          className={cn('size-4 text-muted transition', open && 'rotate-180')}
+          aria-hidden
+        />
+      </button>
+      {open && <div className="border-t border-border/50 px-4 py-3">{children}</div>}
+    </div>
+  )
+}
+
+function StatePill({ label, kind }: { label: string; kind: 'exalted' | 'combust' | 'retro' | 'other' }) {
+  return (
+    <span
+      className={cn(
+        'inline-flex rounded-full px-2.5 py-1 text-[11px] font-semibold',
+        kind === 'exalted' && 'bg-[#7c4dff]/20 text-[#c4a0ff]',
+        kind === 'combust' && 'bg-[#3a7bd5]/20 text-[#5ed7f2]',
+        kind === 'retro' && 'bg-[#7c4dff]/15 text-[#c4a0ff]',
+        kind === 'other' && 'bg-surface-sunken text-muted',
+      )}
+    >
+      {label}
+    </span>
+  )
+}
+
+function stateLabel(row: PlanetRow): string | null {
+  if (row.motion === 'lagna') return null
+  if (row.dignity === 'exalted') return 'Exalted'
+  if (row.dignity === 'debilitated') return 'Debilitated'
+  if (row.dignity === 'own') return 'Own sign'
+  if (row.graha === 'Me' && row.degree < 8) return 'Combust'
+  if (row.motion === 'retrograde') return `R. ${motionLabel(row.motion)}`
+  return null
+}
+
+function stateKind(row: PlanetRow): 'exalted' | 'combust' | 'retro' | 'other' {
+  if (row.dignity === 'exalted') return 'exalted'
+  if (row.graha === 'Me' && row.degree < 8) return 'combust'
+  if (row.motion === 'retrograde') return 'retro'
+  return 'other'
+}
+
+function englishSign(name: string): string {
+  return RASHIS.find((r) => r.name === name)?.english ?? name
 }
 
 function toRow(g: GrahaPosition): PlanetRow {
   return {
     id: g.graha,
-    label: GRAHAS[g.graha].name,
+    label: GRAHAS[g.graha].english,
+    code: g.graha,
     graha: g.graha,
     rashi: g.rashi,
+    rashiEnglish: englishSign(g.rashi),
     degree: g.degree,
     minute: g.minute,
     bhava: g.bhava,

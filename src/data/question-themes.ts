@@ -140,6 +140,27 @@ export const questionThemes: QuestionTheme[] = [
 export function themeFor(question: string): QuestionTheme {
   const q = question.toLowerCase()
 
+  // My Chart → Ask deep links name the house explicitly ("house 10", "10th house", "bhava 3").
+  const houseMatch =
+    q.match(/\b(?:house|bhava|bh)\s*[:#]?\s*(\d{1,2})\b/) ??
+    q.match(/\b(\d{1,2})(?:st|nd|rd|th)\s*house\b/)
+  if (houseMatch) {
+    const n = Number(houseMatch[1])
+    if (n >= 1 && n <= 12) {
+      const byBhava = questionThemes.find((t) => !t.qualifier && t.bhava === n)
+      if (byBhava) return byBhava
+      return {
+        id: `house-${n}`,
+        label: `House ${n}`,
+        bhava: n as BhavaNumber,
+        reads: `bhava ${n}`,
+        grahas: [],
+        keywords: [],
+        questions: [question],
+      }
+    }
+  }
+
   const score = (theme: QuestionTheme) => {
     const matched = theme.keywords.filter((word) => q.includes(word))
     if (matched.length === 0) return 0

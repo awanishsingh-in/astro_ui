@@ -62,6 +62,8 @@ export default function AskPage() {
   const lastAsked = useRef<string | null>(null)
   /** Blocks the ?q= deep-link effect after New chat clears the thread. */
   const suppressUrlAsk = useRef(false)
+  /** After plan unlock, fire the My Chart → Ask deep-link question. */
+  const pendingChartAsk = useRef<string | null>(null)
   const bottomRef = useRef<HTMLDivElement>(null)
 
   const activeSession = activeId ? sessions.find((s) => s.id === activeId) : null
@@ -151,8 +153,31 @@ export default function AskPage() {
   )
 
   const ask = useCallback(
-    async (question: string) => {
+    async (question: string, opts?: { fresh?: boolean }) => {
       if (!user || !planActive) {
+        const trimmed = question.trim()
+        if (trimmed) {
+          pendingChartAsk.current = trimmed
+          setParams(
+            (prev) => {
+              const next = new URLSearchParams(prev)
+              next.set('q', trimmed)
+              return next
+            },
+            { replace: true },
+          )
+          setDraftMessages([
+            { id: `u_pending_${Date.now()}`, role: 'user', text: trimmed },
+            {
+              id: `a_pending_${Date.now()}`,
+              role: 'assistant',
+              status: 'thinking',
+              label: 'Unlock a plan to continue…',
+            },
+          ])
+          setActiveId(null)
+          lastAsked.current = trimmed
+        }
         setPaywallOpen(true)
         return
       }
@@ -163,7 +188,18 @@ export default function AskPage() {
       const id = ++requestId.current
       lastAsked.current = trimmed
       setViewOnly(false)
-      setParams({ q: trimmed }, { replace: true })
+      setParams(
+        (prev) => {
+          const next = new URLSearchParams(prev)
+          next.set('q', trimmed)
+          // Keep chart provenance on the URL while the thread is open.
+          if (opts?.fresh || prev.get('from') === 'chart') {
+            next.set('from', 'chart')
+          }
+          return next
+        },
+        { replace: true },
+      )
 
       const userMsgId = `u_${id}`
       const assistantId = `a_${id}`
@@ -177,7 +213,8 @@ export default function AskPage() {
         },
       ]
 
-      let sessionId = activeId
+      let sessionId = opts?.fresh ? null : activeId
+      const priorDraft = opts?.fresh ? [] : draftMessages
 
       if (!sessionId) {
         sessionId = newChatSessionId()
@@ -185,7 +222,7 @@ export default function AskPage() {
           id: sessionId,
           title: titleFromQuestion(trimmed),
           updatedAt: new Date().toISOString(),
-          messages: [...draftMessages, ...incoming],
+          messages: [...priorDraft, ...incoming],
         }
         setChatSessions((prev) => [session, ...prev])
         setActiveId(sessionId)
@@ -233,15 +270,26 @@ export default function AskPage() {
         } else {
           setParams({ chat: activeId, mode: 'continue' }, { replace: true })
         }
+        return
+      }
+      // My Chart → Ask: unlock then run the house question that was waiting.
+      const queued = pendingChartAsk.current ?? params.get('q')
+      if (queued) {
+        pendingChartAsk.current = queued
+        setDraftMessages([])
+        setActiveId(null)
+        // Keep lastAsked set so the deep-link effect does not also fire ask.
+        lastAsked.current = queued
       }
     },
-    [user, activeId, sessions, setParams],
+    [user, activeId, sessions, setParams, params],
   )
 
   // Deep link / reload with ?q= starts a fresh chat for that question.
   // Skipped after New chat so clearing the URL cannot re-open the old thread.
-  // Without a plan we never auto-open the paywall on visit — only on Ask.
+  // From My Chart (`from=chart`) always opens a new thread with that house context.
   const initial = params.get('q')
+  const fromChart = params.get('from') === 'chart'
   const chatParam = params.get('chat')
   const modeParam = params.get('mode')
   const newParam = params.get('new')
@@ -252,22 +300,38 @@ export default function AskPage() {
       return
     }
     if (!initial || lastAsked.current === initial) return
-    if (activeId || draftMessages.length > 0) return
+
+    if (!fromChart && (activeId || draftMessages.length > 0)) return
+
     if (!planActive) {
-      // Drop the deep-link so switching back to Ask does not re-pop the paywall.
+      // Show the house question in-thread (not the greeting), then unlock.
       lastAsked.current = initial
-      setParams(
-        (prev) => {
-          const next = new URLSearchParams(prev)
-          next.delete('q')
-          return next
+      pendingChartAsk.current = initial
+      setActiveId(null)
+      setDraftMessages([
+        { id: `u_chart_${Date.now()}`, role: 'user', text: initial },
+        {
+          id: `a_chart_${Date.now()}`,
+          role: 'assistant',
+          status: 'thinking',
+          label: 'Unlock a plan to read this house…',
         },
-        { replace: true },
-      )
+      ])
+      setPaywallOpen(true)
       return
     }
-    void ask(initial)
-  }, [initial, ask, activeId, draftMessages.length, planActive, setParams])
+
+    void ask(initial, { fresh: fromChart })
+  }, [initial, fromChart, ask, activeId, draftMessages.length, planActive])
+
+  // After plan unlock from a chart deep-link, fire the queued house question once.
+  useEffect(() => {
+    if (!planActive || !pendingChartAsk.current) return
+    const q = pendingChartAsk.current
+    pendingChartAsk.current = null
+    lastAsked.current = null
+    void ask(q, { fresh: true })
+  }, [planActive, ask])
 
   const startNewChat = useCallback(() => {
     suppressUrlAsk.current = true

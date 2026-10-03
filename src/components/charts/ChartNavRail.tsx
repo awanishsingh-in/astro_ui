@@ -4,13 +4,13 @@ import type { ChartProfile } from '@/data/profiles'
 import { cn } from '@/utils/cn'
 
 const TABS = [
-  { id: 'basic', label: 'Basic' },
-  { id: 'charts', label: 'Charts' },
-  { id: 'planets', label: 'Planets' },
-  { id: 'kp', label: 'KP' },
-  { id: 'ashtakavarga', label: 'Ashtakvarga' },
+  { id: 'chart', label: 'Chart' },
+  { id: 'yoga', label: 'Yoga & Dosha' },
   { id: 'dasha', label: 'Dasha' },
-  { id: 'report', label: 'Report' },
+  { id: 'planets', label: 'Planets' },
+  { id: 'vargas', label: 'Vargas' },
+  { id: 'transits', label: 'Transits' },
+  { id: 'strength', label: 'Strength' },
 ] as const
 
 export type ChartNavTabId = (typeof TABS)[number]['id']
@@ -26,7 +26,7 @@ export interface ChartNavRailProps {
 }
 
 /**
- * Top of My Chart — copper pill tabs + compact profile switcher.
+ * Top of My Chart — pill tabs + compact profile switcher.
  */
 export function ChartNavRail({
   controller,
@@ -40,8 +40,8 @@ export function ChartNavRail({
   return (
     <div
       className={cn(
-        'sticky top-0 z-20 -mx-1 rounded-2xl border border-border/60',
-        'bg-surface/85 px-2 py-2 shadow-[0_12px_32px_-24px_rgba(20,12,8,0.7)] backdrop-blur-xl sm:mx-0 sm:px-3',
+        'sticky top-0 z-20 -mx-1 rounded-2xl border border-border/50',
+        'bg-surface/90 px-2 py-2 shadow-card backdrop-blur-xl sm:mx-0 sm:px-3',
         className,
       )}
     >
@@ -67,17 +67,11 @@ export function ChartNavRail({
                   'relative shrink-0 rounded-full px-3.5 py-2 text-sm transition-all duration-200',
                   'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-copper',
                   active
-                    ? 'bg-copper/20 font-semibold text-copper shadow-[inset_0_0_0_1px_rgba(196, 160, 255,0.45)]'
+                    ? 'bg-copper font-semibold text-white shadow-sm'
                     : 'font-medium text-muted hover:bg-navy-soft/60 hover:text-ink',
                 )}
               >
                 {tab.label}
-                {active && (
-                  <span
-                    aria-hidden
-                    className="absolute inset-x-3 -bottom-0.5 h-0.5 rounded-full bg-copper/80"
-                  />
-                )}
               </button>
             )
           })}
