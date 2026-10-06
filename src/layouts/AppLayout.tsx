@@ -26,7 +26,9 @@ function isImmersivePath(pathname: string): boolean {
     pathname === paths.matching ||
     pathname.startsWith(`${paths.matching}/`) ||
     pathname === paths.horoscopeRoot ||
-    pathname.startsWith(`${paths.horoscopeRoot}/`)
+    pathname.startsWith(`${paths.horoscopeRoot}/`) ||
+    pathname === paths.calculatorRoot ||
+    pathname.startsWith(`${paths.calculatorRoot}/`)
   )
 }
 
@@ -34,7 +36,7 @@ function isImmersivePath(pathname: string): boolean {
  * The signed-in shell.
  *
  * Desktop: vertical SideNav + page. Mobile: page + BottomNav.
- * Immersive routes (Matching, Your Past, Profile, Horoscope) hide both and show a slim back + logo bar.
+ * Immersive routes (Matching, Calculator, Your Past, Profile, Horoscope) hide both and show a slim back + logo bar.
  * My Chart keeps the main sidebar so it matches Ask and other product tabs.
  */
 export function AppLayout() {

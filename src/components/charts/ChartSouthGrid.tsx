@@ -1,7 +1,7 @@
 import { useId } from 'react'
 import type { Chart, GrahaPosition, RashiName } from '@/types/astrology'
 import { cn } from '@/utils/cn'
-import { GRAHAS, RETROGRADE_MARK, RASHIS } from '@/utils/astro'
+import { GRAHAS, RASHIS } from '@/utils/astro'
 
 export interface ChartSouthGridProps {
   chart: Chart
@@ -52,7 +52,6 @@ export function ChartSouthGrid({
   const highlightStroke = paper ? '#C4894A' : 'var(--color-copper)'
 
   const cell = 75
-  const pad = 0
 
   return (
     <svg
@@ -76,7 +75,15 @@ export function ChartSouthGrid({
       />
 
       {/* Inner 2×2 void — only the outer ring holds signs */}
-      <rect x={cell} y={cell} width={cell * 2} height={cell * 2} fill={fill} stroke={line} strokeWidth="1.1" />
+      <rect
+        x={cell}
+        y={cell}
+        width={cell * 2}
+        height={cell * 2}
+        fill={fill}
+        stroke={line}
+        strokeWidth="1.1"
+      />
 
       {SOUTH_CELLS.map(({ rashiIdx, col, row }) => {
         const rashi = RASHIS[rashiIdx - 1]!
@@ -84,10 +91,8 @@ export function ChartSouthGrid({
         const active = activeBhava === bhava
         const isLagna = bhava === 1
         const occupants = grahasByBhava.get(bhava) ?? []
-        const x = pad + col * cell
-        const y = pad + row * cell
-        const cx = x + cell / 2
-        const cy = y + cell / 2 + 4
+        const x = col * cell
+        const y = row * cell
 
         return (
           <g key={rashi.name}>
@@ -105,36 +110,50 @@ export function ChartSouthGrid({
               aria-label={`${rashi.english}, bhava ${bhava}`}
             />
 
+            {/* Sign abbreviation — top-left corner */}
             <text
-              x={x + 8}
-              y={y + 16}
+              x={x + 6}
+              y={y + 14}
               fontFamily="var(--font-sans)"
-              fontSize="11"
-              fontWeight="600"
+              fontSize="10"
+              fontWeight="700"
               fill={signFill}
             >
               {SOUTH_ABBR[rashiIdx]}
             </text>
 
+            {/* ASC chip — top-right, never overlaps planet stack */}
             {isLagna && (
-              <rect
-                x={cx - 16}
-                y={y + 20}
-                width="32"
-                height="14"
-                rx="3"
-                fill={paper ? 'rgba(124,77,255,0.12)' : 'rgba(124,77,255,0.22)'}
-                stroke={lagnaFill}
-                strokeWidth="0.8"
-              />
+              <g>
+                <rect
+                  x={x + cell - 30}
+                  y={y + 5}
+                  width="24"
+                  height="12"
+                  rx="3"
+                  fill={paper ? 'rgba(124,77,255,0.14)' : 'rgba(124,77,255,0.28)'}
+                  stroke={lagnaFill}
+                  strokeWidth="0.75"
+                />
+                <text
+                  x={x + cell - 18}
+                  y={y + 14}
+                  textAnchor="middle"
+                  fontFamily="var(--font-sans)"
+                  fontSize="8"
+                  fontWeight="700"
+                  fill={lagnaFill}
+                >
+                  ASC
+                </text>
+              </g>
             )}
 
-            <HouseLines
-              x={cx}
-              y={isLagna ? cy + 6 : cy}
-              isLagna={isLagna}
+            <PlanetStack
+              x={x}
+              y={y}
+              cell={cell}
               occupants={occupants}
-              lagnaFill={lagnaFill}
               planetFill={planetColor}
             />
           </g>
@@ -144,51 +163,62 @@ export function ChartSouthGrid({
   )
 }
 
-function HouseLines({
+function PlanetStack({
   x,
   y,
-  isLagna,
+  cell,
   occupants,
-  lagnaFill,
   planetFill,
 }: {
   x: number
   y: number
-  isLagna: boolean
+  cell: number
   occupants: GrahaPosition[]
-  lagnaFill: string
   planetFill: string
 }) {
-  const lines: { text: string; fill: string; weight: number }[] = []
-  if (isLagna) {
-    lines.push({ text: 'ASC', fill: lagnaFill, weight: 700 })
-  }
+  if (occupants.length === 0) return null
 
-  // Pack short codes like the reference: "Su Me", "Mo SaR"
   const codes = occupants.map((g) => {
-    const retro = g.motion === 'retrograde' ? RETROGRADE_MARK || 'R' : ''
+    const retro = g.motion === 'retrograde' ? 'R' : ''
     return `${GRAHAS[g.graha].code}${retro}`
   })
-  for (let i = 0; i < codes.length; i += 2) {
-    const chunk = codes.slice(i, i + 2).join(' ')
-    lines.push({ text: chunk, fill: planetFill, weight: 600 })
-  }
-  if (lines.length === 0) return null
 
-  const lineH = 12
-  const startY = y - ((lines.length - 1) * lineH) / 2
+  // Dense cells: 3-wide rows; sparse: 2-wide for readability.
+  const perRow = codes.length >= 4 ? 3 : 2
+  const rows: string[] = []
+  for (let i = 0; i < codes.length; i += perRow) {
+    rows.push(codes.slice(i, i + perRow).join(' '))
+  }
+
+  const crowded = codes.length >= 3
+  const fontSize = crowded ? 9 : 10.5
+  const lineH = crowded ? 11 : 13
+  // Leave room for sign + ASC chip along the top edge.
+  const contentTop = y + 20
+  const contentBottom = y + cell - 6
+  const blockH = rows.length * lineH
+  const available = contentBottom - contentTop
+  const startY = contentTop + Math.max(0, (available - blockH) / 2) + fontSize * 0.85
+
+  const cx = x + cell / 2
 
   return (
-    <text x={x} textAnchor="middle" fontFamily="var(--font-sans)" fontSize="11">
-      {lines.map((line, i) => (
+    <text
+      x={cx}
+      textAnchor="middle"
+      fontFamily="var(--font-sans)"
+      fontSize={fontSize}
+      letterSpacing="0.02em"
+    >
+      {rows.map((row, i) => (
         <tspan
-          key={`${line.text}-${i}`}
-          x={x}
+          key={`${row}-${i}`}
+          x={cx}
           y={startY + i * lineH}
-          fill={line.fill}
-          fontWeight={line.weight}
+          fill={planetFill}
+          fontWeight={600}
         >
-          {line.text}
+          {row}
         </tspan>
       ))}
     </text>

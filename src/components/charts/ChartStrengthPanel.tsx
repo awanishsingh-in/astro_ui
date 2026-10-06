@@ -2,6 +2,11 @@ import { ChevronDown, MessageCircle } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { PlanetGlyph } from '@/components/astrology/PlanetGlyph'
+import {
+  DownloadKundaliButton,
+  PremiumKundaliAdCard,
+  type ChartKundaliDownloadContext,
+} from '@/components/charts/ChartKundaliDownloads'
 import { paths } from '@/routes/paths'
 import type { Chart, GrahaCode } from '@/types/astrology'
 import { GRAHAS } from '@/utils/astro'
@@ -11,6 +16,7 @@ export interface ChartStrengthPanelProps {
   chart: Chart
   activeBhava?: number
   onSelectBhava?: (bhava: number) => void
+  downloads?: ChartKundaliDownloadContext
   className?: string
 }
 
@@ -36,6 +42,7 @@ export function ChartStrengthPanel({
   chart,
   activeBhava,
   onSelectBhava,
+  downloads,
   className,
 }: ChartStrengthPanelProps) {
   const navigate = useNavigate()
@@ -145,69 +152,87 @@ export function ChartStrengthPanel({
               </span>
               <span className="inline-flex items-center gap-1.5">— · {mean} average</span>
             </div>
-          </section>
 
-          <section className="overflow-hidden rounded-[1.75rem] border border-border/70 bg-surface p-5 shadow-card sm:p-6">
-            <div className="flex flex-wrap items-start justify-between gap-3">
-              <div>
-                <h2 className="font-serif text-2xl font-semibold text-ink">Bhinnashtakavarga</h2>
-                <p className="mt-1 text-sm text-muted">
-                  {GRAHAS[bhinnGraha].english} · {bhinn.total} bindus across 12 houses
-                </p>
+            {downloads && (
+              <div className="mt-5 border-t border-border/50 pt-4">
+                <DownloadKundaliButton context={downloads} className="w-full sm:w-auto" size="sm" />
               </div>
-              <div className="flex flex-wrap gap-1">
-                {SHADBALA_PLANETS.map((code) => (
-                  <button
-                    key={code}
-                    type="button"
-                    onClick={() => setBhinnGraha(code)}
-                    className={cn(
-                      'rounded-full px-2.5 py-1 text-xs font-semibold transition',
-                      bhinnGraha === code
-                        ? 'bg-copper text-white'
-                        : 'bg-surface-sunken text-muted hover:text-ink',
-                    )}
-                  >
-                    {GRAHAS[code].english}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="mt-5 grid grid-cols-6 gap-2 sm:grid-cols-12">
-              {bhinn.houses.map((h) => (
-                <div
-                  key={h.bhava}
-                  className={cn(
-                    'rounded-xl border px-1 py-2 text-center',
-                    h.bindus >= 5
-                      ? 'border-[#7c4dff]/40 bg-[#7c4dff]/25'
-                      : h.bindus <= 3
-                        ? 'border-border/50 bg-surface-sunken/40'
-                        : 'border-[#7c4dff]/20 bg-[#7c4dff]/10',
-                  )}
-                >
-                  <p className="font-mono text-[10px] text-muted">{h.bhava}</p>
-                  <p className="text-sm font-semibold text-ink">{h.bindus}</p>
-                </div>
-              ))}
-            </div>
-
-            <button
-              type="button"
-              onClick={() => setPrastaraOpen((v) => !v)}
-              className="mt-5 flex w-full items-center justify-between rounded-xl border border-border/60 px-4 py-3 text-left text-sm font-medium text-ink"
-            >
-              <span>Prastarashtakavarga · which planet gave each bindu</span>
-              <ChevronDown className={cn('size-4 text-muted transition', prastaraOpen && 'rotate-180')} />
-            </button>
-            {prastaraOpen && (
-              <p className="mt-3 text-sm text-muted text-pretty">
-                Full contributor grid lands next — for now, Bhinnashtakavarga above shows how{' '}
-                {GRAHAS[bhinnGraha].english} supports each house.
-              </p>
             )}
           </section>
+
+          <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(16rem,22rem)] lg:items-start">
+            <section className="overflow-hidden rounded-[1.75rem] border border-border/70 bg-surface p-5 shadow-card sm:p-6">
+              <div className="flex flex-wrap items-start justify-between gap-3">
+                <div>
+                  <h2 className="font-serif text-2xl font-semibold text-ink">Bhinnashtakavarga</h2>
+                  <p className="mt-1 text-sm text-muted">
+                    {GRAHAS[bhinnGraha].english} · {bhinn.total} bindus across 12 houses
+                  </p>
+                </div>
+                <div className="flex flex-wrap gap-1">
+                  {SHADBALA_PLANETS.map((code) => (
+                    <button
+                      key={code}
+                      type="button"
+                      onClick={() => setBhinnGraha(code)}
+                      className={cn(
+                        'rounded-full px-2.5 py-1 text-xs font-semibold transition',
+                        bhinnGraha === code
+                          ? 'bg-copper text-white'
+                          : 'bg-surface-sunken text-muted hover:text-ink',
+                      )}
+                    >
+                      {GRAHAS[code].english}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="mt-5 grid grid-cols-6 gap-2 sm:grid-cols-12">
+                {bhinn.houses.map((h) => (
+                  <div
+                    key={h.bhava}
+                    className={cn(
+                      'rounded-xl border px-1 py-2 text-center',
+                      h.bindus >= 5
+                        ? 'border-[#7c4dff]/40 bg-[#7c4dff]/25'
+                        : h.bindus <= 3
+                          ? 'border-border/50 bg-surface-sunken/40'
+                          : 'border-[#7c4dff]/20 bg-[#7c4dff]/10',
+                    )}
+                  >
+                    <p className="font-mono text-[10px] text-muted">{h.bhava}</p>
+                    <p className="text-sm font-semibold text-ink">{h.bindus}</p>
+                  </div>
+                ))}
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setPrastaraOpen((v) => !v)}
+                className="mt-5 flex w-full items-center justify-between rounded-xl border border-border/60 px-4 py-3 text-left text-sm font-medium text-ink"
+              >
+                <span>Prastarashtakavarga · which planet gave each bindu</span>
+                <ChevronDown
+                  className={cn('size-4 text-muted transition', prastaraOpen && 'rotate-180')}
+                />
+              </button>
+              {prastaraOpen && (
+                <p className="mt-3 text-sm text-muted text-pretty">
+                  Full contributor grid lands next — for now, Bhinnashtakavarga above shows how{' '}
+                  {GRAHAS[bhinnGraha].english} supports each house.
+                </p>
+              )}
+            </section>
+
+            {downloads && (
+              <PremiumKundaliAdCard
+                context={downloads}
+                compact
+                className="lg:sticky lg:top-20"
+              />
+            )}
+          </div>
         </>
       )}
 
@@ -265,6 +290,11 @@ export function ChartStrengthPanel({
               </span>
               <span>| Required</span>
             </div>
+            {downloads && (
+              <div className="mt-5 border-t border-border/50 pt-4">
+                <DownloadKundaliButton context={downloads} className="w-full" size="sm" />
+              </div>
+            )}
           </section>
 
           <section className="overflow-hidden rounded-[1.75rem] border border-border/70 bg-surface p-5 shadow-card sm:p-6">
@@ -315,11 +345,17 @@ export function ChartStrengthPanel({
             <button
               type="button"
               onClick={() => askHouse(strongestBhava.bhava)}
-              className="mt-5 flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#7c4dff] to-[#3a7bd5] px-4 py-3 text-sm font-semibold text-white"
+              className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#7c4dff] to-[#3a7bd5] px-3 py-2.5 text-sm font-semibold text-white"
             >
-              <MessageCircle className="size-4" />
+              <MessageCircle className="size-3.5" />
               Ask about strongest house
             </button>
+
+            {downloads && (
+              <div className="mt-4">
+                <PremiumKundaliAdCard context={downloads} compact />
+              </div>
+            )}
           </section>
         </div>
       )}

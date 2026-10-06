@@ -2,6 +2,11 @@ import { ArrowUpRight, ChevronRight, MessageCircle } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
+  DownloadKundaliButton,
+  PremiumKundaliAdCard,
+  type ChartKundaliDownloadContext,
+} from '@/components/charts/ChartKundaliDownloads'
+import {
   buildYogaDoshaBundle,
   type ChartDoshaCard,
   type ChartYogaItem,
@@ -13,13 +18,14 @@ import { cn } from '@/utils/cn'
 
 export interface ChartYogaDoshaPanelProps {
   chart: Chart
+  downloads?: ChartKundaliDownloadContext
   className?: string
 }
 
 /**
  * Yoga & Dosha tab — dosha check strip + yoga list / detail (reference layout).
  */
-export function ChartYogaDoshaPanel({ chart, className }: ChartYogaDoshaPanelProps) {
+export function ChartYogaDoshaPanel({ chart, downloads, className }: ChartYogaDoshaPanelProps) {
   const navigate = useNavigate()
   const bundle = useMemo(() => buildYogaDoshaBundle(chart), [chart])
   const [selectedYogaId, setSelectedYogaId] = useState(bundle.yogas[0]?.id ?? '')
@@ -120,83 +126,93 @@ export function ChartYogaDoshaPanel({ chart, className }: ChartYogaDoshaPanelPro
         </div>
 
         <div className="grid gap-4 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.25fr)] lg:items-start">
-          <ul className="flex flex-col gap-2">
-            {bundle.yogas.map((yoga) => {
-              const active = selected?.id === yoga.id
-              return (
-                <li key={yoga.id}>
-                  <button
-                    type="button"
-                    onClick={() => setSelectedYogaId(yoga.id)}
-                    className={cn(
-                      'flex w-full items-center gap-3 rounded-2xl border px-4 py-3.5 text-left transition',
-                      active
-                        ? 'border-copper bg-copper text-white shadow-[0_12px_28px_-16px_rgba(124,77,255,0.65)]'
-                        : 'border-border/70 bg-surface text-ink hover:border-copper/40 hover:bg-copper/5',
-                    )}
-                  >
-                    <span className="min-w-0 flex-1">
-                      <span className="block font-serif text-lg font-semibold">{yoga.name}</span>
-                      <span
-                        className={cn(
-                          'mt-0.5 block text-sm',
-                          active ? 'text-white/75' : 'text-muted',
-                        )}
-                      >
-                        {yoga.subtitle}
+          <div className="flex flex-col gap-3">
+            <ul className="flex flex-col gap-2">
+              {bundle.yogas.map((yoga) => {
+                const active = selected?.id === yoga.id
+                return (
+                  <li key={yoga.id}>
+                    <button
+                      type="button"
+                      onClick={() => setSelectedYogaId(yoga.id)}
+                      className={cn(
+                        'flex w-full items-center gap-3 rounded-2xl border px-4 py-3.5 text-left transition',
+                        active
+                          ? 'border-copper bg-copper text-white shadow-[0_12px_28px_-16px_rgba(124,77,255,0.65)]'
+                          : 'border-border/70 bg-surface text-ink hover:border-copper/40 hover:bg-copper/5',
+                      )}
+                    >
+                      <span className="min-w-0 flex-1">
+                        <span className="block font-serif text-lg font-semibold">{yoga.name}</span>
+                        <span
+                          className={cn(
+                            'mt-0.5 block text-sm',
+                            active ? 'text-white/75' : 'text-muted',
+                          )}
+                        >
+                          {yoga.subtitle}
+                        </span>
                       </span>
-                    </span>
-                    <ChevronRight
-                      className={cn('size-4 shrink-0', active ? 'text-white/80' : 'text-muted')}
-                      aria-hidden
-                    />
-                  </button>
-                </li>
-              )
-            })}
-          </ul>
+                      <ChevronRight
+                        className={cn('size-4 shrink-0', active ? 'text-white/80' : 'text-muted')}
+                        aria-hidden
+                      />
+                    </button>
+                  </li>
+                )
+              })}
+            </ul>
+            {downloads && (
+              <DownloadKundaliButton context={downloads} className="w-full" size="sm" />
+            )}
+          </div>
 
           {selected && (
-            <article className="rounded-[1.75rem] border border-border/70 bg-surface p-5 shadow-card sm:p-6">
-              <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-copper">
-                {selected.family}
-              </p>
-              <h3 className="mt-2 font-serif text-3xl font-semibold tracking-tight text-ink">
-                {selected.name}
-              </h3>
-              <p className="mt-3 text-sm leading-relaxed text-muted text-pretty sm:text-body">
-                {selected.description}
-              </p>
+            <div className="space-y-3">
+              <article className="rounded-[1.75rem] border border-border/70 bg-surface p-5 shadow-card sm:p-6">
+                <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-copper">
+                  {selected.family}
+                </p>
+                <h3 className="mt-2 font-serif text-3xl font-semibold tracking-tight text-ink">
+                  {selected.name}
+                </h3>
+                <p className="mt-3 text-sm leading-relaxed text-muted text-pretty sm:text-body">
+                  {selected.description}
+                </p>
 
-              <div className="mt-5 flex flex-wrap items-center gap-2 rounded-2xl border border-border/60 bg-surface-sunken/35 px-4 py-3">
-                <div className="min-w-0">
-                  <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-muted">
-                    {selected.fromLabel}
-                  </p>
-                  <p className="text-sm font-semibold text-ink">{selected.fromDetail}</p>
+                <div className="mt-5 flex flex-wrap items-center gap-2 rounded-2xl border border-border/60 bg-surface-sunken/35 px-4 py-3">
+                  <div className="min-w-0">
+                    <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-muted">
+                      {selected.fromLabel}
+                    </p>
+                    <p className="text-sm font-semibold text-ink">{selected.fromDetail}</p>
+                  </div>
+                  <span aria-hidden className="px-2 text-muted">
+                    →
+                  </span>
+                  <div className="min-w-0">
+                    <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-muted">
+                      {selected.toLabel}
+                    </p>
+                    <p className="text-sm font-semibold text-ink">{selected.toDetail}</p>
+                  </div>
                 </div>
-                <span aria-hidden className="px-2 text-muted">
-                  →
-                </span>
-                <div className="min-w-0">
-                  <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-muted">
-                    {selected.toLabel}
-                  </p>
-                  <p className="text-sm font-semibold text-ink">{selected.toDetail}</p>
-                </div>
-              </div>
 
-              <p className="mt-4 text-xs text-faint">{selected.source}</p>
+                <p className="mt-4 text-xs text-faint">{selected.source}</p>
 
-              <button
-                type="button"
-                onClick={() => askYoga(selected)}
-                className="mt-5 flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#7c4dff] to-[#3a7bd5] px-4 py-3.5 text-sm font-semibold text-white shadow-[0_12px_28px_-16px_rgba(124,77,255,0.7)] transition hover:from-[#8b5cff] hover:to-[#4a8be5]"
-              >
-                <MessageCircle className="size-4" aria-hidden />
-                Ask about this yoga
-              </button>
-            </article>
+                <button
+                  type="button"
+                  onClick={() => askYoga(selected)}
+                  className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#7c4dff] to-[#3a7bd5] px-3 py-2.5 text-sm font-semibold text-white shadow-[0_10px_22px_-14px_rgba(124,77,255,0.65)] transition hover:from-[#8b5cff] hover:to-[#4a8be5]"
+                >
+                  <MessageCircle className="size-3.5" aria-hidden />
+                  Ask about this yoga
+                </button>
+              </article>
+              {downloads && (
+                <PremiumKundaliAdCard context={downloads} compact className="lg:sticky lg:top-20" />
+              )}
+            </div>
           )}
         </div>
       </section>

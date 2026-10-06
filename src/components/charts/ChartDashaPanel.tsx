@@ -2,6 +2,11 @@ import { ArrowLeft, Bell, ChevronRight, MessageCircle } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { PlanetGlyph } from '@/components/astrology/PlanetGlyph'
+import {
+  DownloadKundaliButton,
+  PremiumKundaliAdCard,
+  type ChartKundaliDownloadContext,
+} from '@/components/charts/ChartKundaliDownloads'
 import { expandDashaChildren, type DashaSummary } from '@/data/dasha-mock'
 import { paths } from '@/routes/paths'
 import type { DashaLevel, DashaPeriod } from '@/types/astrology'
@@ -10,6 +15,7 @@ import { formatDateShort } from '@/utils/format'
 
 export interface ChartDashaPanelProps {
   dasha: DashaSummary
+  downloads?: ChartKundaliDownloadContext
   className?: string
 }
 
@@ -23,7 +29,7 @@ const DETAIL_TABS: { level: DashaLevel; label: string }[] = [
 /**
  * Dasha tab — Vimshottari timeline · mahadasha list · nested period detail.
  */
-export function ChartDashaPanel({ dasha, className }: ChartDashaPanelProps) {
+export function ChartDashaPanel({ dasha, downloads, className }: ChartDashaPanelProps) {
   const navigate = useNavigate()
   const currentPath = useMemo(() => findPath(dasha.periods), [dasha.periods])
   const [selectedMaha, setSelectedMaha] = useState<DashaPeriod | null>(
@@ -228,109 +234,22 @@ export function ChartDashaPanel({ dasha, className }: ChartDashaPanelProps) {
 
       {/* List + detail */}
       <div className="grid gap-4 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.2fr)] lg:items-start">
-        <section className="overflow-hidden rounded-[1.75rem] border border-border/70 bg-surface shadow-card">
-          <header className="border-b border-border/50 px-4 py-3">
-            <h3 className="text-sm font-semibold text-ink">Mahadasha</h3>
-          </header>
-          <ul className="divide-y divide-border/40">
-            {dasha.periods.map((period) => {
-              const selected = samePeriod(period, maha)
-              return (
-                <li key={`${period.name}-${period.start}`}>
-                  <button
-                    type="button"
-                    onClick={() => selectMaha(period)}
-                    className={cn(
-                      'flex w-full items-center gap-3 px-4 py-3.5 text-left transition',
-                      selected ? 'bg-[#7c4dff]/12' : 'hover:bg-navy-soft/40',
-                    )}
-                  >
-                    <PlanetGlyph code={period.graha} size="sm" className="shrink-0" />
-                    <span className="min-w-0 flex-1">
-                      <span className="flex flex-wrap items-center gap-2">
-                        <span className="text-sm font-semibold text-ink">{period.name}</span>
-                        {period.current && <NowBadge />}
-                      </span>
-                      <span className="mt-0.5 block font-mono text-[11px] text-muted">
-                        {formatDateShort(period.start)} – {formatDateShort(period.end)}
-                      </span>
-                    </span>
-                  </button>
-                </li>
-              )
-            })}
-          </ul>
-        </section>
-
-        <section className="overflow-hidden rounded-[1.75rem] border border-border/70 bg-surface shadow-card">
-          <header className="flex items-start gap-2 border-b border-border/50 px-4 py-3 sm:px-5">
-            {detailLevel !== 'antar' && (
-              <button
-                type="button"
-                aria-label="Back a level"
-                onClick={() => {
-                  const idx = DETAIL_TABS.findIndex((t) => t.level === detailLevel)
-                  if (idx > 0) {
-                    setDetailLevel(DETAIL_TABS[idx - 1]!.level)
-                    setDrill((prev) => prev.slice(0, idx - 1))
-                  }
-                }}
-                className="mt-0.5 inline-flex size-8 items-center justify-center rounded-full border border-border/70 text-muted hover:bg-navy-soft hover:text-ink"
-              >
-                <ArrowLeft className="size-3.5" />
-              </button>
-            )}
-            <div className="min-w-0 flex-1">
-              <h3 className="font-serif text-xl font-semibold text-ink">{detailTitle}</h3>
-              {activeDetail && (
-                <p className="mt-0.5 font-mono text-[11px] text-muted">
-                  {formatDateShort(activeDetail.start)} – {formatDateShort(activeDetail.end)}
-                </p>
-              )}
-            </div>
-          </header>
-
-          <div
-            role="tablist"
-            aria-label="Dasha level"
-            className="flex gap-1 overflow-x-auto border-b border-border/50 px-3 pt-2 sm:px-4"
-          >
-            {DETAIL_TABS.map((tab) => {
-              const active = tab.level === detailLevel
-              return (
-                <button
-                  key={tab.level}
-                  type="button"
-                  role="tab"
-                  aria-selected={active}
-                  onClick={() => setDetailLevel(tab.level)}
-                  className={cn(
-                    'shrink-0 px-3 py-2 text-sm font-medium transition',
-                    active
-                      ? 'border-b-2 border-ink text-ink'
-                      : 'border-b-2 border-transparent text-muted hover:text-ink',
-                  )}
-                >
-                  {tab.label}
-                </button>
-              )
-            })}
-          </div>
-
-          <ul className="max-h-[22rem] divide-y divide-border/40 overflow-y-auto">
-            {detailList.length === 0 ? (
-              <li className="px-4 py-8 text-center text-sm text-muted">No sub-periods here</li>
-            ) : (
-              detailList.map((period) => {
-                const active = activeDetail ? samePeriod(period, activeDetail) : false
+        <div className="space-y-3">
+          <section className="overflow-hidden rounded-[1.75rem] border border-border/70 bg-surface shadow-card">
+            <header className="border-b border-border/50 px-4 py-3">
+              <h3 className="text-sm font-semibold text-ink">Mahadasha</h3>
+            </header>
+            <ul className="divide-y divide-border/40">
+              {dasha.periods.map((period) => {
+                const selected = samePeriod(period, maha)
                 return (
-                  <li key={`${period.name}-${period.start}-${period.level}`}>
+                  <li key={`${period.name}-${period.start}`}>
                     <button
                       type="button"
-                      onClick={() => selectDetail(period)}
+                      onClick={() => selectMaha(period)}
                       className={cn(
-                        'flex w-full items-center gap-3 px-4 py-3.5 text-left transition sm:px-5',
-                        active ? 'bg-[#7c4dff]/14' : 'hover:bg-navy-soft/40',
+                        'flex w-full items-center gap-3 px-4 py-3.5 text-left transition',
+                        selected ? 'bg-[#7c4dff]/12' : 'hover:bg-navy-soft/40',
                       )}
                     >
                       <PlanetGlyph code={period.graha} size="sm" className="shrink-0" />
@@ -343,25 +262,122 @@ export function ChartDashaPanel({ dasha, className }: ChartDashaPanelProps) {
                           {formatDateShort(period.start)} – {formatDateShort(period.end)}
                         </span>
                       </span>
-                      <ChevronRight className="size-4 shrink-0 text-muted" aria-hidden />
                     </button>
                   </li>
                 )
-              })
-            )}
-          </ul>
+              })}
+            </ul>
+          </section>
 
-          <div className="border-t border-border/50 p-4 sm:px-5">
-            <button
-              type="button"
-              onClick={askAboutPeriod}
-              className="flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#7c4dff] to-[#3a7bd5] px-4 py-3.5 text-sm font-semibold text-white shadow-[0_12px_28px_-16px_rgba(124,77,255,0.7)] transition hover:from-[#8b5cff] hover:to-[#4a8be5]"
+          {downloads && (
+            <DownloadKundaliButton context={downloads} className="w-full" size="sm" />
+          )}
+        </div>
+
+        <div className="space-y-4">
+          <section className="overflow-hidden rounded-[1.75rem] border border-border/70 bg-surface shadow-card">
+            <header className="flex items-start gap-2 border-b border-border/50 px-4 py-3 sm:px-5">
+              {detailLevel !== 'antar' && (
+                <button
+                  type="button"
+                  aria-label="Back a level"
+                  onClick={() => {
+                    const idx = DETAIL_TABS.findIndex((t) => t.level === detailLevel)
+                    if (idx > 0) {
+                      setDetailLevel(DETAIL_TABS[idx - 1]!.level)
+                      setDrill((prev) => prev.slice(0, idx - 1))
+                    }
+                  }}
+                  className="mt-0.5 inline-flex size-8 items-center justify-center rounded-full border border-border/70 text-muted hover:bg-navy-soft hover:text-ink"
+                >
+                  <ArrowLeft className="size-3.5" />
+                </button>
+              )}
+              <div className="min-w-0 flex-1">
+                <h3 className="font-serif text-xl font-semibold text-ink">{detailTitle}</h3>
+                {activeDetail && (
+                  <p className="mt-0.5 font-mono text-[11px] text-muted">
+                    {formatDateShort(activeDetail.start)} – {formatDateShort(activeDetail.end)}
+                  </p>
+                )}
+              </div>
+            </header>
+
+            <div
+              role="tablist"
+              aria-label="Dasha level"
+              className="flex gap-1 overflow-x-auto border-b border-border/50 px-3 pt-2 sm:px-4"
             >
-              <MessageCircle className="size-4" aria-hidden />
-              Ask about this period
-            </button>
-          </div>
-        </section>
+              {DETAIL_TABS.map((tab) => {
+                const active = tab.level === detailLevel
+                return (
+                  <button
+                    key={tab.level}
+                    type="button"
+                    role="tab"
+                    aria-selected={active}
+                    onClick={() => setDetailLevel(tab.level)}
+                    className={cn(
+                      'shrink-0 px-3 py-2 text-sm font-medium transition',
+                      active
+                        ? 'border-b-2 border-ink text-ink'
+                        : 'border-b-2 border-transparent text-muted hover:text-ink',
+                    )}
+                  >
+                    {tab.label}
+                  </button>
+                )
+              })}
+            </div>
+
+            <ul className="max-h-[22rem] divide-y divide-border/40 overflow-y-auto">
+              {detailList.length === 0 ? (
+                <li className="px-4 py-8 text-center text-sm text-muted">No sub-periods here</li>
+              ) : (
+                detailList.map((period) => {
+                  const active = activeDetail ? samePeriod(period, activeDetail) : false
+                  return (
+                    <li key={`${period.name}-${period.start}-${period.level}`}>
+                      <button
+                        type="button"
+                        onClick={() => selectDetail(period)}
+                        className={cn(
+                          'flex w-full items-center gap-3 px-4 py-3.5 text-left transition sm:px-5',
+                          active ? 'bg-[#7c4dff]/14' : 'hover:bg-navy-soft/40',
+                        )}
+                      >
+                        <PlanetGlyph code={period.graha} size="sm" className="shrink-0" />
+                        <span className="min-w-0 flex-1">
+                          <span className="flex flex-wrap items-center gap-2">
+                            <span className="text-sm font-semibold text-ink">{period.name}</span>
+                            {period.current && <NowBadge />}
+                          </span>
+                          <span className="mt-0.5 block font-mono text-[11px] text-muted">
+                            {formatDateShort(period.start)} – {formatDateShort(period.end)}
+                          </span>
+                        </span>
+                        <ChevronRight className="size-4 shrink-0 text-muted" aria-hidden />
+                      </button>
+                    </li>
+                  )
+                })
+              )}
+            </ul>
+
+            <div className="border-t border-border/50 p-4 sm:px-5">
+              <button
+                type="button"
+                onClick={askAboutPeriod}
+                className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#7c4dff] to-[#3a7bd5] px-3 py-2.5 text-sm font-semibold text-white shadow-[0_10px_22px_-14px_rgba(124,77,255,0.65)] transition hover:from-[#8b5cff] hover:to-[#4a8be5]"
+              >
+                <MessageCircle className="size-3.5" aria-hidden />
+                Ask about this period
+              </button>
+            </div>
+          </section>
+
+          {downloads && <PremiumKundaliAdCard context={downloads} compact />}
+        </div>
       </div>
 
       <p className="px-1 text-sm text-muted text-pretty">

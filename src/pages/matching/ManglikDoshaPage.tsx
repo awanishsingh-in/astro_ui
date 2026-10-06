@@ -15,6 +15,7 @@ import {
   type PersonDraft,
   type PersonErrors,
 } from '@/components/matching/PersonForm'
+import { MatchThemeShell } from '@/components/matching/MatchThemeShell'
 import { useToast } from '@/components/feedback/toast-context'
 import { useAuth } from '@/auth/auth-context'
 import { MANGLIK_HOUSES, type ManglikResult } from '@/data/manglik-mock'
@@ -107,6 +108,7 @@ export default function ManglikDoshaPage() {
   if (!user) return null
 
   return (
+    <MatchThemeShell>
     <PageContainer width="content">
       <SectionHeader
         as="h1"
@@ -216,6 +218,7 @@ export default function ManglikDoshaPage() {
         </div>
       )}
     </PageContainer>
+    </MatchThemeShell>
   )
 }
 

@@ -1,13 +1,18 @@
-import { Check, ChevronRight, Search, Users, X } from 'lucide-react'
+import { Search, Users, X } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { Avatar } from '@/components/common/Avatar'
 import { EmptyState } from '@/components/common/EmptyState'
 import { IconButton } from '@/components/common/IconButton'
-import { SectionHeader } from '@/components/common/SectionHeader'
 import { Input } from '@/components/forms/Input'
+import { MatchThemeShell } from '@/components/matching/MatchThemeShell'
 import { useAuth } from '@/auth/auth-context'
-import { RELATION_LABEL, RELATION_ORDER } from '@/data/profiles'
+import {
+  ADDABLE_RELATIONS,
+  RELATION_LABEL,
+  RELATION_ORDER,
+  type ProfileRelation,
+} from '@/data/profiles'
 import { PageContainer } from '@/layouts/PageContainer'
 import { useProfiles } from '@/profiles/profiles-context'
 import { paths } from '@/routes/paths'
@@ -19,6 +24,8 @@ import {
 import { cn } from '@/utils/cn'
 import { formatDateShort, formatTime12 } from '@/utils/format'
 
+type CategoryFilter = 'all' | ProfileRelation
+
 /**
  * Full-page picker - choose a saved chart to fill Person 1 or Person 2 on Matching.
  */
@@ -28,6 +35,7 @@ export default function MatchProfilePickPage() {
   const navigate = useNavigate()
   const [params] = useSearchParams()
   const [query, setQuery] = useState('')
+  const [category, setCategory] = useState<CategoryFilter>('all')
 
   const slotParam = params.get('for')
   const slot: MatchPersonSlot = slotParam === 'b' ? 'b' : 'a'
@@ -51,10 +59,14 @@ export default function MatchProfilePickPage() {
     [profiles, takenByOther],
   )
 
+  /** Same folders as “add another profile” — Family, Friend, Relative, Other. */
+  const categoryOptions = ADDABLE_RELATIONS
+
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase()
-    if (!q) return available
     return available.filter((p) => {
+      if (category !== 'all' && p.relation !== category) return false
+      if (!q) return true
       const haystack = [
         p.name,
         p.note ?? '',
@@ -65,7 +77,7 @@ export default function MatchProfilePickPage() {
         .toLowerCase()
       return haystack.includes(q)
     })
-  }, [available, query])
+  }, [available, query, category])
 
   const grouped = useMemo(
     () =>
@@ -85,37 +97,92 @@ export default function MatchProfilePickPage() {
   }
 
   const trimmedQuery = query.trim()
+  const emptyAfterFilter =
+    category !== 'all' && filtered.length === 0 && !trimmedQuery
 
   return (
-    <PageContainer width="content">
-      <SectionHeader
-        as="h1"
-        size="lg"
-        title="Saved profiles"
-        description={
-          returnTo === paths.matchingManglik
-            ? 'Pick a saved chart for the Manglik dosha calculator.'
-            : `Pick whose chart fills ${personLabel} on Kundli Matching.`
-        }
-      />
+    <MatchThemeShell>
+      <PageContainer width="content">
+        <button
+          type="button"
+          onClick={() => navigate(returnTo)}
+          className="inline-flex items-center gap-1.5 text-sm font-semibold text-copper hover:underline"
+        >
+          ← Back to Kundli Matching
+        </button>
 
-        {(draft?.a.name || draft?.b.name) && (
-          <p className="mt-3 rounded-card border border-border/70 bg-surface/60 px-3.5 py-2.5 font-mono text-label uppercase tracking-[0.1em] text-muted">
-            Filling {personLabel}
-            {draft.a.name || draft.b.name
-              ? ` · draft kept for ${[draft.a.name, draft.b.name].filter(Boolean).join(' / ') || 'both'}`
-              : ''}
-          </p>
-        )}
+        <header className="mt-5 flex flex-wrap items-start justify-between gap-4">
+          <div className="min-w-0 space-y-2">
+            <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-copper">
+              Choosing {personLabel}
+            </p>
+            <h1 className="font-serif text-4xl font-semibold tracking-tight text-ink sm:text-5xl">
+              Saved <span className="text-copper">kundlis</span>
+            </h1>
+            <p className="max-w-xl text-sm text-muted text-pretty">
+              {returnTo === paths.matchingManglik
+                ? 'Pick a saved chart for the Manglik dosha calculator.'
+                : `Pick who to match${draft?.a.name || draft?.b.name ? ` with ${[draft.a.name, draft.b.name].filter(Boolean).join(' / ')}` : ''}. Your other side is kept.`}
+            </p>
+          </div>
+
+          {available.length > 0 && (
+            <div className="flex max-w-full shrink-0 flex-col gap-1.5 self-start sm:items-end sm:self-center">
+              <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-faint">
+                Category
+              </span>
+              <div
+                role="tablist"
+                aria-label="Filter by category"
+                className="flex max-w-[min(100vw-2rem,28rem)] flex-wrap justify-end gap-1.5"
+              >
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={category === 'all'}
+                  onClick={() => setCategory('all')}
+                  className={cn(
+                    'rounded-full px-3 py-1.5 text-xs font-semibold transition',
+                    category === 'all'
+                      ? 'bg-copper text-[var(--btn-primary-fg)]'
+                      : 'border border-border text-muted hover:border-copper/50 hover:text-ink',
+                  )}
+                >
+                  All
+                </button>
+                {categoryOptions.map((relation) => {
+                  const active = category === relation
+                  return (
+                    <button
+                      key={relation}
+                      type="button"
+                      role="tab"
+                      aria-selected={active}
+                      onClick={() => setCategory(relation)}
+                      className={cn(
+                        'rounded-full px-3 py-1.5 text-xs font-semibold transition',
+                        active
+                          ? 'bg-copper text-[var(--btn-primary-fg)]'
+                          : 'border border-border text-muted hover:border-copper/50 hover:text-ink',
+                      )}
+                    >
+                      {RELATION_LABEL[relation]}
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
+          )}
+        </header>
 
         {available.length > 0 && (
           <div className="mt-5">
             <Input
               inputSize="md"
-              tone="sunken"
+              tone="celestial"
               icon={<Search />}
               type="search"
-              placeholder="Search by name or place"
+              placeholder="Search by name"
               aria-label="Search saved profiles"
               value={query}
               onChange={(event) => setQuery(event.target.value)}
@@ -153,63 +220,125 @@ export default function MatchProfilePickPage() {
           <EmptyState
             className="mt-8"
             variant="inline"
-            icon={<Search />}
-            title="Nothing matches that"
-            description={`No saved profile mentions “${trimmedQuery}”. Try another name or place.`}
+            icon={emptyAfterFilter ? <Users /> : <Search />}
+            title={
+              emptyAfterFilter
+                ? `No ${RELATION_LABEL[category as ProfileRelation].toLowerCase()} charts`
+                : 'Nothing matches that'
+            }
+            description={
+              emptyAfterFilter
+                ? 'Try another category, or add someone new below.'
+                : `No saved profile mentions “${trimmedQuery}”. Try another name or place.`
+            }
           />
         ) : (
           <div className="mt-6 space-y-6">
             {grouped.map((group) => (
               <section key={group.relation} className="space-y-2">
-                <h2 className="px-0.5 font-mono text-label uppercase tracking-[0.12em] text-faint">
-                  {group.label}
-                </h2>
-                <ul className="overflow-hidden rounded-panel border border-border bg-surface divide-y divide-border/80">
+                {category === 'all' && (
+                  <h2 className="px-0.5 font-mono text-label uppercase tracking-[0.12em] text-faint">
+                    {group.label}
+                  </h2>
+                )}
+                <ul className="space-y-2">
                   {group.items.map((profile) => {
                     const selected =
                       (slot === 'a' && draft?.a.profileId === profile.id) ||
                       (slot === 'b' && draft?.b.profileId === profile.id)
+                    const takenAsOther =
+                      (slot === 'a' && draft?.b.profileId === profile.id) ||
+                      (slot === 'b' && draft?.a.profileId === profile.id)
                     return (
                       <li key={profile.id}>
-                        <button
-                          type="button"
-                          onClick={() => choose(profile.id)}
-                          className={cn(
-                            'flex w-full items-center gap-3 px-4 py-3.5 text-left',
-                            'transition-colors hover:bg-navy-soft/70',
-                            selected && 'bg-copper/10',
-                          )}
-                        >
-                          <Avatar name={profile.name} size="md" />
-                          <span className="min-w-0 flex-1">
-                            <span className="block truncate text-sub font-medium text-ink">
-                              {profile.name}
+                        {takenAsOther ? (
+                          <div
+                            className={cn(
+                              'flex w-full items-center gap-3 rounded-[1.15rem] border px-4 py-3.5',
+                              'border-border/60 bg-surface/70 opacity-70',
+                            )}
+                          >
+                            <Avatar name={profile.name} size="md" />
+                            <span className="min-w-0 flex-1 text-left">
+                              <span className="flex flex-wrap items-center gap-2">
+                                <span className="truncate text-sub font-medium text-ink">
+                                  {profile.name}
+                                </span>
+                                <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-copper">
+                                  {RELATION_LABEL[profile.relation]}
+                                </span>
+                              </span>
+                              <span className="mt-0.5 block truncate font-mono text-label uppercase text-muted">
+                                {formatDateShort(profile.birthDetails.date)} ·{' '}
+                                {profile.birthDetails.timeUnknown
+                                  ? 'time unknown'
+                                  : formatTime12(profile.birthDetails.time)}
+                              </span>
+                              <span className="mt-0.5 block truncate text-xs text-faint">
+                                {profile.birthDetails.place.label}
+                              </span>
                             </span>
-                            <span className="mt-0.5 block truncate font-mono text-label uppercase text-muted">
-                              {profile.note ? `${profile.note} · ` : ''}
-                              {formatDateShort(profile.birthDetails.date)} ·{' '}
-                              {profile.birthDetails.timeUnknown
-                                ? 'time unknown'
-                                : formatTime12(profile.birthDetails.time)}
+                            <span className="shrink-0 text-xs text-muted">
+                              Already the other person
                             </span>
-                            <span className="mt-0.5 block truncate text-xs text-faint">
-                              {profile.birthDetails.place.label}
+                          </div>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => choose(profile.id)}
+                            className={cn(
+                              'flex w-full items-center gap-3 rounded-[1.15rem] border px-4 py-3.5 text-left',
+                              'transition hover:border-copper/50 hover:bg-copper/5',
+                              'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-copper',
+                              selected
+                                ? 'border-copper/60 bg-copper/10 shadow-[0_0_24px_-12px_rgba(124,77,255,0.45)]'
+                                : 'border-border bg-surface',
+                            )}
+                          >
+                            <Avatar name={profile.name} size="md" />
+                            <span className="min-w-0 flex-1">
+                              <span className="flex flex-wrap items-center gap-2">
+                                <span className="truncate text-sub font-medium text-ink">
+                                  {profile.name}
+                                </span>
+                                <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-copper">
+                                  {RELATION_LABEL[profile.relation]}
+                                </span>
+                              </span>
+                              <span className="mt-0.5 block truncate font-mono text-label uppercase text-muted">
+                                {formatDateShort(profile.birthDetails.date)} ·{' '}
+                                {profile.birthDetails.timeUnknown
+                                  ? 'time unknown'
+                                  : formatTime12(profile.birthDetails.time)}
+                              </span>
+                              <span className="mt-0.5 block truncate text-xs text-faint">
+                                {profile.birthDetails.place.label}
+                              </span>
                             </span>
-                          </span>
-                          {selected ? (
-                            <Check className="size-4 shrink-0 text-gold-deep" aria-hidden />
-                          ) : (
-                            <ChevronRight className="size-4 shrink-0 text-faint" aria-hidden />
-                          )}
-                        </button>
+                            {selected && (
+                              <span className="shrink-0 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-copper">
+                                Selected
+                              </span>
+                            )}
+                          </button>
+                        )}
                       </li>
                     )
                   })}
                 </ul>
               </section>
             ))}
+
+            <button
+              type="button"
+              onClick={() => navigate(returnTo)}
+              className="flex w-full items-center justify-center gap-2 rounded-[1.15rem] border border-dashed border-border-strong px-4 py-4 text-sm font-semibold text-copper hover:border-copper/60 hover:bg-copper/5"
+            >
+              + Someone new: enter their birth details
+            </button>
           </div>
         )}
       </PageContainer>
+    </MatchThemeShell>
   )
 }

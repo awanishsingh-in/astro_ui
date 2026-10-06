@@ -2,6 +2,11 @@ import { ChevronDown } from 'lucide-react'
 import { useMemo, useState, type ReactNode } from 'react'
 import { PlanetGlyph } from '@/components/astrology/PlanetGlyph'
 import { PlanetaryRelationship } from '@/components/astrology/PlanetaryRelationship'
+import {
+  DownloadKundaliButton,
+  PremiumKundaliAdCard,
+  type ChartKundaliDownloadContext,
+} from '@/components/charts/ChartKundaliDownloads'
 import { PlanetDetailSheet } from '@/components/charts/PlanetDetailSheet'
 import { GRAHA_FRIENDS } from '@/data/kootas'
 import type { Chart, Dignity, GrahaCode, GrahaPosition, Motion } from '@/types/astrology'
@@ -30,6 +35,7 @@ export interface ChartPlanetsPanelProps {
   chart: Chart
   activeGraha: GrahaCode | null
   onSelectGraha: (graha: GrahaCode) => void
+  downloads?: ChartKundaliDownloadContext
   className?: string
 }
 
@@ -40,6 +46,7 @@ export function ChartPlanetsPanel({
   chart,
   activeGraha,
   onSelectGraha,
+  downloads,
   className,
 }: ChartPlanetsPanelProps) {
   const [open, setOpen] = useState<Record<AccordionId, boolean>>({
@@ -78,12 +85,7 @@ export function ChartPlanetsPanel({
 
   return (
     <div className={cn('animate-rise space-y-4', className)}>
-      <div
-        className={cn(
-          'grid gap-4',
-          activeGraha && 'lg:grid-cols-[minmax(0,1fr)_minmax(16rem,22rem)] lg:items-start',
-        )}
-      >
+      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(16rem,22rem)] lg:items-start">
         <section className="overflow-hidden rounded-[1.75rem] border border-border/70 bg-surface shadow-card">
           <header className="flex flex-wrap items-end justify-between gap-2 px-5 py-4 sm:px-6">
             <h2 className="font-serif text-2xl font-semibold tracking-tight text-ink">
@@ -155,14 +157,21 @@ export function ChartPlanetsPanel({
           </div>
         </section>
 
-        {activeGraha && (
-          <PlanetDetailSheet
-            chart={chart}
-            graha={activeGraha}
-            onClose={() => onSelectGraha(activeGraha)}
-            className="lg:sticky lg:top-20"
-          />
-        )}
+        <div className="space-y-3 lg:sticky lg:top-20">
+          {activeGraha ? (
+            <PlanetDetailSheet
+              chart={chart}
+              graha={activeGraha}
+              onClose={() => onSelectGraha(activeGraha)}
+            />
+          ) : null}
+          {downloads && (
+            <div className="space-y-3">
+              <PremiumKundaliAdCard context={downloads} compact />
+              <DownloadKundaliButton context={downloads} className="w-full" size="sm" />
+            </div>
+          )}
+        </div>
       </div>
 
       <div className="grid gap-3 md:grid-cols-3">
@@ -220,6 +229,7 @@ export function ChartPlanetsPanel({
           </p>
         </Accordion>
       </div>
+
     </div>
   )
 }

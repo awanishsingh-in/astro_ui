@@ -10,6 +10,7 @@ import { paths } from '@/routes/paths'
 import type { User } from '@/types/user'
 import { requestAvatarMenuReopen } from '@/utils/avatar-menu'
 import { cn } from '@/utils/cn'
+import { tryMatchingBack } from '@/utils/matching-back'
 
 /** Session flag so Family → Profile can pulse the dashed + in the top chrome. */
 export const HIGHLIGHT_ADD_PROFILE_KEY = 'cyklos_highlight_add_profile'
@@ -91,6 +92,26 @@ export function FullPageChrome({ user, action, className }: FullPageChromeProps)
     // Never use history.back() on reports — hub ↔ topic loops reopen Career/etc.
     if (onReportsHub || onReportNested) {
       navigate(paths.ask, { replace: true })
+      return
+    }
+
+    // Matching is one route with in-page steps — step back before leaving the flow.
+    if (location.pathname === paths.matching && tryMatchingBack()) {
+      return
+    }
+
+    // Calculator opened from Matching (or elsewhere) — prefer explicit return path.
+    // Replace so we don't stack Matching again (Matching ↔ calculator back-loop).
+    const from =
+      typeof (location.state as { from?: unknown } | null)?.from === 'string'
+        ? (location.state as { from: string }).from
+        : null
+    if (
+      from &&
+      (location.pathname === paths.calculatorRoot ||
+        location.pathname.startsWith(`${paths.calculatorRoot}/`))
+    ) {
+      navigate(from, { replace: true })
       return
     }
 

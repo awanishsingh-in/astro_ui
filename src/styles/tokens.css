@@ -68,6 +68,16 @@
   --color-gold-soft: #1a0f3d;
   --color-gold-border: #3a7bd5;
 
+  /* Primary / celestial button gradient — Matching remaps these to orange */
+  --btn-primary-from: #7c4dff;
+  --btn-primary-to: #3a7bd5;
+  --btn-primary-hover-from: #8b5cff;
+  --btn-primary-hover-to: #4a8be5;
+  --btn-primary-active-from: #6b3de8;
+  --btn-primary-active-to: #2f6bc0;
+  --btn-primary-shadow: rgba(124, 77, 255, 0.75);
+  --btn-primary-fg: #ffffff;
+
   /* Form fields on mixed auth screens — remapped in light theme. */
   --color-field: #0f0c24;
   --color-field-border: #3a3270;

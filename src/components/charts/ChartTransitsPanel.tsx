@@ -1,6 +1,11 @@
 import { MessageCircle } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import {
+  DownloadKundaliButton,
+  PremiumKundaliAdCard,
+  type ChartKundaliDownloadContext,
+} from '@/components/charts/ChartKundaliDownloads'
 import { paths } from '@/routes/paths'
 import type { Chart, GrahaCode } from '@/types/astrology'
 import { GRAHA_ORDER, RASHIS } from '@/utils/astro'
@@ -8,6 +13,7 @@ import { cn } from '@/utils/cn'
 
 export interface ChartTransitsPanelProps {
   chart: Chart
+  downloads?: ChartKundaliDownloadContext
   className?: string
 }
 
@@ -24,7 +30,7 @@ interface TransitEvent {
 /**
  * Transits tab — natal/gochar wheel · date slider · moving events list.
  */
-export function ChartTransitsPanel({ chart, className }: ChartTransitsPanelProps) {
+export function ChartTransitsPanel({ chart, downloads, className }: ChartTransitsPanelProps) {
   const navigate = useNavigate()
   const [slider, setSlider] = useState(50)
   const lagna = RASHIS.find((r) => r.name === chart.lagna.rashi)?.english ?? chart.lagna.rashi
@@ -85,45 +91,54 @@ export function ChartTransitsPanel({ chart, className }: ChartTransitsPanelProps
         </div>
       </section>
 
-      <section className="overflow-hidden rounded-[1.75rem] border border-border/70 bg-surface p-5 shadow-card sm:p-6">
-        <h2 className="font-serif text-2xl font-semibold text-ink">What&apos;s moving on your chart</h2>
-        <p className="mt-1 text-sm text-muted">Apr 2026 – Apr 2027</p>
+      <div className="space-y-4">
+        <section className="overflow-hidden rounded-[1.75rem] border border-border/70 bg-surface p-5 shadow-card sm:p-6">
+          <h2 className="font-serif text-2xl font-semibold text-ink">What&apos;s moving on your chart</h2>
+          <p className="mt-1 text-sm text-muted">Apr 2026 – Apr 2027</p>
 
-        <ul className="mt-5 space-y-4">
-          {events.map((event) => (
-            <li key={event.id} className="rounded-2xl border border-border/60 bg-surface-sunken/25 p-4">
-              <div className="flex flex-wrap items-start justify-between gap-2">
-                <div>
-                  <h3 className="text-sm font-semibold text-ink">{event.title}</h3>
-                  <p className="mt-1 text-sm text-muted text-pretty">{event.detail}</p>
+          <ul className="mt-5 space-y-4">
+            {events.map((event) => (
+              <li key={event.id} className="rounded-2xl border border-border/60 bg-surface-sunken/25 p-4">
+                <div className="flex flex-wrap items-start justify-between gap-2">
+                  <div>
+                    <h3 className="text-sm font-semibold text-ink">{event.title}</h3>
+                    <p className="mt-1 text-sm text-muted text-pretty">{event.detail}</p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => askTransit(event)}
+                    className="inline-flex items-center gap-1 text-xs font-semibold text-copper hover:underline"
+                  >
+                    <MessageCircle className="size-3.5" />
+                    Ask
+                  </button>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => askTransit(event)}
-                  className="inline-flex items-center gap-1 text-xs font-semibold text-copper hover:underline"
-                >
-                  <MessageCircle className="size-3.5" />
-                  Ask
-                </button>
-              </div>
-              <p className="mt-2 font-mono text-[11px] text-faint">
-                {event.start} – {event.end}
-              </p>
-              <div className="relative mt-3 h-2 overflow-hidden rounded-full bg-border/50">
-                <div
-                  className={cn('absolute inset-y-0 left-0 rounded-full', toneBar(event.tone))}
-                  style={{ width: `${Math.round(event.progress * 100)}%` }}
-                />
-                <span
-                  aria-hidden
-                  className="absolute top-1/2 h-3 w-0.5 -translate-y-1/2 bg-ink"
-                  style={{ left: '50%' }}
-                />
-              </div>
-            </li>
-          ))}
-        </ul>
-      </section>
+                <p className="mt-2 font-mono text-[11px] text-faint">
+                  {event.start} – {event.end}
+                </p>
+                <div className="relative mt-3 h-2 overflow-hidden rounded-full bg-border/50">
+                  <div
+                    className={cn('absolute inset-y-0 left-0 rounded-full', toneBar(event.tone))}
+                    style={{ width: `${Math.round(event.progress * 100)}%` }}
+                  />
+                  <span
+                    aria-hidden
+                    className="absolute top-1/2 h-3 w-0.5 -translate-y-1/2 bg-ink"
+                    style={{ left: '50%' }}
+                  />
+                </div>
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        {downloads && (
+          <div className="space-y-3">
+            <PremiumKundaliAdCard context={downloads} compact />
+            <DownloadKundaliButton context={downloads} className="w-full" size="sm" />
+          </div>
+        )}
+      </div>
     </div>
   )
 }

@@ -23,6 +23,7 @@ import { paths } from './paths'
  *   bare       — the calculating screen: signed in, but no chrome
  */
 
+
 const LandingPage = lazy(() => import('@/pages/auth/LandingPage'))
 const PhonePage = lazy(() => import('@/pages/auth/PhonePage'))
 const CodePage = lazy(() => import('@/pages/auth/CodePage'))

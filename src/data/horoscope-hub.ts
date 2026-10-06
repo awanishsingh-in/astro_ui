@@ -100,6 +100,14 @@ function chipFromDate(d: Date, period: HoroscopePeriod): HoroscopeDateChip {
   return { id: `${period}-${iso}`, iso, dayNum, weekday, monthShort, label }
 }
 
+export type HoroscopeVerticalId = 'career' | 'love' | 'health' | 'finance'
+
+export interface SignHoroscopeVertical {
+  id: HoroscopeVerticalId
+  label: string
+  blurb: string
+}
+
 export interface SignHoroscopeSummary {
   rashi: RashiName
   english: string
@@ -109,6 +117,8 @@ export interface SignHoroscopeSummary {
   headline: string
   summary: string
   bullets: string[]
+  /** Career / Love / Health / Finance columns for the hub card. */
+  verticals: SignHoroscopeVertical[]
   mood: string
 }
 
@@ -145,6 +155,13 @@ export function buildSignHoroscopeSummary(
   const periodWord =
     period === 'daily' ? 'Today' : period === 'weekly' ? 'This week' : 'This month'
 
+  const spanCue =
+    period === 'daily'
+      ? 'today'
+      : period === 'weekly'
+        ? 'this week'
+        : 'this month'
+
   return {
     rashi,
     english: meta.english,
@@ -163,6 +180,48 @@ export function buildSignHoroscopeSummary(
       theme === 'lucky'
         ? 'Favour soft metals and muted greens where you choose colour.'
         : 'Name one watch-out and one opening — leave the rest.',
+    ],
+    verticals: [
+      {
+        id: 'career',
+        label: 'Career',
+        blurb:
+          period === 'daily'
+            ? `One clear work thread serves ${meta.english} better than a crowded desk ${spanCue}.`
+            : period === 'weekly'
+              ? `Mid-week holds more career traction for ${meta.english}; keep weekends lighter.`
+              : `The first half of the month sets standing; consolidate rather than relaunch.`,
+      },
+      {
+        id: 'love',
+        label: 'Love',
+        blurb:
+          period === 'daily'
+            ? `Plain words land cleaner than hints — keep partnership simple ${spanCue}.`
+            : period === 'weekly'
+              ? `Warmth builds in small check-ins; avoid a heavy talk on the weekend edge.`
+              : `Steady presence beats grand gestures; name what you need once, clearly.`,
+      },
+      {
+        id: 'health',
+        label: 'Health',
+        blurb:
+          period === 'daily'
+            ? `Protect sleep and a short walk — routine outweighs a dramatic reset ${spanCue}.`
+            : period === 'weekly'
+              ? `Pace the middle days; rest is part of the plan, not a reward at the end.`
+              : `Anchor one daily habit for the month; drop what you cannot keep.`,
+      },
+      {
+        id: 'finance',
+        label: 'Finance',
+        blurb:
+          period === 'daily'
+            ? `Hold impulse spends; one planned outlay is enough ${spanCue}.`
+            : period === 'weekly'
+              ? `Review one bill mid-week; leave speculative moves for clearer sky.`
+              : `Budget the first fortnight tightly; freer room opens later if you stay steady.`,
+      },
     ],
     mood: theme === 'love' || theme === 'lucky' ? 'Warm' : theme === 'career' ? 'Focused' : 'Steady',
   }

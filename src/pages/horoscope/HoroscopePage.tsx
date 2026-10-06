@@ -1,11 +1,13 @@
-import { ArrowLeft, Compass, TriangleAlert } from 'lucide-react'
+import {
+  ArrowLeft,
+  Compass,
+  Sparkles,
+  Sun,
+  TriangleAlert,
+} from 'lucide-react'
 import { Navigate, useNavigate, useParams } from 'react-router-dom'
-import { Badge } from '@/components/common/Badge'
 import { Button } from '@/components/common/Button'
-import { Card } from '@/components/common/Card'
 import { ErrorState } from '@/components/common/ErrorState'
-import { SectionHeader } from '@/components/common/SectionHeader'
-import { CelestialCard } from '@/components/celestial/CelestialCard'
 import { GalaxyBackdrop } from '@/components/celestial/GalaxyBackdrop'
 import { Skeleton, SkeletonText } from '@/components/common/Skeleton'
 import { PlanetGlyph } from '@/components/astrology/PlanetGlyph'
@@ -73,7 +75,7 @@ export default function HoroscopePage() {
   }
 
   return (
-    <PageContainer width="content">
+    <PageContainer width="wide" className="pb-16">
       {status === 'error' ? (
         <ErrorState error={error} onRetry={retry} title="This horoscope did not load" />
       ) : status === 'loading' || status === 'idle' || !data ? (
@@ -402,141 +404,260 @@ function YearlyPersonalBody({
 
 function HoroscopeBody({ horoscope }: { horoscope: Horoscope }) {
   return (
-    <article className="animate-rise">
-      <CelestialCard
-        motifs={['stars', 'orbits']}
-        tone="midnight"
-        seed={horoscope.period.label}
-        padding="lg"
-        className="mx-auto max-w-reading"
+    <article className="animate-rise space-y-6 sm:space-y-8">
+      {/* Hero */}
+      <section
+        className={cn(
+          'relative overflow-hidden rounded-[1.75rem] border border-[#7c4dff]/40',
+          'bg-[linear-gradient(155deg,#24105a_0%,#120e28_45%,#0d1a38_100%)]',
+          'px-5 py-7 shadow-[0_0_0_1px_rgba(124,77,255,0.16),0_28px_64px_-28px_rgba(124,77,255,0.75)]',
+          'sm:px-8 sm:py-9',
+        )}
       >
-        <header className="space-y-3">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -right-20 -top-24 h-64 w-64 rounded-full bg-[#7c4dff]/35 blur-3xl"
+        />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -bottom-28 -left-16 h-56 w-56 rounded-full bg-[#3a7bd5]/25 blur-3xl"
+        />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-x-12 top-0 h-px bg-gradient-to-r from-transparent via-[#c4a0ff]/70 to-transparent"
+        />
+
+        <div className="relative space-y-5">
           <div className="flex flex-wrap items-center gap-2">
-            <p className="font-mono text-label uppercase text-gold-soft-line">
+            <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-[#c4a0ff]">
               {horoscope.period.label}
             </p>
-            <Badge tone={horoscope.personal ? 'gold' : 'neutral'} mono>
+            <span
+              className={cn(
+                'inline-flex items-center gap-1.5 rounded-full border px-3 py-1',
+                'font-mono text-[10px] font-semibold uppercase tracking-[0.12em]',
+                horoscope.personal
+                  ? 'border-[#c4a0ff]/40 bg-[#7c4dff]/25 text-[#e8d6ff]'
+                  : 'border-white/15 bg-white/5 text-white/70',
+              )}
+            >
+              <Sparkles className="size-3" aria-hidden />
               {horoscope.personal ? 'From your chart' : 'By sign'}
-            </Badge>
+            </span>
           </div>
 
-          <h1 className="font-serif text-title font-normal text-on-celestial text-balance lg:text-title-lg">
-            {horoscope.title}
-          </h1>
-          <p className="text-sub text-on-celestial-muted text-pretty">{horoscope.standfirst}</p>
-        </header>
+          <div className="space-y-2">
+            <h1 className="font-serif text-3xl font-semibold tracking-tight text-white text-balance sm:text-4xl lg:text-5xl">
+              {horoscope.title}
+            </h1>
+            <p className="max-w-2xl text-sm leading-relaxed text-white/60 text-pretty sm:text-base">
+              {horoscope.standfirst}
+            </p>
+          </div>
 
-        <p className="mt-6 border-l-2 border-gold-soft-line py-1 pl-5 text-title font-semibold text-on-celestial text-balance">
-          {horoscope.summary}
-        </p>
-      </CelestialCard>
+          <blockquote
+            className={cn(
+              'rounded-2xl border border-white/10 bg-white/[0.05] px-5 py-4',
+              'shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]',
+            )}
+          >
+            <p className="font-serif text-xl leading-snug text-white text-pretty sm:text-2xl">
+              {horoscope.summary}
+            </p>
+          </blockquote>
 
-      <div className="mt-8 grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,18rem)] lg:gap-10">
-        <div className="min-w-0 space-y-8">
-          <Block title="Overview">
-            <p className="text-body text-purple text-pretty">{horoscope.overview}</p>
-          </Block>
+          {horoscope.lucky && (
+            <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-4">
+              {(
+                [
+                  ['Number', String(horoscope.lucky.number)],
+                  ['Colour', horoscope.lucky.colour],
+                  ['Hours', horoscope.lucky.hours],
+                  ['Direction', horoscope.lucky.direction],
+                ] as const
+              ).map(([label, value]) => (
+                <div
+                  key={label}
+                  className="rounded-2xl border border-[#c4a0ff]/25 bg-[#7c4dff]/15 px-3.5 py-3"
+                >
+                  <p className="font-mono text-[9px] font-semibold uppercase tracking-[0.14em] text-[#c4a0ff]">
+                    {label}
+                  </p>
+                  <p className="mt-1 text-sm font-semibold text-white">{value}</p>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
 
-          <Block title="Opportunities">
-            <PointList items={horoscope.opportunities} tone="positive" />
-          </Block>
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(16rem,20rem)] lg:items-start lg:gap-7">
+        <div className="min-w-0 space-y-5">
+          <section
+            className={cn(
+              'rounded-[1.35rem] border border-border/80 bg-surface/90 p-5 shadow-card sm:p-6',
+            )}
+          >
+            <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-gold-deep">
+              Overview
+            </p>
+            <p className="mt-3 text-base leading-relaxed text-ink text-pretty sm:text-lg">
+              {horoscope.overview}
+            </p>
+          </section>
 
-          <Block title="Watch-outs">
-            <PointList items={horoscope.watchOuts} tone="caution" />
-          </Block>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <InsightPanel
+              title="Opportunities"
+              tone="positive"
+              items={horoscope.opportunities}
+            />
+            <InsightPanel title="Watch-outs" tone="caution" items={horoscope.watchOuts} />
+          </div>
 
-          <Block title="Timing">
-            <ol className="space-y-3">
+          <section
+            className={cn(
+              'rounded-[1.35rem] border border-border/80 bg-surface/90 p-5 shadow-card sm:p-6',
+            )}
+          >
+            <div className="mb-4 flex items-center gap-2">
+              <span className="inline-flex size-8 items-center justify-center rounded-xl border border-copper/35 bg-copper/15 text-copper">
+                <Sun className="size-3.5" aria-hidden />
+              </span>
+              <div>
+                <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-gold-deep">
+                  Timing
+                </p>
+                <p className="text-xs text-muted">When the sky favours push or pause</p>
+              </div>
+            </div>
+            <ol className="grid gap-3 sm:grid-cols-2">
               {horoscope.timing.map((slot) => (
                 <li
                   key={slot.label}
                   className={cn(
-                    'flex flex-col gap-1 rounded-card border p-4 sm:flex-row sm:items-baseline sm:gap-4',
-                    slot.strong ? 'border-gold-border bg-gold-soft' : 'border-border bg-surface',
+                    'rounded-2xl border px-4 py-3.5',
+                    slot.strong
+                      ? 'border-copper/45 bg-copper/10 shadow-[0_0_24px_-12px_rgba(124,77,255,0.55)]'
+                      : 'border-border/80 bg-surface-raised/50',
                   )}
                 >
-                  <span
+                  <p
                     className={cn(
-                      'shrink-0 font-mono text-label uppercase sm:w-40',
-                      slot.strong ? 'text-gold-deep' : 'text-muted',
+                      'font-mono text-[10px] font-semibold uppercase tracking-[0.12em]',
+                      slot.strong ? 'text-copper' : 'text-muted',
                     )}
                   >
                     {slot.label}
-                  </span>
-                  <span className="min-w-0 flex-1 text-sm text-purple text-pretty">
-                    {slot.note}
-                  </span>
+                  </p>
+                  <p className="mt-1.5 text-sm leading-relaxed text-ink text-pretty">{slot.note}</p>
                 </li>
               ))}
             </ol>
-          </Block>
+          </section>
         </div>
 
-        <aside className="space-y-4 lg:sticky lg:top-8 lg:self-start">
-          <Card padding="md" className="gap-3">
-            <p className="font-mono text-label uppercase text-muted">Read from</p>
-            <ul className="space-y-1.5">
+        <aside className="space-y-4 lg:sticky lg:top-20 lg:self-start">
+          <div
+            className={cn(
+              'relative overflow-hidden rounded-[1.35rem] border border-[#7c4dff]/35',
+              'bg-[linear-gradient(160deg,#1a1040_0%,#0f0c24_100%)] p-5',
+              'shadow-[0_16px_40px_-24px_rgba(124,77,255,0.65)]',
+            )}
+          >
+            <div
+              aria-hidden
+              className="pointer-events-none absolute -right-10 -top-10 size-28 rounded-full bg-[#7c4dff]/25 blur-2xl"
+            />
+            <p className="relative font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-[#c4a0ff]">
+              Read from
+            </p>
+            <ul className="relative mt-3 space-y-2">
               {horoscope.source.bhavas.map((bhava) => (
-                <li key={bhava} className="font-mono text-data text-purple">
+                <li
+                  key={bhava}
+                  className="rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 font-mono text-xs text-white/80"
+                >
                   {bhavaRef(bhava)} · {BHAVA_SIGNIFIES[bhava]}
                 </li>
               ))}
             </ul>
-            <div className="flex flex-wrap items-center gap-3 border-t border-border pt-3">
+            <div className="relative mt-4 flex flex-wrap items-center gap-2 border-t border-white/10 pt-4">
               {horoscope.source.grahas.map((code) => (
-                <PlanetGlyph key={code} code={code} withName size="sm" />
+                <PlanetGlyph key={code} code={code} withName size="sm" tone="dark" />
               ))}
             </div>
-            <p className="font-mono text-data text-muted">{horoscope.source.dashaPath}</p>
+            <p className="relative mt-3 font-mono text-[11px] text-white/45">
+              {horoscope.source.dashaPath}
+            </p>
             <Button
-              variant="secondary"
+              variant="primary"
               size="sm"
               to={paths.chart}
               iconLeft={<Compass className="size-4" />}
-              className="mt-1 w-fit"
+              className="relative mt-4 w-full rounded-full"
             >
               Open my chart
             </Button>
-          </Card>
+          </div>
 
-          <Card tone="sunken" padding="md" className="gap-1.5">
-            <p className="flex items-center gap-1.5 font-mono text-label uppercase text-muted">
+          <div className="rounded-[1.35rem] border border-caution/30 bg-caution/5 p-5">
+            <p className="flex items-center gap-1.5 font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-caution">
               <TriangleAlert aria-hidden className="size-3.5" />
               What this does not show
             </p>
-            <p className="text-sm text-purple text-pretty">{horoscope.limits}</p>
-          </Card>
+            <p className="mt-2.5 text-sm leading-relaxed text-muted text-pretty">
+              {horoscope.limits}
+            </p>
+          </div>
         </aside>
       </div>
     </article>
   )
 }
 
-function Block({ title, children }: { title: string; children: React.ReactNode }) {
+function InsightPanel({
+  title,
+  items,
+  tone,
+}: {
+  title: string
+  items: string[]
+  tone: 'positive' | 'caution'
+}) {
+  const positive = tone === 'positive'
   return (
-    <section className="space-y-3">
-      <SectionHeader as="h2" size="sm" title={title} />
-      {children}
+    <section
+      className={cn(
+        'rounded-[1.35rem] border p-5 shadow-card',
+        positive
+          ? 'border-dignity-exalted/35 bg-dignity-exalted/5'
+          : 'border-caution/35 bg-caution/5',
+      )}
+    >
+      <p
+        className={cn(
+          'font-mono text-[10px] font-semibold uppercase tracking-[0.14em]',
+          positive ? 'text-dignity-exalted' : 'text-caution',
+        )}
+      >
+        {title}
+      </p>
+      <ul className="mt-3 space-y-3">
+        {items.map((item) => (
+          <li key={item} className="flex gap-3">
+            <span
+              aria-hidden
+              className={cn(
+                'mt-1.5 size-1.5 shrink-0 rounded-full',
+                positive ? 'bg-dignity-exalted' : 'bg-caution',
+              )}
+            />
+            <span className="text-sm leading-relaxed text-ink text-pretty">{item}</span>
+          </li>
+        ))}
+      </ul>
     </section>
-  )
-}
-
-function PointList({ items, tone }: { items: string[]; tone: 'positive' | 'caution' }) {
-  return (
-    <ul className="space-y-2.5">
-      {items.map((item) => (
-        <li key={item} className="flex gap-3">
-          <span
-            aria-hidden
-            className={cn(
-              'mt-1.5 size-1.5 shrink-0 rounded-full',
-              tone === 'positive' ? 'bg-dignity-exalted' : 'bg-caution',
-            )}
-          />
-          <span className="text-sub text-purple text-pretty">{item}</span>
-        </li>
-      ))}
-    </ul>
   )
 }
 

@@ -1,6 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { ChartDiamond } from '@/components/charts/ChartDiamond'
 import { ChartEastDiamond } from '@/components/charts/ChartEastDiamond'
+import {
+  DownloadKundaliButton,
+  PremiumKundaliAdCard,
+  type ChartKundaliDownloadContext,
+} from '@/components/charts/ChartKundaliDownloads'
 import { ChartSouthGrid } from '@/components/charts/ChartSouthGrid'
 import { LoadingState } from '@/components/common/LoadingState'
 import { vargas } from '@/data/vargas'
@@ -14,6 +19,7 @@ export interface ChartVargasPanelProps {
   seed: string
   varga: VargaCode
   onVargaChange: (varga: VargaCode) => void
+  downloads?: ChartKundaliDownloadContext
   className?: string
 }
 
@@ -24,6 +30,7 @@ export function ChartVargasPanel({
   seed,
   varga,
   onVargaChange,
+  downloads,
   className,
 }: ChartVargasPanelProps) {
   const [style, setStyle] = useState<ChartStyle>('north')
@@ -162,7 +169,7 @@ export function ChartVargasPanel({
             </header>
 
             <div className="mt-5 grid gap-5 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] lg:items-start">
-              <div>
+              <div className="space-y-3">
                 {style === 'north' && (
                   <ChartDiamond chart={chart} tone="surface" className="mx-auto w-full max-w-[420px]" />
                 )}
@@ -171,6 +178,9 @@ export function ChartVargasPanel({
                 )}
                 {style === 'east' && (
                   <ChartEastDiamond chart={chart} tone="surface" className="mx-auto w-full max-w-[420px]" />
+                )}
+                {downloads && (
+                  <DownloadKundaliButton context={downloads} className="w-full" size="sm" />
                 )}
               </div>
 
@@ -208,6 +218,8 @@ export function ChartVargasPanel({
                     ))}
                   </ul>
                 </div>
+
+                {downloads && <PremiumKundaliAdCard context={downloads} compact />}
               </div>
             </div>
           </>

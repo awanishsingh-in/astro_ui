@@ -1,5 +1,5 @@
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { ErrorState } from '@/components/common/ErrorState'
 import { LoadingState } from '@/components/common/LoadingState'
 import { TabPanel, useTabs } from '@/components/common/Tabs'
@@ -11,6 +11,7 @@ import { ChartVargasPanel } from '@/components/charts/ChartVargasPanel'
 import { ChartTransitsPanel } from '@/components/charts/ChartTransitsPanel'
 import { ChartStrengthPanel } from '@/components/charts/ChartStrengthPanel'
 import { CHART_NAV_TABS, ChartNavRail } from '@/components/charts/ChartNavRail'
+import type { ChartKundaliDownloadContext } from '@/components/charts/ChartKundaliDownloads'
 import { useAuth } from '@/auth/auth-context'
 import { chartSeedFor, type ChartProfile } from '@/data/profiles'
 import { useProfiles } from '@/profiles/profiles-context'
@@ -102,6 +103,17 @@ export default function ChartPage() {
   const chart = chartState.data
   const detailUnlocked = user ? hasChartDetailUnlocked(user.id, profile.id) : false
 
+  const downloads = useMemo<ChartKundaliDownloadContext | undefined>(() => {
+    if (!chart) return undefined
+    return {
+      chart,
+      profileName: profile.name,
+      birthDetails: profile.birthDetails,
+      detailUnlocked,
+      onGetDetail: openDetail,
+    }
+  }, [chart, profile.name, profile.birthDetails, detailUnlocked, openDetail])
+
   if (!user) return null
 
   return (
@@ -127,6 +139,7 @@ export default function ChartPage() {
                 <ChartWorkspace
                   chart={chart}
                   birthDetails={profile.birthDetails}
+                  profileName={profile.name}
                   varga={varga}
                   onVargaChange={changeVarga}
                   activeBhava={activeBhava}
@@ -147,7 +160,7 @@ export default function ChartPage() {
 
             <TabPanel controller={tabs} id="yoga">
               {chart ? (
-                <ChartYogaDoshaPanel chart={chart} />
+                <ChartYogaDoshaPanel chart={chart} downloads={downloads} />
               ) : (
                 <LoadingState label="Reading yogas and doshas…" lines={6} />
               )}
@@ -162,7 +175,7 @@ export default function ChartPage() {
                     onRetry={dashaState.retry}
                   />
                 ) : dashaState.data ? (
-                  <ChartDashaPanel dasha={dashaState.data} />
+                  <ChartDashaPanel dasha={dashaState.data} downloads={downloads} />
                 ) : (
                   <LoadingState label="Counting the periods…" lines={5} />
                 )}
@@ -175,6 +188,7 @@ export default function ChartPage() {
                   chart={chart}
                   activeGraha={activeGraha}
                   onSelectGraha={selectGraha}
+                  downloads={downloads}
                 />
               ) : (
                 <LoadingState label="Reading the grahas…" lines={6} />
@@ -182,12 +196,17 @@ export default function ChartPage() {
             </TabPanel>
 
             <TabPanel controller={tabs} id="vargas">
-              <ChartVargasPanel seed={seed} varga={varga} onVargaChange={changeVarga} />
+              <ChartVargasPanel
+                seed={seed}
+                varga={varga}
+                onVargaChange={changeVarga}
+                downloads={downloads}
+              />
             </TabPanel>
 
             <TabPanel controller={tabs} id="transits">
               {chart ? (
-                <ChartTransitsPanel chart={chart} />
+                <ChartTransitsPanel chart={chart} downloads={downloads} />
               ) : (
                 <LoadingState label="Reading gochar…" lines={5} />
               )}
@@ -199,6 +218,7 @@ export default function ChartPage() {
                   chart={chart}
                   activeBhava={activeBhava}
                   onSelectBhava={selectBhava}
+                  downloads={downloads}
                 />
               ) : (
                 <LoadingState label="Counting bindus…" lines={5} />

@@ -1,17 +1,32 @@
-import { ChevronLeft, ChevronRight, Maximize2, MessageCircle } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Download, Maximize2, MessageCircle } from 'lucide-react'
 import { useMemo, useState, type RefObject } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ChartDiamond } from '@/components/charts/ChartDiamond'
 import { ChartEastDiamond } from '@/components/charts/ChartEastDiamond'
 import { ChartSouthGrid } from '@/components/charts/ChartSouthGrid'
+import { Button } from '@/components/common/Button'
+import { PremiumKundaliAdCard } from '@/components/charts/ChartKundaliDownloads'
+import { Modal } from '@/components/modals/Modal'
+import { BottomSheet } from '@/components/sheets/BottomSheet'
+import { useToast } from '@/components/feedback/toast-context'
 import { vargaLabel } from '@/components/charts/VargaSelector'
 import { buildChartBasicsBundle } from '@/data/chart-basics'
 import { vargas } from '@/data/vargas'
+import { useDisclosure } from '@/hooks/useDisclosure'
+import { useIsDesktop } from '@/hooks/useMediaQuery'
 import { paths } from '@/routes/paths'
 import type { Chart, ChartStyle, GrahaCode, VargaCode } from '@/types/astrology'
 import type { BirthDetails } from '@/types/user'
 import { GRAHAS, RASHIS, rashiIndex } from '@/utils/astro'
+import { triggerBasicKundaliDownload } from '@/utils/chart-kundali-download'
 import { cn } from '@/utils/cn'
+
+/** Quick rail — D1 / D2 only; full list opens from All. */
+const VARGA_RAIL: VargaCode[] = ['D1', 'D2']
+
+const SORTED_VARGAS = [...vargas].sort(
+  (a, b) => Number(a.code.slice(1)) - Number(b.code.slice(1)),
+)
 
 const BHAVA_SANSKRIT: Record<number, string> = {
   1: 'Tanu',
@@ -52,6 +67,7 @@ const CHART_STYLES: { id: ChartStyle; label: string; icon: string }[] = [
 export interface ChartWorkspaceProps {
   chart: Chart
   birthDetails: BirthDetails
+  profileName: string
   varga: VargaCode
   onVargaChange: (varga: VargaCode) => void
   activeBhava?: number
@@ -70,18 +86,29 @@ export interface ChartWorkspaceProps {
 export function ChartWorkspace({
   chart,
   birthDetails,
+  profileName,
   varga,
   onVargaChange,
   activeBhava,
   onBhavaClick,
   chartFrameRef,
+  detailUnlocked,
+  onGetDetail,
   className,
 }: ChartWorkspaceProps) {
   const navigate = useNavigate()
+  const toast = useToast()
+  const vargaPicker = useDisclosure()
+  const isDesktop = useIsDesktop()
   const vargaMeta = vargas.find((v) => v.code === varga)
   const { birth, avakhada } = buildChartBasicsBundle(chart, birthDetails)
   const [chartStyle, setChartStyle] = useState<ChartStyle>('north')
   const [ayanamsa, setAyanamsa] = useState('Lahiri')
+
+  function chooseVarga(code: VargaCode) {
+    onVargaChange(code)
+    vargaPicker.close()
+  }
 
   const house = useMemo(() => {
     const n = activeBhava && activeBhava >= 1 && activeBhava <= 12 ? activeBhava : 1
@@ -119,48 +146,32 @@ export function ChartWorkspace({
     if (!house) return
     const planetLine =
       occupants.length === 0
-        ? 'No graha occupies this house.'
+        ? 'No planets in this house.'
         : `Planets here: ${occupants.map((o) => (o.note ? `${o.name} (${o.note})` : o.name)).join(', ')}.`
     const q = [
-      `What does house ${houseNumber} (${BHAVA_SANSKRIT[houseNumber]} bhava · ${rashiEnglish}) mean in my chart?`,
-      `${BHAVA_BLURB[houseNumber]}`,
-      `Lord ${lordEnglish} sits in my ${house.lordSitsIn}${ordinal(house.lordSitsIn)} (${lordRashiEnglish}).`,
+      `What does my ${houseNumber}${ordinal(houseNumber)} house (${BHAVA_SANSKRIT[houseNumber]} · ${rashiEnglish}) mean?`,
+      `Lord is ${lordEnglish} in the ${house.lordSitsIn}${ordinal(house.lordSitsIn)} (${lordRashiEnglish}).`,
       planetLine,
     ].join(' ')
+    navigate(`${paths.ask}?q=${encodeURIComponent(q)}&from=chart&bhava=${houseNumber}`)
+  }
 
-    try {
-      sessionStorage.setItem(
-        'cyklos_ask_chart_context',
-        JSON.stringify({
-          bhava: houseNumber,
-          sanskrit: BHAVA_SANSKRIT[houseNumber],
-          rashi: house.rashi,
-          rashiEnglish,
-          lord: lordEnglish,
-          lordBhava: house.lordSitsIn,
-          lordRashiEnglish,
-          planets: occupants.map((o) => o.name),
-          blurb: BHAVA_BLURB[houseNumber],
-          question: q,
-        }),
-      )
-    } catch {
-      /* private mode */
-    }
-
-    navigate(
-      `${paths.ask}?q=${encodeURIComponent(q)}&from=chart&bhava=${houseNumber}`,
-    )
+  function downloadBasicKundali() {
+    triggerBasicKundaliDownload({ chart, profileName, birthDetails, ayanamsa })
+    toast.success('Kundali downloaded', {
+      description: 'Basic chart summary saved to your device.',
+    })
   }
 
   return (
     <div
       className={cn(
-        'animate-rise grid gap-4 lg:grid-cols-[minmax(0,1.45fr)_minmax(0,1fr)] lg:items-start',
+        'animate-rise grid gap-4 lg:grid-cols-[minmax(0,1.45fr)_minmax(0,1fr)] lg:items-stretch',
         className,
       )}
     >
-      {/* Lagna chart card */}
+      {/* Lagna chart column */}
+      <div className="flex flex-col gap-3">
       <section className="overflow-hidden rounded-[1.75rem] border border-border/70 bg-surface shadow-card">
         <header className="flex flex-wrap items-start justify-between gap-3 px-5 pb-2 pt-5 sm:px-6 sm:pt-6">
           <div className="min-w-0">
@@ -172,35 +183,49 @@ export function ChartWorkspace({
             </p>
           </div>
 
-          <div className="flex items-center gap-2">
-            <div className="inline-flex rounded-full border border-border/70 bg-surface-sunken/40 p-0.5">
-              {(
-                [
-                  { code: 'D1' as const, label: 'D1 · Rasi' },
-                  { code: 'D9' as const, label: 'D9 · Navamsa' },
-                ] as const
-              ).map((opt) => {
-                const active = varga === opt.code
+          <div className="flex min-w-0 items-center gap-2">
+            <div
+              className="inline-flex max-w-[min(100%,22rem)] items-center gap-0.5 overflow-x-auto rounded-full border border-border/70 bg-surface-sunken/40 p-0.5 scrollbar-none sm:max-w-none"
+              role="tablist"
+              aria-label="Divisional chart"
+            >
+              {VARGA_RAIL.map((code) => {
+                const active = varga === code
                 return (
                   <button
-                    key={opt.code}
+                    key={code}
                     type="button"
-                    onClick={() => onVargaChange(opt.code)}
+                    role="tab"
+                    aria-selected={active}
+                    onClick={() => onVargaChange(code)}
                     className={cn(
-                      'rounded-full px-3 py-1.5 text-xs font-semibold transition',
+                      'shrink-0 rounded-full px-2.5 py-1.5 font-mono text-xs font-semibold transition',
                       active
                         ? 'bg-copper text-white shadow-sm'
                         : 'text-muted hover:text-ink',
                     )}
                   >
-                    {opt.label}
+                    {code}
                   </button>
                 )
               })}
+              <button
+                type="button"
+                onClick={vargaPicker.open}
+                aria-haspopup="dialog"
+                className={cn(
+                  'shrink-0 rounded-full px-2.5 py-1.5 text-xs font-semibold transition',
+                  !VARGA_RAIL.includes(varga)
+                    ? 'bg-copper text-white shadow-sm'
+                    : 'text-muted hover:bg-copper/15 hover:text-copper',
+                )}
+              >
+                All
+              </button>
             </div>
             <button
               type="button"
-              className="inline-flex size-9 items-center justify-center rounded-full border border-border/70 text-muted transition hover:bg-navy-soft hover:text-ink"
+              className="inline-flex size-9 shrink-0 items-center justify-center rounded-full border border-border/70 text-muted transition hover:bg-navy-soft hover:text-ink"
               aria-label="Expand chart"
               onClick={() =>
                 chartFrameRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
@@ -288,8 +313,19 @@ export function ChartWorkspace({
         </footer>
       </section>
 
+      <Button
+        variant="secondary"
+        size="md"
+        className="w-full rounded-2xl"
+        iconLeft={<Download className="size-4" />}
+        onClick={downloadBasicKundali}
+      >
+        Download Kundali
+      </Button>
+      </div>
+
       {/* Right column */}
-      <div className="flex flex-col gap-4">
+      <div className="flex h-full flex-col gap-4">
         {house && (
           <article className="relative overflow-hidden rounded-[1.75rem] border border-border/70 bg-surface px-5 py-5 shadow-card sm:px-6">
             <div className="flex items-start justify-between gap-3">
@@ -349,9 +385,9 @@ export function ChartWorkspace({
             <button
               type="button"
               onClick={askAboutHouse}
-              className="mt-5 flex w-full items-center justify-center gap-2 rounded-2xl bg-copper/90 px-4 py-3.5 text-sm font-semibold text-white shadow-[0_12px_28px_-16px_rgba(124,77,255,0.7)] transition hover:bg-copper"
+              className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-copper/90 px-3 py-2.5 text-sm font-semibold text-white shadow-[0_10px_22px_-14px_rgba(124,77,255,0.65)] transition hover:bg-copper"
             >
-              <MessageCircle className="size-4" aria-hidden />
+              <MessageCircle className="size-3.5" aria-hidden />
               Ask about this house
             </button>
           </article>
@@ -380,11 +416,91 @@ export function ChartWorkspace({
           />
         </div>
 
+        <div className="mt-auto">
+          <PremiumKundaliAdCard
+            context={{
+              chart,
+              profileName,
+              birthDetails,
+              detailUnlocked,
+              onGetDetail,
+              ayanamsa,
+            }}
+          />
+        </div>
+
         <p className="px-1 text-center font-mono text-[10px] uppercase tracking-[0.12em] text-faint">
           Lagna {chart.lagna.rashi} · sign {rashiIndex(chart.lagna.rashi)}
         </p>
       </div>
+
+      {isDesktop ? (
+        <Modal
+          isOpen={vargaPicker.isOpen}
+          onClose={vargaPicker.close}
+          title="All divisional charts"
+          description="Pick any of the sixteen Vargas — D1 first, then the finer divisions."
+          size="lg"
+          className="max-w-3xl"
+        >
+          <VargaPickerGrid value={varga} onSelect={chooseVarga} />
+        </Modal>
+      ) : (
+        <BottomSheet
+          isOpen={vargaPicker.isOpen}
+          onClose={vargaPicker.close}
+          title="All divisional charts"
+          description="Pick any of the sixteen Vargas — D1 first, then the finer divisions."
+        >
+          <VargaPickerGrid value={varga} onSelect={chooseVarga} />
+        </BottomSheet>
+      )}
     </div>
+  )
+}
+
+function VargaPickerGrid({
+  value,
+  onSelect,
+}: {
+  value: VargaCode
+  onSelect: (code: VargaCode) => void
+}) {
+  return (
+    <ul className="grid grid-cols-2 gap-2 sm:grid-cols-4 sm:gap-2.5" aria-label="Divisional charts">
+      {SORTED_VARGAS.map((item) => {
+        const active = item.code === value
+        return (
+          <li key={item.code}>
+            <button
+              type="button"
+              onClick={() => onSelect(item.code)}
+              aria-current={active ? 'true' : undefined}
+              className={cn(
+                'flex h-full min-h-[4.75rem] w-full flex-col items-start gap-1 rounded-2xl border p-3 text-left',
+                'transition-[border-color,background-color,transform] duration-150 ease-out-soft',
+                'active:scale-[0.99]',
+                active
+                  ? 'border-copper/55 bg-copper/12'
+                  : 'border-border bg-surface hover:border-border-strong hover:bg-navy-soft',
+              )}
+            >
+              <span className="flex w-full items-start justify-between gap-2">
+                <span className="font-mono text-sm font-semibold text-ink">
+                  {item.code} · {item.name}
+                </span>
+                {active && (
+                  <span className="shrink-0 font-mono text-[10px] uppercase text-copper">On</span>
+                )}
+              </span>
+              <span className="line-clamp-2 text-xs leading-snug text-muted text-pretty">
+                {item.signifies}
+              </span>
+            </button>
+          </li>
+        )
+      })}
+    </ul>
   )
 }
 

@@ -249,11 +249,20 @@ export function GlowCursor({
     if (prefersReduced) return
 
     const initialConfig = propsRef.current
-    const renderer = new Renderer({
-      canvas,
-      alpha: true,
-      dpr: Math.min(window.devicePixelRatio || 1, initialConfig.maxDevicePixelRatio),
-    })
+    let renderer: Renderer
+    try {
+      renderer = new Renderer({
+        canvas,
+        alpha: true,
+        dpr: Math.min(window.devicePixelRatio || 1, initialConfig.maxDevicePixelRatio),
+      })
+      if (!renderer.gl) {
+        throw new Error('WebGL context unavailable')
+      }
+    } catch {
+      // WebGL unavailable (blocked GPU / too many contexts) — skip cursor glow instead of crashing the app.
+      return
+    }
     const gl = renderer.gl
     gl.clearColor(0, 0, 0, 0)
 
