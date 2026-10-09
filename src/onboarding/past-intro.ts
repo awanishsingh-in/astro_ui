@@ -141,6 +141,32 @@ export const unlockPlan = unlockChat
 
 const YEARLY_HOROSCOPE_KEY = 'cyklos_yearly_horoscope_unlocked'
 
+/** Per-user: profile ids paid for, or legacy `true` (unlocked, ids unknown). */
+type YearlyUnlockMap = Record<string, string[] | true>
+
+function readYearlyUnlockMap(): YearlyUnlockMap {
+  try {
+    const raw = window.localStorage.getItem(YEARLY_HOROSCOPE_KEY)
+    if (!raw) return {}
+    if (raw === 'true') return {}
+    const parsed = JSON.parse(raw) as unknown
+    if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+      return parsed as YearlyUnlockMap
+    }
+    return {}
+  } catch {
+    return {}
+  }
+}
+
+function writeYearlyUnlockMap(map: YearlyUnlockMap): void {
+  try {
+    window.localStorage.setItem(YEARLY_HOROSCOPE_KEY, JSON.stringify(map))
+  } catch {
+    // noop
+  }
+}
+
 /** Yearly personalised horoscope — unlocked after demo checkout pay. */
 export function hasYearlyHoroscopeUnlocked(userId: string): boolean {
   if (!userId) return false
@@ -148,28 +174,28 @@ export function hasYearlyHoroscopeUnlocked(userId: string): boolean {
     const raw = window.localStorage.getItem(YEARLY_HOROSCOPE_KEY)
     if (!raw) return false
     if (raw === 'true') return true
-    const parsed = JSON.parse(raw) as SeenMap
-    return Boolean(parsed?.[userId])
+    const entry = readYearlyUnlockMap()[userId]
+    if (entry === true) return true
+    return Array.isArray(entry) && entry.length > 0
   } catch {
     return false
   }
 }
 
-export function unlockYearlyHoroscope(userId: string): void {
+/** Profile ids included in the yearly unlock for this user. */
+export function getYearlyHoroscopeUnlockedProfileIds(userId: string): string[] {
+  if (!userId) return []
+  const entry = readYearlyUnlockMap()[userId]
+  if (Array.isArray(entry)) return entry
+  return []
+}
+
+/** Unlock yearly for the paid profile ids (merges with any existing). */
+export function unlockYearlyHoroscope(userId: string, profileIds: string[] = []): void {
   if (!userId) return
-  try {
-    const raw = window.localStorage.getItem(YEARLY_HOROSCOPE_KEY)
-    let map: SeenMap = {}
-    if (raw && raw !== 'true') {
-      try {
-        map = JSON.parse(raw) as SeenMap
-      } catch {
-        map = {}
-      }
-    }
-    map[userId] = true
-    window.localStorage.setItem(YEARLY_HOROSCOPE_KEY, JSON.stringify(map))
-  } catch {
-    // noop
-  }
+  const map = readYearlyUnlockMap()
+  const existing = getYearlyHoroscopeUnlockedProfileIds(userId)
+  const merged = [...new Set([...existing, ...profileIds.filter(Boolean)])]
+  map[userId] = merged.length > 0 ? merged : true
+  writeYearlyUnlockMap(map)
 }

@@ -100,12 +100,22 @@ function chipFromDate(d: Date, period: HoroscopePeriod): HoroscopeDateChip {
   return { id: `${period}-${iso}`, iso, dayNum, weekday, monthShort, label }
 }
 
-export type HoroscopeVerticalId = 'career' | 'love' | 'health' | 'finance'
+export type HoroscopeVerticalId =
+  | 'career'
+  | 'love'
+  | 'health'
+  | 'finance'
+  | 'lucky'
+  | 'focus'
+  | 'family'
+  | 'growth'
 
 export interface SignHoroscopeVertical {
   id: HoroscopeVerticalId
   label: string
   blurb: string
+  /** 0–100 display score for the hub card. */
+  score: number
 }
 
 export interface SignHoroscopeSummary {
@@ -123,15 +133,15 @@ export interface SignHoroscopeSummary {
 }
 
 const THEME_LINE: Record<HoroscopeThemeId, string> = {
-  general: 'The chart favours steady moves over sudden turns.',
-  love: 'Partnership reads clearer when you speak plainly.',
-  career: 'Work gains from focus on one thread, not ten.',
-  health: 'Routine and rest outweigh a dramatic reset.',
-  finance: 'Hold the purse for impulse; plan one real spend.',
-  lucky: 'Luck here is rhythm — hours and colour from your lords.',
-  yearly: 'The year opens with patience; later months carry more push.',
-  tomorrow: 'Tomorrow rewards what you prepare quietly today.',
-  rashifal: 'Read by moon sign — same sky, different house emphasis.',
+  general: 'Slow beats sudden today — pick one move and stick with it.',
+  love: 'Say it plain. Soft hints get lost.',
+  career: 'One thread of work beats a piled desk.',
+  health: 'Sleep and a short walk win over a dramatic reset.',
+  finance: 'One planned spend. Leave the impulse cart.',
+  lucky: 'Your colour and hours matter more than a hunch.',
+  yearly: 'Patience first; push later in the year.',
+  tomorrow: 'Prep quietly today — tomorrow pays you back.',
+  rashifal: 'Same sky, different house — read by your moon sign.',
 }
 
 /**
@@ -169,58 +179,119 @@ export function buildSignHoroscopeSummary(
     period,
     dateLabel,
     headline: `${periodWord} for ${meta.english}`,
-    summary: `${THEME_LINE[theme]} For ${meta.english} (${rashi}), the sky asks for care with timing rather than force.`,
-    bullets: [
-      `Lead with what ${meta.english} already does well — do not stretch into every house at once.`,
+    summary:
       period === 'daily'
-        ? 'Keep the middle of the day for decisions; evenings for review.'
+        ? `${THEME_LINE[theme]} For ${meta.english} (${rashi}), timing beats force — lean in where the score is high, and hold back where the chart is thin. Keep the middle of the day for the one decision that matters; leave evenings for review, not for reopening closed loops. A quiet hour or a short walk will do more for you than a packed calendar.`
         : period === 'weekly'
-          ? 'Mid-week carries more traction than the weekend edges.'
-          : 'The first fortnight sets the tone; the second consolidates.',
+          ? `${THEME_LINE[theme]} For ${meta.english} (${rashi}), timing beats force — lean in where the score is high, and hold back where the chart is thin. Mid-week holds the real traction; keep weekend edges light so Monday isn’t spent undoing Friday’s stretch. One clear win for the week beats five half-started threads.`
+          : `${THEME_LINE[theme]} For ${meta.english} (${rashi}), timing beats force — lean in where the score is high, and hold back where the chart is thin. The first fortnight sets the tone; the second consolidates if you stay steady. Name one priority for the month and protect it — depth beats dabbling.`,
+    bullets: [
+      `Lead with what ${meta.english} already does well. Don’t stretch into every lane at once.`,
+      period === 'daily'
+        ? 'Keep decisions for mid-day. Soften the evening. Skip the late-night spiral.'
+        : period === 'weekly'
+          ? 'Mid-week for push. Soft weekends. One clear win is enough.'
+          : 'First half builds standing. Second half locks it in — don’t reboot mid-month.',
+      period === 'daily'
+        ? 'One clear ask of the day beats five half-started threads.'
+        : period === 'weekly'
+          ? 'Name one push and one pause for the week — leave the rest.'
+          : 'Pick one habit and one boundary for the month. Depth over noise.',
+      period === 'daily'
+        ? 'If love or money asks for attention, keep the answer short and clear.'
+        : 'Protect sleep and one real conversation. The rest can wait.',
       theme === 'lucky'
-        ? 'Favour soft metals and muted greens where you choose colour.'
-        : 'Name one watch-out and one opening — leave the rest.',
+        ? 'Favour soft metals and muted greens if you choose a colour.'
+        : 'Watch the house the chart is stressing — guard sleep, spend, and sharp words there.',
     ],
     verticals: [
       {
         id: 'career',
         label: 'Career',
+        score: verticalScore(rashi, period, dateIso, 'career'),
         blurb:
           period === 'daily'
-            ? `One clear work thread serves ${meta.english} better than a crowded desk ${spanCue}.`
+            ? `One clear work thread beats a crowded desk for ${meta.english} ${spanCue}.`
             : period === 'weekly'
-              ? `Mid-week holds more career traction for ${meta.english}; keep weekends lighter.`
-              : `The first half of the month sets standing; consolidate rather than relaunch.`,
+              ? `Push mid-week. Soft-pedal the weekend for ${meta.english}.`
+              : `First half sets standing — consolidate, don’t relaunch.`,
       },
       {
         id: 'love',
         label: 'Love',
+        score: verticalScore(rashi, period, dateIso, 'love'),
         blurb:
           period === 'daily'
-            ? `Plain words land cleaner than hints — keep partnership simple ${spanCue}.`
+            ? `Say it straight — soft hints get lost ${spanCue}.`
             : period === 'weekly'
-              ? `Warmth builds in small check-ins; avoid a heavy talk on the weekend edge.`
-              : `Steady presence beats grand gestures; name what you need once, clearly.`,
+              ? `Small check-ins warm things up; save the heavy talk.`
+              : `Show up steady. One clear ask beats a grand gesture.`,
       },
       {
         id: 'health',
         label: 'Health',
+        score: verticalScore(rashi, period, dateIso, 'health'),
         blurb:
           period === 'daily'
-            ? `Protect sleep and a short walk — routine outweighs a dramatic reset ${spanCue}.`
+            ? `Sleep + a short walk beat any dramatic reset ${spanCue}.`
             : period === 'weekly'
-              ? `Pace the middle days; rest is part of the plan, not a reward at the end.`
-              : `Anchor one daily habit for the month; drop what you cannot keep.`,
+              ? `Pace the middle days. Rest is part of the plan.`
+              : `One habit you can keep. Drop what you can’t.`,
       },
       {
         id: 'finance',
         label: 'Finance',
+        score: verticalScore(rashi, period, dateIso, 'finance'),
         blurb:
           period === 'daily'
-            ? `Hold impulse spends; one planned outlay is enough ${spanCue}.`
+            ? `One planned outlay. Leave the impulse cart alone ${spanCue}.`
             : period === 'weekly'
-              ? `Review one bill mid-week; leave speculative moves for clearer sky.`
-              : `Budget the first fortnight tightly; freer room opens later if you stay steady.`,
+              ? `Check one bill mid-week. Skip speculative moves.`
+              : `Tight first fortnight — freer room opens if you stay steady.`,
+      },
+      {
+        id: 'lucky',
+        label: 'Lucky',
+        score: verticalScore(rashi, period, dateIso, 'lucky'),
+        blurb:
+          period === 'daily'
+            ? `Trust your hours and colour more than a random hunch ${spanCue}.`
+            : period === 'weekly'
+              ? `Luck rides rhythm this week — stack small wins, not jackpots.`
+              : `Pick one lucky lane for the month and stick with it.`,
+      },
+      {
+        id: 'focus',
+        label: 'Focus',
+        score: verticalScore(rashi, period, dateIso, 'focus'),
+        blurb:
+          period === 'daily'
+            ? `Guard one quiet hour — that’s the real win for ${meta.english} ${spanCue}.`
+            : period === 'weekly'
+              ? `Block deep work mid-week. Meetings can wait.`
+              : `One priority for the month. Everything else is noise.`,
+      },
+      {
+        id: 'family',
+        label: 'Family',
+        score: verticalScore(rashi, period, dateIso, 'family'),
+        blurb:
+          period === 'daily'
+            ? `A short check-in lands better than a long lecture ${spanCue}.`
+            : period === 'weekly'
+              ? `Keep home talk light mid-week; save big chats for softer days.`
+              : `Presence over performance — show up once, clearly.`,
+      },
+      {
+        id: 'growth',
+        label: 'Growth',
+        score: verticalScore(rashi, period, dateIso, 'growth'),
+        blurb:
+          period === 'daily'
+            ? `Learn one thing well. Don’t open five tabs ${spanCue}.`
+            : period === 'weekly'
+              ? `Skill over stretch — finish one lesson before starting two.`
+              : `Pick one craft for the month. Depth beats dabbling.`,
       },
     ],
     mood: theme === 'love' || theme === 'lucky' ? 'Warm' : theme === 'career' ? 'Focused' : 'Steady',
@@ -238,4 +309,45 @@ export function themeToKind(
   if (theme === 'lucky') return 'lucky'
   if (theme === 'rashifal') return 'rashifal'
   return theme
+}
+
+/** Map an area lane → the horoscope kind we fetch for the detail pane. */
+export function verticalToKind(
+  id: HoroscopeVerticalId,
+  period: HoroscopePeriod,
+): string {
+  switch (id) {
+    case 'focus':
+      return period
+    case 'family':
+      return 'love'
+    case 'growth':
+      return 'career'
+    default:
+      return id
+  }
+}
+
+/** Stable 50–100 score so the hub cards feel lively without a live API. */
+function verticalScore(
+  rashi: RashiName,
+  period: HoroscopePeriod,
+  dateIso: string,
+  area: HoroscopeVerticalId,
+): number {
+  const rashiI = Math.max(0, RASHIS.findIndex((r) => r.name === rashi))
+  const day = Number(dateIso.slice(-2)) || 1
+  const periodW = period === 'daily' ? 1 : period === 'weekly' ? 3 : 5
+  const areaW: Record<HoroscopeVerticalId, number> = {
+    career: 7,
+    love: 11,
+    health: 13,
+    finance: 17,
+    lucky: 19,
+    focus: 23,
+    family: 29,
+    growth: 31,
+  }
+  const raw = 58 + ((rashiI * 9 + day * periodW + areaW[area] * 5) % 43)
+  return Math.min(100, Math.round(raw / 5) * 5)
 }

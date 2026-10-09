@@ -457,7 +457,7 @@ export const DEFAULT_SAVED_MUHURATS: SavedMuhurat[] = [
     forLabel: 'Self',
     dateLabel: 'Sun 11 Oct',
     window: '10:20–12:02',
-    status: 'Reminder set · added to Google Calendar',
+    status: 'Notification on',
   },
   {
     id: 's2',
@@ -465,7 +465,7 @@ export const DEFAULT_SAVED_MUHURATS: SavedMuhurat[] = [
     forLabel: 'Papa · saved profile',
     dateLabel: 'Fri 23 Oct',
     window: '08:05–09:30',
-    status: 'Reminder set',
+    status: 'Notification on',
   },
   {
     id: 's3',

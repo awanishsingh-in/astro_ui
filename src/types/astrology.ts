@@ -208,6 +208,10 @@ export interface CalendarDay extends Panchang {
   events: CalendarEvent[]
   /** Hindu month name for this day, e.g. Bhadrapada. */
   hinduMonth?: string
+  /** Chandra rashi (moon sign) for the day, e.g. Vrishabha. */
+  chandraRashi?: string
+  /** Approximate time the moon enters that rashi (mock). */
+  chandraRashiAt?: string
   /** Vikram Samvat year label. */
   samvat?: string
   /** End times shown in the day rail (mock). */

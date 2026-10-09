@@ -1,8 +1,9 @@
-import { Bell } from 'lucide-react'
+import { Bell, CalendarPlus } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { Badge } from '@/components/common/Badge'
 import { Button } from '@/components/common/Button'
 import { Card } from '@/components/common/Card'
+import { useToast } from '@/components/feedback/toast-context'
 import {
   FESTIVAL_CATEGORY_LABEL,
   nextFestivals,
@@ -10,6 +11,7 @@ import {
 import { paths } from '@/routes/paths'
 import type { FestivalCategory, FestivalEntry } from '@/types/astrology'
 import { cn } from '@/utils/cn'
+import { downloadEventsIcs } from '@/utils/event-calendar'
 
 const CATEGORIES: { id: 'all' | FestivalCategory; label: string }[] = [
   { id: 'all', label: 'All' },
@@ -18,6 +20,18 @@ const CATEGORIES: { id: 'all' | FestivalCategory; label: string }[] = [
   { id: 'regional', label: 'Regional' },
   { id: 'observance', label: 'Observances' },
 ]
+
+const YEAR_OPTIONS = Array.from({ length: 21 }, (_, i) => 2016 + i)
+
+const REGIONS = [
+  { id: 'north', label: 'North India', match: /north|pan-india|delhi|punjab|uttar|haryana/i },
+  { id: 'west', label: 'West India', match: /west|maharashtra|gujarat|rajasthan|pan-india/i },
+  { id: 'south', label: 'South India', match: /south|tamil|telugu|kerala|karnataka|pan-india/i },
+  { id: 'east', label: 'East India', match: /east|bengal|odisha|assam|pan-india/i },
+  { id: 'pan', label: 'Pan-India', match: /pan-india|\S+/i },
+] as const
+
+type FestivalRegionId = (typeof REGIONS)[number]['id']
 
 const TRADITIONS = [
   'North Indian',
@@ -33,35 +47,128 @@ function formatListDate(iso: string) {
   return d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', weekday: 'short' })
 }
 
+function FilterSelect({
+  label,
+  value,
+  onChange,
+  options,
+}: {
+  label: string
+  value: string
+  onChange: (value: string) => void
+  options: { value: string; label: string }[]
+}) {
+  return (
+    <label className="group relative inline-flex items-center">
+      <span
+        className={cn(
+          'relative inline-flex items-center rounded-full border border-border/80',
+          'bg-surface px-3.5 py-1.5',
+          'shadow-[0_0_0_1px_rgba(124,77,255,0.06)]',
+          'transition group-hover:border-copper/45 group-hover:bg-copper/10',
+        )}
+      >
+        <span className="pointer-events-none mr-1.5 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-muted">
+          {label} ·
+        </span>
+        <select
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          aria-label={label}
+          className={cn(
+            'appearance-none bg-transparent pr-5',
+            'font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-ink',
+            'outline-none',
+          )}
+        >
+          {options.map((opt) => (
+            <option key={opt.value} value={opt.value}>
+              {opt.label}
+            </option>
+          ))}
+        </select>
+        <span
+          aria-hidden
+          className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[0.65em] text-copper"
+        >
+          ▾
+        </span>
+      </span>
+    </label>
+  )
+}
+
 export function FestivalsCalendarView({
   festivals,
   year,
   category,
+  region,
+  onYearChange,
   onCategory,
+  onRegionChange,
   onRemind,
   onShowMonth,
 }: {
   festivals: FestivalEntry[]
   year: number
   category: 'all' | FestivalCategory
+  region: FestivalRegionId
+  onYearChange: (year: number) => void
   onCategory: (c: 'all' | FestivalCategory) => void
+  onRegionChange: (region: FestivalRegionId) => void
   onRemind: (festival: FestivalEntry) => void
   onShowMonth: () => void
 }) {
-  const filtered =
+  const toast = useToast()
+  const regionMeta = REGIONS.find((r) => r.id === region) ?? REGIONS[0]
+  const byCategory =
     category === 'all' ? festivals : festivals.filter((f) => f.category === category)
+  const filtered =
+    region === 'pan'
+      ? byCategory
+      : byCategory.filter((f) => regionMeta.match.test(f.regions))
   const upcoming = nextFestivals(`${year}-01-01`, 3)
+  const yearChoices = YEAR_OPTIONS.includes(year)
+    ? YEAR_OPTIONS
+    : [...YEAR_OPTIONS, year].sort((a, b) => a - b)
+
+  function syncFestivalsToGoogle() {
+    if (filtered.length === 0) {
+      toast.info('No festivals to sync', { description: 'Try another year, region, or category.' })
+      return
+    }
+    downloadEventsIcs(
+      filtered.map((f) => ({
+        id: f.id,
+        title: f.name,
+        dateIso: f.date,
+        description: `${f.hinduDate} · ${f.regions}`,
+      })),
+      `cyklos-festivals-${year}.ics`,
+      `Cyklos festivals ${year}`,
+    )
+    window.open('https://calendar.google.com/calendar/u/0/r/settings/export', '_blank')
+    toast.success('Ready for Google Calendar', {
+      description: `${filtered.length} festival${filtered.length === 1 ? '' : 's'} downloaded. In Google Calendar choose Import and select the .ics file.`,
+    })
+  }
 
   return (
     <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(17rem,19rem)] xl:items-start xl:gap-7">
       <div className="space-y-5">
         <div className="flex flex-wrap items-center gap-2.5">
-          <span className="rounded-full border border-border/80 bg-surface px-3.5 py-1.5 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-muted">
-            Year · {year}
-          </span>
-          <span className="rounded-full border border-border/80 bg-surface px-3.5 py-1.5 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-muted">
-            Region · North India
-          </span>
+          <FilterSelect
+            label="Year"
+            value={String(year)}
+            onChange={(value) => onYearChange(Number(value))}
+            options={yearChoices.map((y) => ({ value: String(y), label: String(y) }))}
+          />
+          <FilterSelect
+            label="Region"
+            value={region}
+            onChange={(value) => onRegionChange(value as FestivalRegionId)}
+            options={REGIONS.map((r) => ({ value: r.id, label: r.label }))}
+          />
         </div>
 
         <div className="flex flex-wrap gap-2">
@@ -120,7 +227,7 @@ export function FestivalsCalendarView({
         </ul>
 
         <p className="font-mono text-label uppercase tracking-[0.1em] text-faint">
-          Showing {filtered.length} of {festivals.length} festivals in {year}
+          Showing {filtered.length} of {festivals.length} festivals in {year} · {regionMeta.label}
         </p>
       </div>
 
@@ -157,11 +264,19 @@ export function FestivalsCalendarView({
           <Button variant="secondary" size="sm" className="w-full rounded-full" onClick={onShowMonth}>
             See them on the month grid
           </Button>
-          <Button variant="primary" size="sm" className="w-full rounded-full" to={`${paths.panchang}?tab=downloads`}>
-            Sync festivals to my calendar
+          <Button
+            variant="primary"
+            size="sm"
+            className="w-full rounded-full"
+            iconLeft={<CalendarPlus className="size-3.5" />}
+            onClick={syncFestivalsToGoogle}
+          >
+            Sync festivals to Google Calendar
           </Button>
         </div>
       </aside>
     </div>
   )
 }
+
+export type { FestivalRegionId }

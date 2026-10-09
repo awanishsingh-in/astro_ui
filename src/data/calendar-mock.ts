@@ -366,6 +366,9 @@ export function buildCalendarDay(year: number, month: number, day: number): Cale
   const endHour = 8 + (seed % 14)
   const endMin = (seed * 7) % 60
 
+  const rashiHour = 6 + (seed % 12)
+  const rashiMin = (seed * 11) % 60
+
   return {
     date: toIsoDate(year, month, day),
     tithi: label,
@@ -376,6 +379,8 @@ export function buildCalendarDay(year: number, month: number, day: number): Cale
     paksha,
     events: eventsFor(year, month, day, isEkadashi),
     hinduMonth: HINDU_MONTH_BY_GREGORIAN[month] ?? 'Chaitra',
+    chandraRashi: CHANDRA_RASHIS[seed % CHANDRA_RASHIS.length] ?? 'Mesha',
+    chandraRashiAt: `${hh(rashiHour)}:${hh(rashiMin)}`,
     samvat: `Vikram Samvat ${year + 57}`,
     tithiEnds: `${hh(endHour)}:${hh(endMin)}`,
     nakshatraEnds: `${hh((endHour + 1) % 24)}:${hh((endMin + 17) % 60)}`,
@@ -400,6 +405,21 @@ const HINDU_MONTH_BY_GREGORIAN = [
   'Ashwina',
   'Kartika',
   'Margashirsha',
+] as const
+
+const CHANDRA_RASHIS = [
+  'Mesha',
+  'Vrishabha',
+  'Mithuna',
+  'Karka',
+  'Simha',
+  'Kanya',
+  'Tula',
+  'Vrishchika',
+  'Dhanu',
+  'Makara',
+  'Kumbha',
+  'Meena',
 ] as const
 
 /** All days in a month, including leading/trailing padding for the grid. */

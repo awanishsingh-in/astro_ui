@@ -32,7 +32,8 @@ export function YearlyHoroscopeCheckout({
 }: {
   profiles: ChartProfile[]
   onClose: () => void
-  onUnlocked?: () => void
+  /** Called after pay with the profile ids included in this purchase. */
+  onUnlocked?: (profileIds: string[]) => void
 }) {
   const navigate = useNavigate()
   const { user } = useAuth()
@@ -61,8 +62,8 @@ export function YearlyHoroscopeCheckout({
     window.setTimeout(() => {
       setPaying(false)
       if (user?.id) {
-        unlockYearlyHoroscope(user.id)
-        onUnlocked?.()
+        unlockYearlyHoroscope(user.id, selectedIds)
+        onUnlocked?.(selectedIds)
       }
       setStep('done')
       toast.success('Payment successful', {

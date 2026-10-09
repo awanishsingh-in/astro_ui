@@ -9,27 +9,53 @@ import {
 import { useNavigate } from 'react-router-dom'
 import {
   Briefcase,
-  ChevronRight,
+  Clover,
+  Focus,
   Heart,
   HeartPulse,
-  LayoutGrid,
+  Home,
+  MessageCircle,
+  Plus,
+  RefreshCw,
   Sparkles,
+  Sprout,
   Wallet,
 } from 'lucide-react'
 import { useAuth } from '@/auth/auth-context'
 import { Button } from '@/components/common/Button'
+import { ErrorState } from '@/components/common/ErrorState'
 import { RubberSegment } from '@/components/common/RubberSegment'
+import { Modal } from '@/components/modals/Modal'
+import { buildChart } from '@/data/chart-mock'
+import {
+  chartSeedFor,
+  RELATION_LABEL,
+  type ChartProfile,
+} from '@/data/profiles'
 import {
   buildHoroscopeDateChips,
   buildSignHoroscopeSummary,
+  verticalToKind,
   type HoroscopePeriod,
   type HoroscopeVerticalId,
+  type SignHoroscopeVertical,
 } from '@/data/horoscope-hub'
+import type { HoroscopeKind } from '@/data/horoscope-mock'
+import { useAsync } from '@/hooks/useAsync'
+import { useDisclosure } from '@/hooks/useDisclosure'
 import { PageContainer } from '@/layouts/PageContainer'
-import { hasYearlyHoroscopeUnlocked } from '@/onboarding/past-intro'
+import {
+  getYearlyHoroscopeUnlockedProfileIds,
+  hasYearlyHoroscopeUnlocked,
+} from '@/onboarding/past-intro'
+import {
+  HoroscopeBody,
+  HoroscopeSkeleton,
+} from '@/pages/horoscope/HoroscopePage'
 import { YearlyHoroscopeCheckout } from '@/pages/horoscope/YearlyHoroscopeCheckout'
 import { useProfiles } from '@/profiles/profiles-context'
 import { paths } from '@/routes/paths'
+import { getHoroscope } from '@/services/astrology.service'
 import dhanuIcon from '@/assets/zodiac/dhanu.jpg'
 import kanyaIcon from '@/assets/zodiac/kanya.jpg'
 import karkaIcon from '@/assets/zodiac/karka.jpg'
@@ -66,16 +92,36 @@ const RASHI_ART: Record<RashiName, string> = {
  * Immersive horoscope hub — full-bleed width, no side rail.
  * Signs in one horizontal strip · span · dates · summary · personalise.
  */
+/** Moon rashi for a saved profile — used by the personalised hub card. */
+function moonRashiFor(profile: ChartProfile): RashiName {
+  const chart = buildChart(chartSeedFor(profile), 'D1')
+  const moon = chart.grahas.find((g) => g.graha === 'Mo')
+  return (moon?.rashi ?? chart.lagna.rashi) as RashiName
+}
+
 export default function HoroscopeFlow() {
   const navigate = useNavigate()
   const { user } = useAuth()
-  const { profiles } = useProfiles()
+  const { profiles, selected, select } = useProfiles()
+  const changeProfile = useDisclosure()
   const [checkout, setCheckout] = useState(false)
   const [yearlyUnlocked, setYearlyUnlocked] = useState(() =>
     user ? hasYearlyHoroscopeUnlocked(user.id) : false,
   )
+  const [unlockedProfileIds, setUnlockedProfileIds] = useState<string[]>(() =>
+    user ? getYearlyHoroscopeUnlockedProfileIds(user.id) : [],
+  )
   const [period, setPeriod] = useState<HoroscopePeriod>('daily')
-  const [rashi, setRashi] = useState<RashiName>('Simha')
+  /** Sign locked to the paid personalised hub — not changed by general browsing. */
+  const [personalRashi, setPersonalRashi] = useState<RashiName>(() =>
+    moonRashiFor(selected),
+  )
+  /** Free / generalised strip selection. */
+  const [generalRashi, setGeneralRashi] = useState<RashiName>(() =>
+    moonRashiFor(selected),
+  )
+  /** After unlock: show the free all-signs hub instead of the selected card only. */
+  const [showGeneral, setShowGeneral] = useState(false)
   const chips = buildHoroscopeDateChips(period)
   const todayIso = chips.find((c) => {
     const now = new Date()
@@ -86,13 +132,32 @@ export default function HoroscopeFlow() {
     () => todayIso ?? chips[3]?.id ?? chips[0]?.id ?? '',
   )
 
+  const seed = chartSeedFor(selected)
+  /** Free hub + generalised browse share `generalRashi`; personalised hub keeps `personalRashi`. */
+  const rashi = !yearlyUnlocked || showGeneral ? generalRashi : personalRashi
+  const unlockedProfiles = profiles.filter((p) => unlockedProfileIds.includes(p.id))
+  const effectiveUnlocked =
+    unlockedProfiles.length > 0
+      ? unlockedProfiles
+      : yearlyUnlocked
+        ? [selected]
+        : []
+  const canChangeProfile = effectiveUnlocked.length >= 2
+
   useEffect(() => {
     if (!user) {
       setYearlyUnlocked(false)
+      setUnlockedProfileIds([])
       return
     }
     setYearlyUnlocked(hasYearlyHoroscopeUnlocked(user.id))
+    setUnlockedProfileIds(getYearlyHoroscopeUnlockedProfileIds(user.id))
   }, [user])
+
+  useEffect(() => {
+    if (showGeneral || !yearlyUnlocked) return
+    setPersonalRashi(moonRashiFor(selected))
+  }, [selected.id, showGeneral, yearlyUnlocked])
 
   useEffect(() => {
     const next = buildHoroscopeDateChips(period)
@@ -115,8 +180,45 @@ export default function HoroscopeFlow() {
     setCheckout(true)
   }
 
-  function openFullReading() {
-    navigate(paths.horoscope(period))
+  function askAboutSummary() {
+    if (!summary) return
+    const q = `${summary.headline}: ${summary.summary} What should I watch and lean into?`
+    navigate(`${paths.ask}?q=${encodeURIComponent(q)}&from=horoscope`)
+  }
+
+  function openGeneral() {
+    setGeneralRashi(personalRashi)
+    setShowGeneral(true)
+  }
+
+  function backToPersonal() {
+    setShowGeneral(false)
+  }
+
+  function onYearlyUnlocked(profileIds: string[]) {
+    setYearlyUnlocked(true)
+    const merged = [
+      ...new Set([
+        ...unlockedProfileIds,
+        ...profileIds,
+        ...getYearlyHoroscopeUnlockedProfileIds(user?.id ?? ''),
+      ]),
+    ]
+    setUnlockedProfileIds(merged)
+    const first =
+      profiles.find((p) => profileIds.includes(p.id)) ??
+      profiles.find((p) => p.id === selected.id) ??
+      selected
+    select(first.id)
+    setPersonalRashi(moonRashiFor(first))
+    setShowGeneral(false)
+    setCheckout(false)
+  }
+
+  function chooseUnlockedProfile(profile: ChartProfile) {
+    select(profile.id)
+    setPersonalRashi(moonRashiFor(profile))
+    changeProfile.close()
   }
 
   if (checkout) {
@@ -124,49 +226,152 @@ export default function HoroscopeFlow() {
       <YearlyHoroscopeCheckout
         profiles={profiles}
         onClose={() => setCheckout(false)}
-        onUnlocked={() => setYearlyUnlocked(true)}
+        onUnlocked={onYearlyUnlocked}
       />
     )
   }
 
+  const rashiMeta = RASHIS.find((r) => r.name === rashi)
+  const showRashiStrip = !yearlyUnlocked || showGeneral
+
   return (
     <PageContainer
       width="wide"
-      className="pb-16 pt-4 sm:pt-6 px-6 sm:px-8 lg:px-12 xl:px-16"
+      className={cn(
+        'pt-4 sm:pt-6 px-6 sm:px-8 lg:px-12 xl:px-16',
+        yearlyUnlocked ? 'pb-10' : 'pb-16',
+      )}
     >
       <article className="animate-rise space-y-8 sm:space-y-10">
         <header className="flex flex-wrap items-center justify-between gap-3">
           <h1 className="text-2xl font-semibold tracking-tight text-ink sm:text-3xl">
-            Select your zodiac sign
+            {yearlyUnlocked && !showGeneral
+              ? 'Your personalised horoscope'
+              : 'Select your zodiac sign'}
           </h1>
-          <Button
-            variant="secondary"
-            size="sm"
-            className="rounded-full"
-            iconLeft={<LayoutGrid className="size-3.5" />}
-            onClick={() => navigate(paths.horoscopeReadings)}
-          >
-            All readings
-          </Button>
+          {yearlyUnlocked && !showGeneral && (
+            <Button
+              variant="secondary"
+              size="sm"
+              className="rounded-full"
+              onClick={openGeneral}
+            >
+              View generalized horoscope
+            </Button>
+          )}
+          {yearlyUnlocked && showGeneral && (
+            <Button
+              variant="secondary"
+              size="sm"
+              className="rounded-full"
+              onClick={backToPersonal}
+            >
+              Back to your personalised horoscope
+            </Button>
+          )}
         </header>
 
-        {/* Sign strip is for the free hub only — hidden after personalised unlock. */}
-        {!yearlyUnlocked && (
+        {showRashiStrip ? (
           <section className="space-y-4">
             <div className="flex flex-wrap items-baseline justify-between gap-2">
               <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-muted">
                 Moon sign / rashi
               </p>
               <p className="text-sm text-muted">
-                {RASHIS.find((r) => r.name === rashi)?.english} · {rashi}
+                {rashiMeta?.english} · {rashi}
               </p>
             </div>
-            <RashiStrip selected={rashi} onSelect={setRashi} />
+            <RashiStrip selected={generalRashi} onSelect={setGeneralRashi} />
+          </section>
+        ) : (
+          <section className="w-full space-y-3">
+            <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-muted">
+              Moon sign / rashi
+            </p>
+            <SelectedRashiCard
+              rashi={personalRashi}
+              period={period}
+              dateLabel={summary?.dateLabel}
+              mood={summary?.mood}
+              headline={summary?.headline}
+              profileName={selected.name}
+              profileAction={canChangeProfile ? 'change' : 'add'}
+              onProfileAction={
+                canChangeProfile ? changeProfile.open : () => setCheckout(true)
+              }
+            />
           </section>
         )}
 
+        <Modal
+          isOpen={changeProfile.isOpen}
+          onClose={changeProfile.close}
+          title="Change profile"
+          description="Pick a profile with personalised horoscope unlocked."
+          size="sm"
+        >
+          <ul className="space-y-2">
+            {effectiveUnlocked.map((profile) => {
+              const moon = moonRashiFor(profile)
+              const moonMeta = RASHIS.find((r) => r.name === moon)
+              const active = profile.id === selected.id
+              return (
+                <li key={profile.id}>
+                  <button
+                    type="button"
+                    onClick={() => chooseUnlockedProfile(profile)}
+                    className={cn(
+                      'flex w-full items-center justify-between gap-3 rounded-2xl border px-4 py-3 text-left transition',
+                      active
+                        ? 'border-copper/60 bg-copper/10'
+                        : 'border-border/80 hover:border-copper/40 hover:bg-surface-raised/60',
+                    )}
+                  >
+                    <span className="min-w-0">
+                      <span className="block font-semibold text-ink">{profile.name}</span>
+                      <span className="mt-0.5 block text-xs text-muted">
+                        {RELATION_LABEL[profile.relation]}
+                        {moonMeta ? ` · ${moonMeta.english}` : ''}
+                      </span>
+                    </span>
+                    {active && (
+                      <span className="shrink-0 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-copper">
+                        Current
+                      </span>
+                    )}
+                  </button>
+                </li>
+              )
+            })}
+            <li>
+              <button
+                type="button"
+                onClick={() => {
+                  changeProfile.close()
+                  setCheckout(true)
+                }}
+                className={cn(
+                  'flex w-full items-center gap-3 rounded-2xl border border-dashed border-copper/45',
+                  'bg-copper/5 px-4 py-3 text-left transition',
+                  'hover:border-copper/70 hover:bg-copper/10',
+                )}
+              >
+                <span className="inline-flex size-9 shrink-0 items-center justify-center rounded-xl border border-copper/35 bg-copper/15 text-copper">
+                  <Plus className="size-4" aria-hidden />
+                </span>
+                <span className="min-w-0">
+                  <span className="block font-semibold text-ink">Add profile</span>
+                  <span className="mt-0.5 block text-xs text-muted">
+                    Unlock personalised horoscope for another account
+                  </span>
+                </span>
+              </button>
+            </li>
+          </ul>
+        </Modal>
+
         {/* Daily / Weekly / Monthly */}
-        <section className="mx-auto flex w-full max-w-lg flex-col items-center space-y-3">
+        <section className="mx-auto flex w-full max-w-3xl flex-col items-center space-y-3">
           <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-muted">
             Span
           </p>
@@ -257,113 +462,225 @@ export default function HoroscopeFlow() {
                 </p>
               </header>
 
-              <p className="max-w-3xl text-base leading-relaxed text-white/80 text-pretty sm:text-lg">
-                {summary.summary}
-              </p>
+              <div className="max-w-3xl space-y-4">
+                <p className="text-base leading-relaxed text-white/80 text-pretty sm:text-lg">
+                  {summary.summary}
+                </p>
+                <ul className="space-y-2.5">
+                  {summary.bullets.map((bullet) => (
+                    <li key={bullet} className="flex gap-3">
+                      <span
+                        aria-hidden
+                        className="mt-2 size-1.5 shrink-0 rounded-full bg-[#c4a0ff]"
+                      />
+                      <span className="text-sm leading-relaxed text-white/70 text-pretty sm:text-[15px]">
+                        {bullet}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
 
-              <section className="space-y-3">
-                <div className="flex items-end justify-between gap-3">
-                  <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-[#c4a0ff]">
-                    By area
-                  </p>
-                  <p className="text-[11px] text-white/40">Tap a lane for the full read</p>
-                </div>
-                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4 lg:gap-3.5">
-                  {summary.verticals.map((vertical) => {
-                    const Icon = VERTICAL_ICON[vertical.id]
-                    return (
-                      <button
-                        key={vertical.id}
-                        type="button"
-                        onClick={() => navigate(paths.horoscope(vertical.id))}
-                        className={cn(
-                          'group relative flex flex-col gap-3 overflow-hidden rounded-2xl border border-white/10',
-                          'bg-white/[0.04] px-4 py-4 text-left backdrop-blur-sm',
-                          'transition duration-200',
-                          'hover:-translate-y-0.5 hover:border-[#9b6dff]/55 hover:bg-[#7c4dff]/15',
-                          'hover:shadow-[0_16px_36px_-18px_rgba(124,77,255,0.85)]',
-                          'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#7c4dff]',
-                        )}
-                      >
-                        <div
-                          aria-hidden
-                          className="pointer-events-none absolute -right-8 -top-8 size-20 rounded-full bg-[#7c4dff]/20 blur-2xl transition group-hover:bg-[#7c4dff]/40"
-                        />
-                        <div className="relative flex items-center justify-between gap-2">
-                          <span
-                            className={cn(
-                              'inline-flex size-9 items-center justify-center rounded-xl',
-                              'border border-[#c4a0ff]/35 bg-[#7c4dff]/25 text-[#e8d6ff]',
-                              'shadow-[0_0_20px_-8px_rgba(196,160,255,0.8)]',
-                            )}
-                          >
-                            <Icon className="size-4" aria-hidden strokeWidth={2} />
-                          </span>
-                          <ChevronRight
-                            className="size-4 text-white/30 transition group-hover:translate-x-0.5 group-hover:text-[#e8d6ff]"
-                            aria-hidden
-                          />
-                        </div>
-                        <div className="relative space-y-1.5">
-                          <p className="text-base font-semibold text-white">{vertical.label}</p>
-                          <p className="text-xs leading-relaxed text-white/60 text-pretty sm:text-[13px]">
-                            {vertical.blurb}
-                          </p>
-                        </div>
-                      </button>
-                    )
-                  })}
-                </div>
-              </section>
-
-              <div className="flex flex-wrap items-center gap-3 border-t border-white/10 pt-5">
-                <Button
-                  variant="primary"
-                  size="sm"
-                  className="rounded-full"
-                  onClick={openFullReading}
-                  iconRight={<ChevronRight className="size-3.5" />}
-                >
-                  Open full reading
-                </Button>
+              <div className="flex justify-center border-t border-white/10 pt-5">
                 <button
                   type="button"
-                  onClick={() => navigate(paths.horoscopeReadings)}
-                  className="text-sm font-medium text-white/55 underline-offset-4 transition hover:text-white hover:underline"
+                  onClick={askAboutSummary}
+                  className={cn(
+                    'inline-flex items-center justify-center gap-2 rounded-full px-6 py-3',
+                    'bg-gradient-to-r from-[#7c4dff] to-[#3a7bd5]',
+                    'text-sm font-semibold text-white',
+                    'shadow-[0_12px_28px_-16px_rgba(124,77,255,0.7)]',
+                    'transition hover:from-[#8b5cff] hover:to-[#4a8be5]',
+                    'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#7c4dff]',
+                  )}
                 >
-                  Love, career & more
+                  <MessageCircle className="size-4" aria-hidden />
+                  Ask about this
                 </button>
               </div>
             </div>
           </article>
         )}
 
-        {/* Spacer so content clears the fixed CTA */}
-        <div className="h-32" aria-hidden />
+        {summary && (
+          <section className="scroll-mt-24 space-y-6" aria-label="Today by area of life">
+            <header className="space-y-1">
+              <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-muted">
+                Today by area of life
+              </p>
+              <p className="max-w-xl text-sm text-muted text-pretty">
+                Card on the left, reading on the right — next area starts below when you finish one.
+              </p>
+            </header>
+
+            <div className="flex flex-col gap-12 sm:gap-14">
+              {summary.verticals.map((vertical, index) => (
+                <AreaBlock
+                  key={vertical.id}
+                  vertical={vertical}
+                  period={period}
+                  seed={seed}
+                  birthDate={selected.birthDetails.date}
+                  english={summary.english}
+                  index={index}
+                  total={summary.verticals.length}
+                />
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Spacer so content clears the fixed CTA (free hub only). */}
+        {!yearlyUnlocked && <div className="h-32" aria-hidden />}
       </article>
+
+      {!yearlyUnlocked && (
+        <div
+          className={cn(
+            'fixed inset-x-0 bottom-0 z-30 border-t border-border/80',
+            'bg-canvas/95 backdrop-blur-md pb-safe',
+          )}
+        >
+          <div className="mx-auto flex w-full max-w-lg flex-col items-center px-5 py-3.5 sm:px-6">
+            <Button
+              variant="primary"
+              size="lg"
+              className="w-full rounded-full"
+              iconLeft={<Sparkles className="size-4" />}
+              onClick={openPersonal}
+            >
+              Read personalised horoscope
+            </Button>
+          </div>
+        </div>
+      )}
+    </PageContainer>
+  )
+}
+
+/** Unlocked hub: smaller zodiac art on the left, detail + profile action on the right. */
+function SelectedRashiCard({
+  rashi,
+  period,
+  dateLabel,
+  mood,
+  headline,
+  profileName,
+  profileAction,
+  onProfileAction,
+}: {
+  rashi: RashiName
+  period: HoroscopePeriod
+  dateLabel?: string
+  mood?: string
+  headline?: string
+  profileName?: string
+  profileAction: 'add' | 'change'
+  onProfileAction: () => void
+}) {
+  const meta = RASHIS.find((r) => r.name === rashi)
+  if (!meta) return null
+
+  return (
+    <div
+      className={cn(
+        'relative flex flex-wrap items-stretch gap-4 overflow-hidden rounded-[1.5rem] border border-[#7c4dff]/40 p-3.5',
+        'bg-[linear-gradient(155deg,#24105a_0%,#120e28_45%,#0d1a38_100%)]',
+        'shadow-[0_0_0_1px_rgba(124,77,255,0.14),0_24px_48px_-28px_rgba(124,77,255,0.7)]',
+        'sm:flex-nowrap sm:gap-5 sm:p-4',
+      )}
+    >
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -right-12 -top-16 h-40 w-40 rounded-full bg-[#7c4dff]/25 blur-3xl"
+      />
 
       <div
         className={cn(
-          'fixed inset-x-0 bottom-0 z-30 border-t border-border/80',
-          'bg-canvas/95 backdrop-blur-md pb-safe',
+          'relative h-[7.5rem] w-[5.25rem] shrink-0 overflow-hidden rounded-[1rem] border border-copper/70',
+          'shadow-[0_0_0_1px_rgba(124,77,255,0.35),0_0_20px_-10px_rgba(124,77,255,0.7)]',
+          'sm:h-[8.25rem] sm:w-[5.75rem]',
         )}
       >
-        <div className="mx-auto flex w-full max-w-lg flex-col items-center gap-2 px-5 py-3.5 sm:px-6">
-          <Button
-            variant="primary"
-            size="lg"
-            className="w-full rounded-full"
-            iconLeft={<Sparkles className="size-4" />}
-            onClick={openPersonal}
-          >
-            Read personalised horoscope
-          </Button>
-          <p className="max-w-md text-center text-xs leading-relaxed text-muted text-pretty">
-            Uses your birth chart — dasha, transits, and the houses this reading cares about.
-          </p>
+        <img
+          src={RASHI_ART[rashi]}
+          alt=""
+          aria-hidden
+          className="absolute inset-0 size-full scale-110 object-cover opacity-85"
+        />
+        <div
+          aria-hidden
+          className="absolute inset-0 bg-gradient-to-t from-[#14082e]/90 via-[#14082e]/35 to-[#7c4dff]/10"
+        />
+        <div className="relative z-[1] flex h-full flex-col items-center justify-end gap-0.5 px-2 pb-2.5 text-center">
+          <span className="text-sm font-semibold text-copper drop-shadow-sm">{meta.name}</span>
+          <span aria-hidden className="text-base leading-none text-copper/70">
+            {meta.glyph}
+          </span>
+          <span className="text-[11px] text-copper/80">{meta.english}</span>
         </div>
       </div>
-    </PageContainer>
+
+      <div className="relative flex min-w-0 flex-1 flex-col justify-center gap-2.5 py-0.5">
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="rounded-full border border-[#c4a0ff]/35 bg-[#7c4dff]/20 px-2.5 py-0.5 font-mono text-[9px] font-semibold uppercase tracking-[0.14em] text-[#e8d6ff]">
+            {period}
+          </span>
+          {mood && (
+            <span
+              className={cn(
+                'rounded-full border border-[#9dffc0]/30 bg-[#1a3d2a]/70',
+                'px-2.5 py-0.5 text-[10px] font-semibold text-[#9dffc0]',
+              )}
+            >
+              Mood · {mood}
+            </span>
+          )}
+        </div>
+        <div className="space-y-1">
+          <p className="font-serif text-xl font-semibold tracking-tight text-white text-pretty sm:text-2xl">
+            {meta.english}
+            <span className="text-white/45"> · </span>
+            {meta.name}
+          </p>
+          {profileName && (
+            <p className="text-sm font-medium text-[#e8d6ff]/90">{profileName}</p>
+          )}
+          {headline && (
+            <p className="text-sm font-medium text-white/80 text-pretty">{headline}</p>
+          )}
+          {dateLabel && <p className="text-xs text-white/50">{dateLabel}</p>}
+        </div>
+        <p className="text-xs leading-relaxed text-white/55 text-pretty sm:text-[13px]">
+          Your moon sign for this personalised hub — readings below follow {meta.english}.
+        </p>
+      </div>
+
+      <div className="relative flex w-full shrink-0 items-center justify-end sm:w-auto sm:pl-2">
+        <button
+          type="button"
+          onClick={onProfileAction}
+          className={cn(
+            'inline-flex items-center justify-center gap-2 rounded-full border border-white/20',
+            'bg-white/5 px-4 py-2.5 text-sm font-semibold text-white',
+            'transition hover:border-[#c4a0ff]/50 hover:bg-[#7c4dff]/25',
+            'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#7c4dff]',
+          )}
+        >
+          {profileAction === 'change' ? (
+            <>
+              <RefreshCw className="size-3.5" aria-hidden />
+              Change profile
+            </>
+          ) : (
+            <>
+              <Plus className="size-3.5" aria-hidden />
+              Add profile
+            </>
+          )}
+        </button>
+      </div>
+    </div>
   )
 }
 
@@ -525,11 +842,150 @@ const VERTICAL_ICON: Record<
   love: Heart,
   health: HeartPulse,
   finance: Wallet,
+  lucky: Clover,
+  focus: Focus,
+  family: Home,
+  growth: Sprout,
+}
+
+const VERTICAL_TONE: Record<
+  HoroscopeVerticalId,
+  { text: string; bar: string }
+> = {
+  love: { text: 'text-[#ff8fab]', bar: 'bg-[#ff5c7a]' },
+  finance: { text: 'text-[#7dffb3]', bar: 'bg-[#3dd68c]' },
+  career: { text: 'text-[#ffc46b]', bar: 'bg-[#f0a03a]' },
+  health: { text: 'text-[#7ec8ff]', bar: 'bg-[#4aa3f0]' },
+  lucky: { text: 'text-[#e8d6ff]', bar: 'bg-[#9b6dff]' },
+  focus: { text: 'text-[#ffd88a]', bar: 'bg-[#e8b84a]' },
+  family: { text: 'text-[#ffb38a]', bar: 'bg-[#f08a4a]' },
+  growth: { text: 'text-[#9dffc0]', bar: 'bg-[#3dd68c]' },
+}
+
+/** One life area: summary card left, reading right — next area starts below. */
+function AreaBlock({
+  vertical,
+  period,
+  seed,
+  birthDate,
+  english,
+  index,
+  total,
+}: {
+  vertical: SignHoroscopeVertical
+  period: HoroscopePeriod
+  seed: string
+  birthDate: string
+  english: string
+  index: number
+  total: number
+}) {
+  const kind = verticalToKind(vertical.id, period) as HoroscopeKind
+  const { status, data, error, retry } = useAsync(
+    (signal) => getHoroscope(kind, seed, birthDate, signal),
+    [kind, seed, birthDate],
+  )
+  const Icon = VERTICAL_ICON[vertical.id]
+  const tone = VERTICAL_TONE[vertical.id]
+  const isLast = index === total - 1
+
+  return (
+    <article
+      id={`area-${vertical.id}`}
+      className="scroll-mt-24"
+      aria-label={`${vertical.label} reading`}
+    >
+      <div className="grid gap-5 lg:grid-cols-[minmax(16rem,22rem)_minmax(0,1fr)] lg:items-start lg:gap-7">
+        <aside className="lg:sticky lg:top-20">
+          <div
+            className={cn(
+              'relative flex h-full min-h-[22rem] flex-col overflow-hidden rounded-[1.75rem] border border-[#7c4dff]/40',
+              'bg-[linear-gradient(160deg,#24105a_0%,#120e28_45%,#0d1a38_100%)]',
+              'shadow-[0_0_0_1px_rgba(124,77,255,0.14),0_28px_64px_-28px_rgba(124,77,255,0.7)]',
+            )}
+          >
+            <div
+              aria-hidden
+              className="pointer-events-none absolute -right-16 -top-20 h-48 w-48 rounded-full bg-[#7c4dff]/30 blur-3xl"
+            />
+            <div
+              aria-hidden
+              className="pointer-events-none absolute -bottom-20 -left-12 h-40 w-40 rounded-full bg-[#3a7bd5]/20 blur-3xl"
+            />
+
+            <div className="relative flex items-center justify-between gap-2 px-5 pb-2 pt-5">
+              <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-[#c4a0ff]">
+                {english} · {vertical.label}
+              </p>
+              <p className="font-mono text-[10px] tabular-nums text-white/45">
+                {index + 1} / {total}
+              </p>
+            </div>
+
+            <div className="relative flex flex-1 flex-col justify-between gap-5 px-5 pb-6 pt-2">
+              <div className="space-y-5">
+                <div className="flex items-start justify-between gap-3">
+                  <span
+                    className={cn(
+                      'inline-flex size-14 shrink-0 items-center justify-center rounded-2xl',
+                      'border border-[#c4a0ff]/35 bg-[#7c4dff]/25 text-[#e8d6ff]',
+                      'shadow-[0_0_24px_-8px_rgba(196,160,255,0.85)]',
+                    )}
+                  >
+                    <Icon className="size-6" aria-hidden strokeWidth={2} />
+                  </span>
+                  <span className={cn('text-2xl font-semibold tabular-nums', tone.text)}>
+                    {vertical.score}%
+                  </span>
+                </div>
+
+                <div className="space-y-3">
+                  <h2 className="font-serif text-3xl font-semibold tracking-tight text-white">
+                    {vertical.label}
+                  </h2>
+                  <div
+                    aria-hidden
+                    className="h-2.5 w-full overflow-hidden rounded-full bg-white/10"
+                  >
+                    <div
+                      className={cn('h-full rounded-full', tone.bar)}
+                      style={{ width: `${vertical.score}%` }}
+                    />
+                  </div>
+                  <p className="text-base leading-relaxed text-white/70 text-pretty sm:text-[17px]">
+                    {vertical.blurb}
+                  </p>
+                </div>
+              </div>
+
+              {!isLast && (
+                <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-white/40">
+                  Next area below
+                </p>
+              )}
+            </div>
+          </div>
+        </aside>
+
+        <div className="min-w-0">
+          {status === 'error' ? (
+            <ErrorState error={error} onRetry={retry} title="This horoscope did not load" />
+          ) : status === 'loading' || status === 'idle' || !data ? (
+            <HoroscopeSkeleton />
+          ) : (
+            <HoroscopeBody horoscope={data} />
+          )}
+        </div>
+      </div>
+    </article>
+  )
 }
 
 const DATE_CHIP_PX = 84
+const DATE_CENTER_SCALE = 1.28
 const DATE_GAP_PX = 12
 const DATE_STRIDE = DATE_CHIP_PX + DATE_GAP_PX
+const DATE_CENTER_PX = Math.round(DATE_CHIP_PX * DATE_CENTER_SCALE)
 
 /**
  * Fixed-center date lens (transform carousel):
@@ -675,22 +1131,22 @@ function DateStrip({
   return (
     <div
       className="relative w-full cursor-grab touch-none select-none active:cursor-grabbing"
-      style={{ height: DATE_CHIP_PX }}
+      style={{ height: DATE_CENTER_PX }}
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}
       onPointerUp={endDrag}
       onPointerCancel={endDrag}
       onWheel={onWheel}
     >
-      {/* Pinned purple disc — always the geometric center */}
+      {/* Pinned purple disc — larger center lens */}
       <div
         aria-hidden
         className={cn(
-          'pointer-events-none absolute left-1/2 top-0 z-[1] -translate-x-1/2',
+          'pointer-events-none absolute left-1/2 top-1/2 z-[1] -translate-x-1/2 -translate-y-1/2',
           'rounded-full bg-copper',
-          'shadow-[0_0_34px_-4px_rgba(124,77,255,0.95)]',
+          'shadow-[0_0_40px_-4px_rgba(124,77,255,0.95)]',
         )}
-        style={{ width: DATE_CHIP_PX, height: DATE_CHIP_PX }}
+        style={{ width: DATE_CENTER_PX, height: DATE_CENTER_PX }}
       />
 
       <div
@@ -704,11 +1160,11 @@ function DateStrip({
         }}
       >
         <div
-          className="absolute top-0 flex will-change-transform"
+          className="absolute top-1/2 flex will-change-transform"
           style={{
             left: '50%',
             gap: DATE_GAP_PX,
-            transform: `translate3d(${trackX}px, 0, 0)`,
+            transform: `translate3d(${trackX}px, -50%, 0)`,
             transition: dragging
               ? 'none'
               : 'transform 420ms cubic-bezier(0.16, 1, 0.3, 1)',
@@ -716,6 +1172,11 @@ function DateStrip({
         >
           {chips.map((chip, index) => {
             const inLens = index === liveIndex
+            const dist = Math.abs(index - liveIndex)
+            const scale = inLens
+              ? DATE_CENTER_SCALE
+              : Math.max(0.78, 1 - dist * 0.07)
+            const blurPx = inLens ? 0 : Math.min(5, dist * 1.25)
             return (
               <button
                 key={chip.id}
@@ -728,14 +1189,28 @@ function DateStrip({
                 }}
                 className={cn(
                   'flex shrink-0 flex-col items-center justify-center rounded-full border bg-transparent',
-                  'transition-colors duration-200',
+                  'transition-[transform,filter,color,border-color] duration-300 ease-out',
                   inLens ? 'border-transparent text-midnight' : 'border-border-strong text-ink',
                 )}
-                style={{ width: DATE_CHIP_PX, height: DATE_CHIP_PX }}
+                style={{
+                  width: DATE_CHIP_PX,
+                  height: DATE_CHIP_PX,
+                  transform: `scale(${scale})`,
+                  filter: blurPx > 0 ? `blur(${blurPx}px)` : undefined,
+                  opacity: inLens ? 1 : Math.max(0.45, 1 - dist * 0.12),
+                  zIndex: inLens ? 2 : 1,
+                }}
               >
                 {period === 'monthly' ? (
                   <>
-                    <span className="text-sm font-semibold sm:text-base">{chip.label}</span>
+                    <span
+                      className={cn(
+                        'font-semibold',
+                        inLens ? 'text-base sm:text-lg' : 'text-sm sm:text-base',
+                      )}
+                    >
+                      {chip.label}
+                    </span>
                     <span
                       className={cn(
                         'mt-0.5 text-[10px] uppercase',
@@ -749,13 +1224,19 @@ function DateStrip({
                   <>
                     <span
                       className={cn(
-                        'text-[10px] font-medium uppercase tracking-wide sm:text-[11px]',
+                        'font-medium uppercase tracking-wide',
+                        inLens ? 'text-[11px] sm:text-xs' : 'text-[10px] sm:text-[11px]',
                         inLens ? 'text-midnight/75' : 'text-muted',
                       )}
                     >
                       {chip.weekday}
                     </span>
-                    <span className="text-lg font-semibold leading-none sm:text-xl">
+                    <span
+                      className={cn(
+                        'font-semibold leading-none',
+                        inLens ? 'text-xl sm:text-2xl' : 'text-lg sm:text-xl',
+                      )}
+                    >
                       {chip.dayNum}
                     </span>
                     <span

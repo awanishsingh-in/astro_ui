@@ -1,9 +1,11 @@
+import { useEffect, useRef, useState } from 'react'
 import { ChevronLeft, ChevronRight, Download, Lock, MapPin } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { Badge } from '@/components/common/Badge'
 import { Button } from '@/components/common/Button'
 import { Card } from '@/components/common/Card'
 import { festivalOnDate, nextFestivals } from '@/data/calendar-catalog'
+import { useDisclosure } from '@/hooks/useDisclosure'
 import { paths } from '@/routes/paths'
 import type { CalendarDay, CalendarEventKind } from '@/types/astrology'
 import { cn } from '@/utils/cn'
@@ -67,6 +69,8 @@ function pillClass(kind: CalendarEventKind) {
   return 'bg-navy-soft text-purple border-border/80'
 }
 
+const YEAR_OPTIONS = Array.from({ length: 21 }, (_, i) => 2016 + i)
+
 export interface MonthCalendarViewProps {
   year: number
   month: number
@@ -75,7 +79,8 @@ export interface MonthCalendarViewProps {
   todayIso: string
   onSelect: (iso: string) => void
   onShiftMonth: (delta: number) => void
-  onToday: () => void
+  /** Jump to a specific year + month (0–11). */
+  onNavigate: (year: number, month: number) => void
   locationLabel?: string
 }
 
@@ -90,12 +95,46 @@ export function MonthCalendarView({
   todayIso,
   onSelect,
   onShiftMonth,
-  onToday,
+  onNavigate,
   locationLabel = 'Delhi, India',
 }: MonthCalendarViewProps) {
+  const monthMenu = useDisclosure()
+  const monthMenuRef = useRef<HTMLDivElement>(null)
+  const [menuYear, setMenuYear] = useState(year)
   const selected = days.find((d) => isSameIso(d.date, selectedIso))
   const festival = selected ? festivalOnDate(selected.date) : undefined
   const upcoming = nextFestivals(selectedIso, 1)
+  const now = new Date()
+  const ongoingMonth = now.getMonth()
+  const ongoingYear = now.getFullYear()
+  const canPrevYear = menuYear > YEAR_OPTIONS[0]!
+  const canNextYear = menuYear < YEAR_OPTIONS[YEAR_OPTIONS.length - 1]!
+
+  useEffect(() => {
+    if (monthMenu.isOpen) setMenuYear(year)
+  }, [monthMenu.isOpen, year])
+
+  useEffect(() => {
+    if (!monthMenu.isOpen) return
+    function onPointerDown(event: MouseEvent) {
+      if (!monthMenuRef.current?.contains(event.target as Node)) {
+        monthMenu.close()
+      }
+    }
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key === 'Escape') monthMenu.close()
+    }
+    document.addEventListener('mousedown', onPointerDown)
+    document.addEventListener('keydown', onKeyDown)
+    return () => {
+      document.removeEventListener('mousedown', onPointerDown)
+      document.removeEventListener('keydown', onKeyDown)
+    }
+  }, [monthMenu])
+
+  const yearChoices = YEAR_OPTIONS.includes(year)
+    ? YEAR_OPTIONS
+    : [...YEAR_OPTIONS, year].sort((a, b) => a - b)
 
   return (
     <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(18rem,21rem)] xl:items-start xl:gap-7">
@@ -111,9 +150,103 @@ export function MonthCalendarView({
             >
               <ChevronLeft className="size-4" />
             </Button>
-            <h2 className="min-w-[11rem] text-center text-heading font-semibold tracking-tight text-ink">
-              {MONTHS[month]} {year}
-            </h2>
+            <div ref={monthMenuRef} className="relative">
+              <h2 className="min-w-[11rem] text-center text-heading font-semibold tracking-tight text-ink">
+                <button
+                  type="button"
+                  aria-haspopup="dialog"
+                  aria-expanded={monthMenu.isOpen}
+                  aria-label="Choose month and year"
+                  onClick={monthMenu.toggle}
+                  className={cn(
+                    'inline-flex items-baseline gap-1.5 rounded-lg px-1.5 py-0.5',
+                    'transition hover:bg-copper/15 hover:text-copper',
+                    'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-copper',
+                  )}
+                >
+                  <span>{MONTHS[month]}</span>
+                  <span>{year}</span>
+                  <span aria-hidden className="text-[0.65em] text-ink/50">
+                    ▾
+                  </span>
+                </button>
+              </h2>
+
+              {monthMenu.isOpen && (
+                <div
+                  role="dialog"
+                  aria-label={`Months in ${menuYear}`}
+                  className={cn(
+                    'absolute left-1/2 top-full z-40 mt-2 w-[min(20rem,calc(100vw-2rem))] -translate-x-1/2',
+                    'rounded-2xl border border-border/80 bg-surface p-3 shadow-overlay',
+                  )}
+                >
+                  <div className="mb-2.5 flex items-center justify-between gap-2">
+                    <button
+                      type="button"
+                      aria-label="Previous year"
+                      disabled={!canPrevYear}
+                      onClick={() => setMenuYear((y) => y - 1)}
+                      className={cn(
+                        'inline-flex size-8 items-center justify-center rounded-full border border-border/80 text-ink',
+                        'transition hover:border-copper/40 hover:bg-copper/10',
+                        'disabled:pointer-events-none disabled:opacity-35',
+                      )}
+                    >
+                      <ChevronLeft className="size-4" />
+                    </button>
+                    <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-ink">
+                      {menuYear}
+                    </p>
+                    <button
+                      type="button"
+                      aria-label="Next year"
+                      disabled={!canNextYear}
+                      onClick={() => setMenuYear((y) => y + 1)}
+                      className={cn(
+                        'inline-flex size-8 items-center justify-center rounded-full border border-border/80 text-ink',
+                        'transition hover:border-copper/40 hover:bg-copper/10',
+                        'disabled:pointer-events-none disabled:opacity-35',
+                      )}
+                    >
+                      <ChevronRight className="size-4" />
+                    </button>
+                  </div>
+                  <div className="grid grid-cols-3 gap-1.5">
+                    {MONTHS.map((label, index) => {
+                      const selectedMonth = menuYear === year && index === month
+                      const isOngoing =
+                        menuYear === ongoingYear && index === ongoingMonth
+                      return (
+                        <button
+                          key={label}
+                          type="button"
+                          onClick={() => {
+                            onNavigate(menuYear, index)
+                            monthMenu.close()
+                          }}
+                          className={cn(
+                            'rounded-xl border px-1.5 py-2.5 text-center text-xs font-semibold transition sm:text-sm',
+                            selectedMonth
+                              ? 'border-copper/60 bg-copper/20 text-copper'
+                              : isOngoing
+                                ? 'border-copper/35 bg-copper/10 text-ink'
+                                : 'border-transparent text-ink hover:border-copper/30 hover:bg-copper/10',
+                          )}
+                        >
+                          {label}
+                          {isOngoing && (
+                            <span className="mt-0.5 block font-mono text-[8px] font-semibold uppercase tracking-wide text-copper/80">
+                              Now
+                            </span>
+                          )}
+                        </button>
+                      )
+                    })}
+                  </div>
+                </div>
+              )}
+            </div>
             <Button
               variant="secondary"
               size="sm"
@@ -124,14 +257,43 @@ export function MonthCalendarView({
               <ChevronRight className="size-4" />
             </Button>
           </div>
-          <div className="flex items-center gap-2">
-            <span className="rounded-full border border-copper/40 bg-copper/15 px-3.5 py-1.5 text-sm font-medium text-ink">
-              Month
+
+          <label className="group relative inline-flex items-center gap-2.5">
+            <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-muted">
+              Year
             </span>
-            <Button variant="ghost" size="sm" onClick={onToday} className="rounded-full">
-              Today
-            </Button>
-          </div>
+            <span
+              className={cn(
+                'relative inline-flex items-center rounded-full border border-copper/45',
+                'bg-gradient-to-r from-[#7c4dff]/20 to-[#3a7bd5]/15',
+                'shadow-[0_0_0_1px_rgba(124,77,255,0.12),0_8px_20px_-12px_rgba(124,77,255,0.55)]',
+                'transition group-hover:border-copper/70 group-hover:from-[#7c4dff]/30 group-hover:to-[#3a7bd5]/25',
+              )}
+            >
+              <select
+                value={year}
+                onChange={(e) => onNavigate(Number(e.target.value), month)}
+                aria-label="Choose year"
+                className={cn(
+                  'appearance-none bg-transparent py-2 pl-4 pr-9',
+                  'text-sm font-semibold text-ink outline-none',
+                  'focus-visible:ring-2 focus-visible:ring-copper/45 focus-visible:ring-offset-2 focus-visible:ring-offset-canvas',
+                )}
+              >
+                {yearChoices.map((y) => (
+                  <option key={y} value={y}>
+                    {y}
+                  </option>
+                ))}
+              </select>
+              <span
+                aria-hidden
+                className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[0.7em] text-copper"
+              >
+                ▾
+              </span>
+            </span>
+          </label>
         </div>
 
         <Card padding="none" className="overflow-hidden border-border/80">
@@ -284,7 +446,7 @@ export function MonthCalendarView({
                 variant="secondary"
                 size="md"
                 className="w-full rounded-full"
-                to={`${paths.panchang}?tab=muhurat`}
+                to={`${paths.panchang}?tab=muhurat&date=${selectedIso.slice(0, 10)}`}
               >
                 Find muhurat for this day
               </Button>
@@ -293,7 +455,7 @@ export function MonthCalendarView({
                 size="md"
                 className="w-full rounded-full"
                 iconLeft={<Download className="size-3.5" />}
-                to={`${paths.panchang}?tab=downloads`}
+                to={`${paths.panchang}?tab=downloads&date=${selectedIso.slice(0, 10)}`}
               >
                 Download panchang
               </Button>

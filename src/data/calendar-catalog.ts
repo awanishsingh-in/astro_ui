@@ -221,7 +221,7 @@ export const VRAT_CATALOG: VratEntry[] = [
     parana: '06:12 – 08:36, 23 Oct',
     fastType: 'Nirjala / Phalahar',
     involves:
-      'Ashwin Shukla Ekadashi, falling soon after Vijayadashami. Free to read; saving a reminder needs an account.',
+      'Ashwin Shukla Ekadashi, falling soon after Vijayadashami. Free to read; a push reminder needs an account.',
     pujaVidhi: 'Vishnu remembrance, grain-free day, parana on Dwadashi morning.',
   },
   {
@@ -291,10 +291,18 @@ export const VRAT_KIND_LABEL: Record<VratEntry['kind'], string> = {
 }
 
 export const HINDU_MONTHS = [
+  { id: 'chaitra', name: 'Chaitra', range: 'Mar–Apr' },
+  { id: 'vaishakha', name: 'Vaishakha', range: 'Apr–May' },
+  { id: 'jyeshtha', name: 'Jyeshtha', range: 'May–Jun' },
+  { id: 'ashadha', name: 'Ashadha', range: 'Jun–Jul' },
   { id: 'shravana', name: 'Shravana', range: 'Jul–Aug' },
   { id: 'bhadrapada', name: 'Bhadrapada', range: 'Aug–Sep' },
   { id: 'ashwina', name: 'Ashwina', range: 'Sep–Oct' },
   { id: 'kartika', name: 'Kartika', range: 'Oct–Nov' },
+  { id: 'margashirsha', name: 'Margashirsha', range: 'Nov–Dec' },
+  { id: 'pausha', name: 'Pausha', range: 'Dec–Jan' },
+  { id: 'magha', name: 'Magha', range: 'Jan–Feb' },
+  { id: 'phalguna', name: 'Phalguna', range: 'Feb–Mar' },
 ] as const
 
 export const TITHI_NAMES = [

@@ -431,7 +431,7 @@ export default function AccountPage() {
             <AccountSection
               id="notifications"
               title="Notifications"
-              description="One alert a day, at a time you choose. Nothing else is ever pushed."
+              description="Daily alert and event reminders (festivals, vrats, muhurat) use this time for push from the app."
               className={only('notifications')}
             >
               <Card padding="none" className="divide-y divide-border">

@@ -1,14 +1,20 @@
-import { MapPin } from 'lucide-react'
 import { useCallback, useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { ErrorState } from '@/components/common/ErrorState'
 import { SectionHeader } from '@/components/common/SectionHeader'
 import { Skeleton } from '@/components/common/Skeleton'
 import { CalendarViewTabs, type CalendarViewId } from '@/components/calendar/CalendarViewTabs'
-import { FestivalsCalendarView } from '@/components/calendar/FestivalsCalendarView'
-import { HinduCalendarView } from '@/components/calendar/HinduCalendarView'
+import {
+  FestivalsCalendarView,
+  type FestivalRegionId,
+} from '@/components/calendar/FestivalsCalendarView'
+import type { VratAreaId, VratRegionId } from '@/components/calendar/VratsCalendarView'
+import {
+  HinduCalendarView,
+  type HinduAreaId,
+} from '@/components/calendar/HinduCalendarView'
 import { MonthCalendarView } from '@/components/calendar/MonthCalendarView'
-import { RemindAccountGate } from '@/components/calendar/RemindAccountGate'
+import { RemindCalendarChoice } from '@/components/calendar/RemindCalendarChoice'
 import { VratsCalendarView } from '@/components/calendar/VratsCalendarView'
 import { MobileHeader } from '@/components/navigation/MobileHeader'
 import { useAuth } from '@/auth/auth-context'
@@ -43,12 +49,20 @@ export default function CalendarPage() {
   const [viewMonth, setViewMonth] = useState(now.getMonth())
   const [selectedIso, setSelectedIso] = useState(todayIso())
   const [festivalCategory, setFestivalCategory] = useState<'all' | FestivalCategory>('all')
+  const [festivalRegion, setFestivalRegion] = useState<FestivalRegionId>('north')
   const [vratFilter, setVratFilter] = useState<'all' | VratKind>('all')
+  const [vratArea, setVratArea] = useState<VratAreaId>('north')
+  const [vratRegion, setVratRegion] = useState<VratRegionId>('north-indian')
   const [selectedVratId, setSelectedVratId] = useState<string | null>(null)
-  const [hinduPaksha, setHinduPaksha] = useState<'Shukla' | 'Krishna'>('Shukla')
+  const [hinduPaksha, setHinduPaksha] = useState<'Shukla' | 'Krishna' | 'all'>('all')
   const [reckoning, setReckoning] = useState<'amanta' | 'purnimanta'>('amanta')
-  const [selectedTithi, setSelectedTithi] = useState(7)
-  const [remindTarget, setRemindTarget] = useState<{ title: string; when: string } | null>(null)
+  const [hinduArea, setHinduArea] = useState<HinduAreaId>('north')
+  const [remindTarget, setRemindTarget] = useState<{
+    title: string
+    when: string
+    dateIso: string
+    kind: 'festival' | 'vrat'
+  } | null>(null)
 
   const { status, data, error, retry } = useAsync(
     (signal) => getMonthCalendar(viewYear, viewMonth, signal),
@@ -80,19 +94,20 @@ export default function CalendarPage() {
     [viewMonth, viewYear],
   )
 
-  const goToday = useCallback(() => {
-    const today = new Date()
-    setViewYear(today.getFullYear())
-    setViewMonth(today.getMonth())
-    setSelectedIso(todayIso())
+  const navigateMonth = useCallback((nextYear: number, nextMonth: number) => {
+    setViewYear(nextYear)
+    setViewMonth(nextMonth)
+    setSelectedIso(
+      `${nextYear}-${String(nextMonth + 1).padStart(2, '0')}-01`,
+    )
   }, [])
 
-  const openRemind = (title: string, dateIso: string) => {
+  const openRemind = (title: string, dateIso: string, kind: 'festival' | 'vrat') => {
     const when = new Date(`${dateIso}T12:00:00`).toLocaleDateString('en-IN', {
       day: 'numeric',
       month: 'short',
     })
-    setRemindTarget({ title, when })
+    setRemindTarget({ title, when, dateIso: dateIso.slice(0, 10), kind })
   }
 
   if (!user) return null
@@ -107,18 +122,12 @@ export default function CalendarPage() {
         ) : (
           <article className="animate-rise space-y-7">
             <header className="space-y-5">
-              <div className="flex flex-wrap items-start justify-between gap-4">
-                <SectionHeader
-                  as="h1"
-                  size="lg"
-                  title="Calendar"
-                  description="What happens on a date — festivals, vrats, and the Hindu month. Free and open."
-                />
-                <span className="inline-flex items-center gap-1.5 rounded-full border border-border/90 bg-surface/90 px-3.5 py-2 text-sm text-muted shadow-sm">
-                  <MapPin className="size-3.5 shrink-0 text-copper" aria-hidden />
-                  Delhi, India
-                </span>
-              </div>
+              <SectionHeader
+                as="h1"
+                size="lg"
+                title="Calendar"
+                description="What happens on a date — festivals, vrats, and the Hindu month. Free and open."
+              />
               <CalendarViewTabs active={view} onChange={setView} />
             </header>
 
@@ -136,7 +145,7 @@ export default function CalendarPage() {
                   todayIso={todayIso()}
                   onSelect={setSelectedIso}
                   onShiftMonth={shiftMonth}
-                  onToday={goToday}
+                  onNavigate={navigateMonth}
                 />
               ))}
 
@@ -145,8 +154,11 @@ export default function CalendarPage() {
                 festivals={festivals}
                 year={viewYear}
                 category={festivalCategory}
+                region={festivalRegion}
+                onYearChange={setViewYear}
                 onCategory={setFestivalCategory}
-                onRemind={(f: FestivalEntry) => openRemind(f.name, f.date)}
+                onRegionChange={setFestivalRegion}
+                onRemind={(f: FestivalEntry) => openRemind(f.name, f.date, 'festival')}
                 onShowMonth={() => setView('month')}
               />
             )}
@@ -155,23 +167,34 @@ export default function CalendarPage() {
               <VratsCalendarView
                 vrats={vrats}
                 year={viewYear}
+                area={vratArea}
+                region={vratRegion}
                 filter={vratFilter}
                 selectedId={selectedVratId}
+                onYearChange={setViewYear}
+                onAreaChange={setVratArea}
+                onRegionChange={setVratRegion}
                 onFilter={setVratFilter}
                 onSelect={setSelectedVratId}
-                onRemind={(v: VratEntry) => openRemind(v.name, v.date)}
+                onRemind={(v: VratEntry) => openRemind(v.name, v.date, 'vrat')}
               />
             )}
 
             {view === 'hindu' && (
               <HinduCalendarView
                 year={viewYear}
+                month={viewMonth}
+                selectedIso={selectedIso}
+                todayIso={todayIso()}
                 paksha={hinduPaksha}
                 onPaksha={setHinduPaksha}
                 reckoning={reckoning}
                 onReckoning={setReckoning}
-                selectedTithi={selectedTithi}
-                onSelectTithi={setSelectedTithi}
+                area={hinduArea}
+                onAreaChange={setHinduArea}
+                onSelect={setSelectedIso}
+                onShiftMonth={shiftMonth}
+                onNavigate={navigateMonth}
                 onSwitchGregorian={() => setView('month')}
               />
             )}
@@ -179,11 +202,13 @@ export default function CalendarPage() {
         )}
       </PageContainer>
 
-      <RemindAccountGate
+      <RemindCalendarChoice
         isOpen={Boolean(remindTarget)}
         onClose={() => setRemindTarget(null)}
         title={remindTarget?.title ?? ''}
         whenLabel={remindTarget?.when ?? ''}
+        dateIso={remindTarget?.dateIso ?? ''}
+        kind={remindTarget?.kind ?? 'other'}
       />
     </>
   )

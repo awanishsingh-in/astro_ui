@@ -1,6 +1,7 @@
 import {
   ArrowLeft,
   Compass,
+  MessageCircle,
   Sparkles,
   Sun,
   TriangleAlert,
@@ -402,7 +403,8 @@ function YearlyPersonalBody({
   )
 }
 
-function HoroscopeBody({ horoscope }: { horoscope: Horoscope }) {
+/** Full reading body — also embedded under the hub summary (same page). */
+export function HoroscopeBody({ horoscope }: { horoscope: Horoscope }) {
   return (
     <article className="animate-rise space-y-6 sm:space-y-8">
       {/* Hero */}
@@ -491,73 +493,71 @@ function HoroscopeBody({ horoscope }: { horoscope: Horoscope }) {
         </div>
       </section>
 
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(16rem,20rem)] lg:items-start lg:gap-7">
-        <div className="min-w-0 space-y-5">
-          <section
-            className={cn(
-              'rounded-[1.35rem] border border-border/80 bg-surface/90 p-5 shadow-card sm:p-6',
-            )}
-          >
-            <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-gold-deep">
-              Overview
-            </p>
-            <p className="mt-3 text-base leading-relaxed text-ink text-pretty sm:text-lg">
-              {horoscope.overview}
-            </p>
-          </section>
+      <div className="flex flex-col gap-5">
+        <section
+          className={cn(
+            'rounded-[1.35rem] border border-border/80 bg-surface/90 p-5 shadow-card sm:p-6',
+          )}
+        >
+          <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-gold-deep">
+            Overview
+          </p>
+          <p className="mt-3 text-base leading-relaxed text-ink text-pretty sm:text-lg">
+            {horoscope.overview}
+          </p>
+        </section>
 
-          <div className="grid gap-4 sm:grid-cols-2">
-            <InsightPanel
-              title="Opportunities"
-              tone="positive"
-              items={horoscope.opportunities}
-            />
-            <InsightPanel title="Watch-outs" tone="caution" items={horoscope.watchOuts} />
-          </div>
-
-          <section
-            className={cn(
-              'rounded-[1.35rem] border border-border/80 bg-surface/90 p-5 shadow-card sm:p-6',
-            )}
-          >
-            <div className="mb-4 flex items-center gap-2">
-              <span className="inline-flex size-8 items-center justify-center rounded-xl border border-copper/35 bg-copper/15 text-copper">
-                <Sun className="size-3.5" aria-hidden />
-              </span>
-              <div>
-                <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-gold-deep">
-                  Timing
-                </p>
-                <p className="text-xs text-muted">When the sky favours push or pause</p>
-              </div>
-            </div>
-            <ol className="grid gap-3 sm:grid-cols-2">
-              {horoscope.timing.map((slot) => (
-                <li
-                  key={slot.label}
-                  className={cn(
-                    'rounded-2xl border px-4 py-3.5',
-                    slot.strong
-                      ? 'border-copper/45 bg-copper/10 shadow-[0_0_24px_-12px_rgba(124,77,255,0.55)]'
-                      : 'border-border/80 bg-surface-raised/50',
-                  )}
-                >
-                  <p
-                    className={cn(
-                      'font-mono text-[10px] font-semibold uppercase tracking-[0.12em]',
-                      slot.strong ? 'text-copper' : 'text-muted',
-                    )}
-                  >
-                    {slot.label}
-                  </p>
-                  <p className="mt-1.5 text-sm leading-relaxed text-ink text-pretty">{slot.note}</p>
-                </li>
-              ))}
-            </ol>
-          </section>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <InsightPanel
+            title="Opportunities"
+            tone="positive"
+            items={horoscope.opportunities}
+          />
+          <InsightPanel title="Watch-outs" tone="caution" items={horoscope.watchOuts} />
         </div>
 
-        <aside className="space-y-4 lg:sticky lg:top-20 lg:self-start">
+        <section
+          className={cn(
+            'rounded-[1.35rem] border border-border/80 bg-surface/90 p-5 shadow-card sm:p-6',
+          )}
+        >
+          <div className="mb-4 flex items-center gap-2">
+            <span className="inline-flex size-8 items-center justify-center rounded-xl border border-copper/35 bg-copper/15 text-copper">
+              <Sun className="size-3.5" aria-hidden />
+            </span>
+            <div>
+              <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-gold-deep">
+                Timing
+              </p>
+              <p className="text-xs text-muted">When the sky favours push or pause</p>
+            </div>
+          </div>
+          <ol className="grid gap-3 sm:grid-cols-2">
+            {horoscope.timing.map((slot) => (
+              <li
+                key={slot.label}
+                className={cn(
+                  'rounded-2xl border px-4 py-3.5',
+                  slot.strong
+                    ? 'border-copper/45 bg-copper/10 shadow-[0_0_24px_-12px_rgba(124,77,255,0.55)]'
+                    : 'border-border/80 bg-surface-raised/50',
+                )}
+              >
+                <p
+                  className={cn(
+                    'font-mono text-[10px] font-semibold uppercase tracking-[0.12em]',
+                    slot.strong ? 'text-copper' : 'text-muted',
+                  )}
+                >
+                  {slot.label}
+                </p>
+                <p className="mt-1.5 text-sm leading-relaxed text-ink text-pretty">{slot.note}</p>
+              </li>
+            ))}
+          </ol>
+        </section>
+
+        <aside className="space-y-4">
           <div
             className={cn(
               'relative overflow-hidden rounded-[1.35rem] border border-[#7c4dff]/35',
@@ -593,11 +593,13 @@ function HoroscopeBody({ horoscope }: { horoscope: Horoscope }) {
             <Button
               variant="primary"
               size="sm"
-              to={paths.chart}
-              iconLeft={<Compass className="size-4" />}
+              to={`${paths.ask}?q=${encodeURIComponent(
+                `${horoscope.title}: ${horoscope.summary} What should I watch and lean into?`,
+              )}&from=horoscope`}
+              iconLeft={<MessageCircle className="size-4" />}
               className="relative mt-4 w-full rounded-full"
             >
-              Open my chart
+              Ask more about this
             </Button>
           </div>
 
@@ -661,7 +663,7 @@ function InsightPanel({
   )
 }
 
-function HoroscopeSkeleton({ yearly = false }: { yearly?: boolean }) {
+export function HoroscopeSkeleton({ yearly = false }: { yearly?: boolean }) {
   return (
     <div role="status" aria-busy aria-label="Loading your horoscope" className="space-y-8">
       <span className="sr-only">Loading your horoscope…</span>

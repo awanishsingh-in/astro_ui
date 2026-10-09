@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { SectionHeader } from '@/components/common/SectionHeader'
 import { useToast } from '@/components/feedback/toast-context'
@@ -50,6 +50,16 @@ function shiftIso(iso: string, days: number) {
   return d.toISOString().slice(0, 10)
 }
 
+function todayIso(): string {
+  const now = new Date()
+  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`
+}
+
+function parseDateParam(raw: string | null): string {
+  if (raw && /^\d{4}-\d{2}-\d{2}$/.test(raw)) return raw
+  return todayIso()
+}
+
 /**
  * Panchang & muhurat — is this time good?
  * Today, tithi & nakshatra, Timings (choghadiya, hora, Rahu kaal), muhurat, downloads, alerts.
@@ -61,7 +71,7 @@ export default function PanchangPage() {
   const tab = parseTab(params.get('tab'))
   const timingsSub = parseTimingsSub(params.get('timing'))
 
-  const [dateIso, setDateIso] = useState('2026-09-19')
+  const [dateIso, setDateIso] = useState(() => parseDateParam(params.get('date')))
   const [choghadiyaPeriod, setChoghadiyaPeriod] = useState<'day' | 'night'>('day')
   const [horaSpan, setHoraSpan] = useState<'day' | 'night'>('day')
   const [alerts, setAlerts] = useState<PanchangAlertPref[]>(DEFAULT_PANCHANG_ALERTS)
@@ -71,6 +81,14 @@ export default function PanchangPage() {
   const horas = useMemo(() => buildHora(horaSpan), [horaSpan])
   const avoid = useMemo(() => buildAvoidWindows(), [])
   const isPremium = Boolean(user && hasActivePlan(user.id))
+
+  // Calendar (and other) deep-links pass `?date=YYYY-MM-DD`.
+  useEffect(() => {
+    const fromUrl = params.get('date')
+    if (!fromUrl) return
+    const next = parseDateParam(fromUrl)
+    setDateIso((prev) => (prev === next ? prev : next))
+  }, [params])
 
   const setTab = useCallback(
     (next: PanchangTabId) => {
@@ -143,7 +161,11 @@ export default function PanchangPage() {
           )}
 
           {tab === 'muhurat' && (
-            <MuhuratFlow locationLabel={day.place} isPremium={isPremium} />
+            <MuhuratFlow
+              locationLabel={day.place}
+              isPremium={isPremium}
+              dateIso={dateIso}
+            />
           )}
 
           {tab === 'downloads' && (

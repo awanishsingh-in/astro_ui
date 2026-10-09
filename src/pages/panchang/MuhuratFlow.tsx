@@ -1,9 +1,11 @@
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { CalendarPlus, Lock, MapPin, Share2, Trash2 } from 'lucide-react'
+import { Bell, CalendarPlus, Lock, MapPin, Share2, Trash2 } from 'lucide-react'
+import { useAuth } from '@/auth/auth-context'
 import { Badge } from '@/components/common/Badge'
 import { Button } from '@/components/common/Button'
 import { Card } from '@/components/common/Card'
+import { RemindCalendarChoice } from '@/components/calendar/RemindCalendarChoice'
 import { useToast } from '@/components/feedback/toast-context'
 import {
   buildGenericMuhuratResults,
@@ -17,6 +19,17 @@ import {
 } from '@/data/panchang-mock'
 import { paths } from '@/routes/paths'
 import { cn } from '@/utils/cn'
+import { formatDayAndDate } from '@/utils/format'
+
+/** Best-effort ISO date from labels like "Sun 11 Oct". */
+function muhuratDateIso(dateLabel: string): string {
+  const year = new Date().getFullYear()
+  const parsed = new Date(`${dateLabel} ${year}`)
+  if (Number.isNaN(parsed.getTime())) {
+    return `${year}-01-01`
+  }
+  return `${parsed.getFullYear()}-${String(parsed.getMonth() + 1).padStart(2, '0')}-${String(parsed.getDate()).padStart(2, '0')}`
+}
 
 type MuhuratScreen = 'home' | 'lookup' | 'generic' | 'personalised' | 'saved'
 
@@ -50,23 +63,44 @@ function purposeLabel(id: MuhuratPurposeId) {
  * Free: generic city windows. Premium: re-ranked against the birth chart.
  * Screens: lookup (P6) → generic (P7) / personalised (P8) · premium home (P9) · saved (P10).
  */
+function shortDayLabel(iso: string) {
+  const d = new Date(`${iso.slice(0, 10)}T12:00:00`)
+  if (Number.isNaN(d.getTime())) return formatDayAndDate(iso)
+  return d.toLocaleDateString('en-GB', {
+    weekday: 'short',
+    day: 'numeric',
+    month: 'short',
+  })
+}
+
 export function MuhuratFlow({
   locationLabel,
   isPremium,
+  dateIso,
 }: {
   locationLabel: string
   isPremium: boolean
+  /** Calendar / panchang day this muhurat view is anchored to. */
+  dateIso: string
 }) {
   const toast = useToast()
   const navigate = useNavigate()
+  const { user } = useAuth()
   const [screen, setScreen] = useState<MuhuratScreen>(isPremium ? 'home' : 'lookup')
   const [purpose, setPurpose] = useState<MuhuratPurposeId>('griha-pravesh')
   const [fromDate, setFromDate] = useState('01 Oct 2026')
   const [toDate, setToDate] = useState('31 Oct 2026')
   const [city, setCity] = useState(locationLabel)
+  const dayLabel = shortDayLabel(dateIso)
   const [saved, setSaved] = useState<SavedMuhurat[]>(DEFAULT_SAVED_MUHURATS)
   const [savedFilter, setSavedFilter] = useState<'all' | 'self' | 'family' | 'upcoming'>('all')
   const [hasBirthProfile] = useState(true)
+  const [remindTarget, setRemindTarget] = useState<{
+    id: string
+    title: string
+    when: string
+    dateIso: string
+  } | null>(null)
 
   const label = purposeLabel(purpose)
   const genericRows = useMemo(() => buildGenericMuhuratResults(label), [label])
@@ -80,7 +114,7 @@ export function MuhuratFlow({
   function saveWindow(row: { dateLabel: string; window: string }, matched: boolean) {
     if (!isPremium) {
       toast.info('Saved locally', {
-        description: 'Sign in to sync reminders across devices.',
+        description: 'Sign in to sync push reminders across devices.',
       })
       return
     }
@@ -100,18 +134,52 @@ export function MuhuratFlow({
     setScreen('saved')
   }
 
+  const remindSheet = (
+    <RemindCalendarChoice
+      isOpen={Boolean(remindTarget)}
+      onClose={() => setRemindTarget(null)}
+      onSaved={() => {
+        if (!remindTarget) return
+        setSaved((prev) =>
+          prev.map((row) =>
+            row.id === remindTarget.id ? { ...row, status: 'Notification on' } : row,
+          ),
+        )
+      }}
+      title={remindTarget?.title ?? ''}
+      whenLabel={remindTarget?.when ?? ''}
+      dateIso={remindTarget?.dateIso ?? ''}
+      kind="muhurat"
+    />
+  )
+
   if (screen === 'saved') {
     return (
+      <>
       <SavedMuhuratsView
         items={saved}
         filter={savedFilter}
         onFilter={setSavedFilter}
         onBack={() => setScreen(isPremium ? 'home' : 'lookup')}
+        onRemind={(item) => {
+          if (!user) {
+            toast.info('Sign in to set a push reminder')
+            return
+          }
+          setRemindTarget({
+            id: item.id,
+            title: `${item.purpose} muhurat`,
+            when: `${item.dateLabel} · ${item.window}`,
+            dateIso: muhuratDateIso(item.dateLabel),
+          })
+        }}
         onRemove={(id) => {
           setSaved((prev) => prev.filter((s) => s.id !== id))
           toast.info('Removed from saved')
         }}
       />
+      {remindSheet}
+      </>
     )
   }
 
@@ -181,6 +249,7 @@ export function MuhuratFlow({
     return (
       <PremiumHomeView
         locationLabel={city}
+        dayLabel={dayLabel}
         savedCount={saved.filter((s) => !s.past).length}
         onPick={(id) => {
           setPurpose(id)
@@ -526,6 +595,7 @@ function PersonalisedResultsView({
 
 function PremiumHomeView({
   locationLabel,
+  dayLabel,
   savedCount,
   onPick,
   onCustom,
@@ -533,6 +603,7 @@ function PremiumHomeView({
   onSeeToday,
 }: {
   locationLabel: string
+  dayLabel: string
   savedCount: number
   onPick: (id: MuhuratPurposeId) => void
   onCustom: () => void
@@ -548,7 +619,9 @@ function PremiumHomeView({
           className="flex flex-wrap items-center justify-between gap-3 border-copper/35"
         >
           <div>
-            <p className="text-sub font-semibold text-ink">Today for you — Self · Sat 19 Sep</p>
+            <p className="text-sub font-semibold text-ink">
+              Today for you — Self · {dayLabel}
+            </p>
             <p className="mt-0.5 text-sm text-muted text-pretty">
               Best window 11:48 – 12:36, clear of your Saturn transit — avoid 09:12 – 10:44
             </p>
@@ -557,7 +630,7 @@ function PremiumHomeView({
             </p>
           </div>
           <Button variant="secondary" size="sm" className="rounded-full" onClick={onSeeToday}>
-            See all for today
+            See all for this day
           </Button>
         </Card>
 
@@ -662,12 +735,14 @@ function SavedMuhuratsView({
   filter,
   onFilter,
   onBack,
+  onRemind,
   onRemove,
 }: {
   items: SavedMuhurat[]
   filter: 'all' | 'self' | 'family' | 'upcoming'
   onFilter: (f: 'all' | 'self' | 'family' | 'upcoming') => void
   onBack: () => void
+  onRemind: (item: SavedMuhurat) => void
   onRemove: (id: string) => void
 }) {
   const toast = useToast()
@@ -732,6 +807,15 @@ function SavedMuhuratsView({
               <p className="mt-0.5 text-xs text-muted">{s.status}</p>
             </div>
             <div className="flex flex-wrap gap-1.5">
+              <Button
+                variant="secondary"
+                size="sm"
+                className="rounded-full"
+                iconLeft={<Bell className="size-3.5" />}
+                onClick={() => onRemind(s)}
+              >
+                {s.status.toLowerCase().includes('notification') ? 'Reminded' : 'Remind me'}
+              </Button>
               <Button
                 variant="secondary"
                 size="sm"
