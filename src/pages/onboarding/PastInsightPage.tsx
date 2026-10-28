@@ -1,10 +1,9 @@
 import type { GrahaCode } from '@/types/astrology'
-import { ArrowLeft, Check, Crown, Download, Lock, Orbit } from 'lucide-react'
+import { ArrowLeft, Check, Crown, Download, Lock, MessageCircle } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { Navigate, useNavigate } from 'react-router-dom'
 import { PlanetGlyph } from '@/components/astrology/PlanetGlyph'
 import { ChatPaywall } from '@/components/ask/ChatPaywall'
-import { QuestionComposer } from '@/components/ask/QuestionComposer'
 import { Button } from '@/components/common/Button'
 import { PastAeroSky } from '@/components/celestial/PastAeroSky'
 import { useAuth } from '@/auth/auth-context'
@@ -29,13 +28,12 @@ import { cn } from '@/utils/cn'
 
 /** Shared glass surface for Know Your Past panels. */
 const glassSurface =
-  'rounded-[18px] border border-white/10 bg-[#0e0820]/85 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] backdrop-blur-md'
+  'rounded-[18px] border border-white/10 bg-surface/85 shadow-[inset_0_1px_0_rgba(253,248,244,0.08)] backdrop-blur-md'
 
 const ADVENTURE_BTN =
-  'rounded-full border-0 bg-gradient-to-r from-[#7c4dff] to-[#3a7bd5] text-white shadow-[0_12px_32px_-12px_rgba(124,77,255,0.75)] hover:from-[#8b5cff] hover:to-[#4a8be5] focus-visible:outline-[#c4a0ff]'
+  'rounded-full border-0 btn-primary shadow-[0_12px_32px_-12px_rgba(201,145,115,0.55)] focus-visible:outline-accent'
 
-const ADVENTURE_BTN_SECONDARY =
-  'rounded-full border border-white/15 bg-[#0e0820] text-white hover:border-[#c4a0ff]/40 hover:bg-[#7c4dff]/15'
+const ADVENTURE_BTN_SECONDARY = 'rounded-full btn-copper-outline'
 
 /**
  * Know Your Past — once after signup.
@@ -61,6 +59,7 @@ export default function PastInsightPage() {
   const canContinue = picked.length >= MIN_PAST_SELECTIONS
 
   const toggle = (id: PastInsightCategory) => {
+    // After Lock and continue, the set cannot change on this screen.
     if (selectionsLocked) return
     setPicked((prev) => {
       if (prev.includes(id)) return prev.filter((item) => item !== id)
@@ -72,7 +71,7 @@ export default function PastInsightPage() {
   const openReveal = () => {
     if (!canContinue) return
     savePastSelections(user.id, picked)
-    // Only lock remaining cards once all 3 free slots are filled.
+    // “Lock and continue” freezes the three picks for Your Past (free tier).
     setSelectionsLocked(picked.length >= MAX_PAST_SELECTIONS)
     setActiveId(picked[0])
     setRevealOpen(true)
@@ -104,7 +103,6 @@ export default function PastInsightPage() {
         onBack={goBackToChoices}
         onContinue={finish}
         onAsk={(question) => leave(paths.ask, question)}
-        onLookCalculation={() => leave(paths.chart)}
       />
     )
   }
@@ -119,7 +117,7 @@ export default function PastInsightPage() {
           <h1 className="font-serif text-[2.75rem] leading-[1.05] font-normal tracking-[-0.03em] text-white sm:text-[3.5rem] lg:text-[4rem]">
             Know your past.
           </h1>
-          <p className="mx-auto mt-2 max-w-lg text-[13px] leading-snug text-white/55 text-pretty sm:text-[14px]">
+          <p className="mx-auto mt-2 max-w-lg text-[13px] leading-snug text-text-secondary text-pretty sm:text-[14px]">
             {selectionsLocked
               ? 'Your three areas are locked. Open them to read, or keep exploring.'
               : `Pick up to ${MAX_PAST_SELECTIONS} areas — your chart shows what it carried there.`}
@@ -160,7 +158,7 @@ export default function PastInsightPage() {
             className={cn(
               'inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/5 px-4 py-2.5',
               'text-sm font-semibold text-white/70 transition-all duration-200',
-              'hover:border-[#c4a0ff]/40 hover:bg-[#7c4dff]/15 hover:text-white',
+              'hover:border-accent/40 hover:bg-primary/15 hover:text-silver-300',
             )}
           >
             Skip this step →
@@ -176,7 +174,11 @@ export default function PastInsightPage() {
               canContinue ? ADVENTURE_BTN : 'rounded-full border-0 bg-white/10 text-white/35',
             )}
           >
-            {selectionsLocked ? 'Open my past →' : 'Save and continue'}
+            {selectionsLocked
+              ? 'Open my past →'
+              : atLimit
+                ? 'Lock and continue'
+                : 'Save and continue'}
           </Button>
         </div>
       </div>
@@ -193,7 +195,6 @@ function PastRevealScreen({
   onBack,
   onContinue,
   onAsk,
-  onLookCalculation,
 }: {
   userId: string
   insights: PastInsight[]
@@ -202,7 +203,6 @@ function PastRevealScreen({
   onBack: () => void
   onContinue: () => void
   onAsk: (question: string) => void
-  onLookCalculation: () => void
 }) {
   const active = insights.find((item) => item.id === activeId) ?? insights[0]
   const [planUnlocked, setPlanUnlocked] = useState(() => hasActivePlan(userId))
@@ -228,7 +228,7 @@ function PastRevealScreen({
     <>
       <PastAeroSky
         className="h-dvh max-h-dvh"
-        contentClassName="relative flex h-dvh max-h-dvh flex-col overflow-hidden bg-[#07041a]/40"
+        contentClassName="relative flex h-dvh max-h-dvh flex-col overflow-hidden bg-bg/40"
       >
         <header className="relative z-10 shrink-0 border-b border-white/10 px-4 pb-3 pt-safe sm:px-8 lg:px-12">
           <div className="mx-auto flex w-full max-w-[90rem] items-center gap-3 pt-4">
@@ -236,12 +236,12 @@ function PastRevealScreen({
               type="button"
               onClick={onBack}
               aria-label="Back to choices"
-              className="inline-flex size-10 shrink-0 items-center justify-center rounded-full border border-white/15 bg-[#0e0820]/80 text-white transition-colors hover:border-[#c4a0ff]/45"
+              className="inline-flex size-10 shrink-0 items-center justify-center rounded-full border border-white/15 bg-surface/80 text-white transition-colors hover:border-accent/45"
             >
               <ArrowLeft className="size-5" />
             </button>
             <div className="min-w-0">
-              <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-[#c4a0ff]">
+              <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-silver-300">
                 Your past
               </p>
               <p className="truncate text-sm text-white/55">
@@ -272,8 +272,8 @@ function PastRevealScreen({
                     className={cn(
                       'flex min-w-[9.5rem] flex-col rounded-[16px] border px-3.5 py-3 text-left transition-[border-color,background-color,box-shadow] duration-250 ease-out-soft sm:min-w-[11rem] lg:min-w-0 lg:w-full',
                       selected
-                        ? 'border-[#c4a0ff]/55 bg-[#7c4dff]/25 shadow-[0_0_0_1px_rgba(124,77,255,0.2)]'
-                        : 'border-white/10 bg-[#0e0820]/70 hover:border-[#c4a0ff]/30',
+                        ? 'border-accent/55 bg-primary/25 shadow-[0_0_0_1px_rgba(201,145,115,0.45)]'
+                        : 'border-white/10 bg-surface/70 hover:border-accent/30',
                     )}
                   >
                     <span className="flex items-center gap-1.5">
@@ -300,26 +300,33 @@ function PastRevealScreen({
                 <InsightDetail
                   key={active.id}
                   insight={active}
-                  onLookCalculation={onLookCalculation}
                   onDownloadReport={requestDownload}
                   reportPaid={!planUnlocked}
                   downloadReady={downloadReady}
                 />
               </div>
 
-              <QuestionComposer
-                key={`ask-${active.id}`}
-                variant="bar"
-                tone="adventure"
-                className="w-full"
-                placeholder={`Ask about your past in ${active.category.toLowerCase()}…`}
-                onAsk={onAsk}
-              />
+              <Button
+                variant="ghost"
+                size="lg"
+                fullWidth
+                iconLeft={<MessageCircle className="size-4" strokeWidth={2} />}
+                onClick={() =>
+                  onAsk(`Tell me more about my past in ${active.category.toLowerCase()}.`)
+                }
+                className={cn(
+                  'rounded-full border-0 btn-primary',
+                  'shadow-[0_0_28px_-6px_rgba(201,145,115,0.55)]',
+                  'hover:shadow-[0_0_36px_-4px_rgba(201,145,115,0.55)]',
+                )}
+              >
+                Ask about this
+              </Button>
             </div>
           </div>
         </div>
 
-        <div className="relative z-20 shrink-0 border-t border-white/10 bg-[#07041a]/92 backdrop-blur-xl pb-safe">
+        <div className="relative z-20 shrink-0 border-t border-white/10 bg-bg/92 backdrop-blur-xl pb-safe">
           <div className="mx-auto flex w-full max-w-[90rem] items-center justify-end gap-4 px-5 py-4 sm:px-8 lg:px-12">
             <Button
               variant="ghost"
@@ -362,78 +369,126 @@ function PastOptionCard({
   showLock?: boolean
   onToggle: () => void
 }) {
+  const locked = Boolean(showLock && !selected)
+
   return (
     <button
       type="button"
       onClick={onToggle}
       disabled={disabled}
       aria-pressed={selected}
-      aria-disabled={disabled}
+      aria-disabled={disabled || locked}
       className={cn(
-        'past-option-card group relative flex min-h-0 flex-col overflow-hidden rounded-[18px] border px-4 py-3.5 text-left sm:px-4 sm:py-4',
-        'transition-[border-color,transform,background-color,opacity] duration-300 ease-out-soft',
-        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#c4a0ff]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[#07041a]',
-        'hover:-translate-y-1 hover:scale-[1.015] active:scale-[0.99] lg:h-full',
+        'past-option-card group relative flex min-h-0 flex-col overflow-hidden rounded-[1.35rem] border px-4 py-4 text-left sm:px-5 sm:py-5',
+        'backdrop-blur-md transition-[border-color,transform,background-color,opacity,box-shadow] duration-300 ease-out-soft',
+        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-glow/60 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-bg)]',
+        !locked && 'hover:-translate-y-1.5 hover:scale-[1.02] active:scale-[0.99]',
+        'lg:h-full',
         selected
-          ? 'border-[#c4a0ff]/60 bg-[#1a1238]'
-          : 'border-white/12 bg-[#12102a] shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] hover:border-[#c4a0ff]/40 hover:bg-[#18143a]',
+          ? 'border-blue-light/55 bg-gradient-to-br from-blue-glow/25 via-[#2E1623] to-[#1B101D]'
+          : locked
+            ? 'cursor-not-allowed border-white/10 bg-[#0F0B19]/90 opacity-70'
+            : 'border-white/14 bg-gradient-to-br from-[#2E1623]/95 via-[#1B101D] to-[#0F0B19] shadow-[inset_0_1px_0_rgba(253,248,244,0.08)] hover:border-blue-light/40 hover:from-blue-glow/15 hover:via-[#2E1623] hover:to-[#1B101D]',
         disabled &&
-          'cursor-not-allowed opacity-55 hover:translate-y-0 hover:scale-100 hover:border-white/12 hover:bg-[#12102a]',
+          !locked &&
+          'cursor-not-allowed opacity-55 hover:translate-y-0 hover:scale-100 hover:border-white/14',
         selected && disabled && 'opacity-100',
       )}
       style={{ animationDelay: `${90 + index * 70}ms` }}
     >
+      <span className="past-option-card__orb past-option-card__orb--a" aria-hidden />
+      <span className="past-option-card__orb past-option-card__orb--b" aria-hidden />
+      <span className="past-option-card__stars" aria-hidden />
       <span className="past-option-card__sheen" aria-hidden />
 
-      <div className="relative z-[1] flex items-start gap-2">
-        <span className="past-option-card__glyphs flex items-center gap-1.5 text-[#c4a0ff]">
+      {locked && (
+        <span aria-hidden className="pointer-events-none absolute inset-0 z-[2] bg-black/30" />
+      )}
+
+      <div className="relative z-[3] flex items-start gap-3">
+        <span
+          className={cn(
+            'past-option-card__glyphs inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1.5',
+            selected
+              ? 'border-blue-light/40 bg-blue-glow/20 text-blue-light shadow-[0_0_18px_-6px_rgba(201,145,115,0.55)]'
+              : locked
+                ? 'border-white/10 bg-white/5 text-white/35'
+                : 'border-white/15 bg-white/5 text-blue-light/90 group-hover:border-blue-light/35 group-hover:bg-blue-glow/15',
+          )}
+        >
           {insight.planets.map((code) => (
             <PlanetGlyph key={code} code={code} size="sm" tone="dark" />
           ))}
         </span>
         <span
           className={cn(
-            'ml-auto inline-flex size-5 shrink-0 items-center justify-center rounded-full border transition-all duration-300',
+            'ml-auto inline-flex size-7 shrink-0 items-center justify-center rounded-full border transition-all duration-300',
             selected
-              ? 'past-option-card__check--on border-[#c4a0ff] bg-[#7c4dff] text-white shadow-[0_0_12px_rgba(124,77,255,0.55)]'
-              : showLock
-                ? 'border-[#c4a0ff]/40 bg-[#7c4dff]/20 text-[#c4a0ff]'
-                : 'border-white/20 text-transparent group-hover:border-[#c4a0ff]/35',
+              ? 'past-option-card__check--on border-blue-light bg-blue-glow text-white shadow-[0_0_16px_rgba(201,145,115,0.55)]'
+              : locked
+                ? 'border-blue-light/35 bg-blue-glow/15 text-blue-light'
+                : 'border-white/25 bg-black/20 text-transparent group-hover:border-blue-light/45',
           )}
           aria-hidden
         >
-          {showLock && !selected ? (
-            <Lock className="size-2.5" strokeWidth={2.5} />
+          {locked ? (
+            <Lock className="size-3.5" strokeWidth={2.5} />
           ) : (
-            <Check className="size-2.5" strokeWidth={3} />
+            <Check className="size-3" strokeWidth={3} />
           )}
         </span>
       </div>
 
+      <p
+        className={cn(
+          'relative z-[3] mt-4 font-mono text-[10px] font-semibold uppercase tracking-[0.16em]',
+          locked ? 'text-white/30' : 'text-blue-light/80',
+        )}
+      >
+        Bhava {insight.bhava}
+      </p>
+
       <h2
         className={cn(
-          'past-option-card__title relative z-[1] mt-3 font-serif font-semibold leading-[1.05] tracking-[-0.03em] text-white',
-          'text-[1.65rem] sm:text-[1.85rem] lg:text-[2rem]',
+          'past-option-card__title relative z-[3] mt-1 font-serif font-semibold leading-[1.05] tracking-[-0.03em]',
+          'text-[1.75rem] sm:text-[1.95rem] lg:text-[2.15rem]',
+          locked ? 'text-white/40' : 'text-white',
         )}
       >
         {insight.category}
       </h2>
-      <p className="relative z-[1] mt-2 flex-1 text-[13px] leading-relaxed text-white/60 sm:text-[13.5px] sm:leading-relaxed">
+      <p
+        className={cn(
+          'relative z-[3] mt-2.5 flex-1 text-[13.5px] leading-relaxed sm:text-[14px]',
+          locked ? 'text-white/35' : 'text-text-secondary',
+        )}
+      >
         {insight.blurb}
       </p>
+
+      {locked && (
+        <p className="relative z-[3] mt-3 inline-flex items-center gap-1.5 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-blue-light/75">
+          <Lock className="size-3" strokeWidth={2.5} aria-hidden />
+          Locked
+        </p>
+      )}
+
+      {selected && !locked && (
+        <p className="relative z-[3] mt-3 font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-blue-light">
+          Selected
+        </p>
+      )}
     </button>
   )
 }
 
 function InsightDetail({
   insight,
-  onLookCalculation,
   onDownloadReport,
   reportPaid = false,
   downloadReady = false,
 }: {
   insight: PastInsight
-  onLookCalculation?: () => void
   onDownloadReport?: () => void
   /** When true, download is gated behind Plus. */
   reportPaid?: boolean
@@ -442,63 +497,22 @@ function InsightDetail({
   return (
     <article className="animate-fade-in space-y-5">
       <div className="space-y-3">
-        <div className="flex flex-wrap items-start justify-between gap-2.5">
-          <p className="pt-1 text-[11px] font-medium uppercase tracking-[0.16em] text-[#c4a0ff]">
-            {insight.category}
-          </p>
-
-          {(onLookCalculation || onDownloadReport) && (
-            <div className="ml-auto flex flex-wrap items-center justify-end gap-2">
-              {onLookCalculation && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={onLookCalculation}
-                  iconLeft={<Orbit className="size-3.5" strokeWidth={2} />}
-                  className={ADVENTURE_BTN}
-                >
-                  Look your calculation
-                </Button>
-              )}
-              {onDownloadReport && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={onDownloadReport}
-                  iconLeft={
-                    reportPaid ? (
-                      <Crown className="size-3.5" strokeWidth={2} />
-                    ) : (
-                      <Download className="size-3.5" strokeWidth={2} />
-                    )
-                  }
-                  className={ADVENTURE_BTN_SECONDARY}
-                >
-                  {downloadReady && !reportPaid ? 'Report ready' : 'Download report'}
-                  {reportPaid && (
-                    <span className="ml-1 font-mono text-[9px] uppercase tracking-[0.12em] text-[#c4a0ff]">
-                      Plus
-                    </span>
-                  )}
-                </Button>
-              )}
-            </div>
-          )}
-        </div>
-
+        <p className="text-[11px] font-medium uppercase tracking-[0.16em] text-silver-300">
+          {insight.category}
+        </p>
         <p className="font-serif text-title text-white text-pretty lg:text-title-lg">
           {insight.verdict}
         </p>
       </div>
 
       <section>
-        <h3 className="text-[11px] font-medium uppercase tracking-[0.14em] text-white/45">
+        <h3 className="text-[11px] font-medium uppercase tracking-[0.14em] text-text-muted">
           What your chart points to
         </h3>
         <ul className="mt-3 space-y-2">
           {insight.points.map((point) => (
-            <li key={point} className="flex gap-2 text-body text-white/70 text-pretty">
-              <span className="mt-2 size-1.5 shrink-0 rounded-full bg-[#5ed7f2]" aria-hidden />
+            <li key={point} className="flex gap-2 text-body text-text-secondary text-pretty">
+              <span className="mt-2 size-1.5 shrink-0 rounded-full bg-primary" aria-hidden />
               <span>{point}</span>
             </li>
           ))}
@@ -506,17 +520,17 @@ function InsightDetail({
       </section>
 
       <section>
-        <h3 className="text-[11px] font-medium uppercase tracking-[0.14em] text-white/45">
+        <h3 className="text-[11px] font-medium uppercase tracking-[0.14em] text-text-muted">
           Planetary influence
         </h3>
         <ul className="mt-3 flex flex-wrap gap-2">
           {insight.planets.map((code: GrahaCode) => (
             <li
               key={code}
-              className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-[#07041a]/55 px-3 py-2"
+              className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-bg/55 px-3 py-2"
             >
               <PlanetGlyph code={code} size="md" withName tone="dark" />
-              <span className="text-[10px] font-medium uppercase tracking-[0.1em] text-white/45">
+              <span className="text-[10px] font-medium uppercase tracking-[0.1em] text-text-muted">
                 {GRAHAS[code].english}
               </span>
             </li>
@@ -524,9 +538,33 @@ function InsightDetail({
         </ul>
       </section>
 
-      <p className="border-t border-white/10 pt-4 text-[10px] font-medium uppercase tracking-[0.14em] text-white/35">
-        Source · {bhavaRef(insight.bhava)} · {insight.source}
-      </p>
+      <div className="flex flex-wrap items-end justify-between gap-3 border-t border-white/10 pt-4">
+        <p className="text-[10px] font-medium uppercase tracking-[0.14em] text-text-secondary">
+          Source · {bhavaRef(insight.bhava)} · {insight.source}
+        </p>
+        {onDownloadReport && (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onDownloadReport}
+            iconLeft={
+              reportPaid ? (
+                <Crown className="size-3.5" strokeWidth={2} />
+              ) : (
+                <Download className="size-3.5" strokeWidth={2} />
+              )
+            }
+            className={ADVENTURE_BTN_SECONDARY}
+          >
+            {downloadReady && !reportPaid ? 'Report ready' : 'Download report'}
+            {reportPaid && (
+              <span className="ml-1 font-mono text-[9px] uppercase tracking-[0.12em] text-silver-300">
+                Plus
+              </span>
+            )}
+          </Button>
+        )}
+      </div>
     </article>
   )
 }

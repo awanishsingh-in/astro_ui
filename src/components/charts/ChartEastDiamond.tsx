@@ -37,13 +37,15 @@ export function ChartEastDiamond({
     rashiByBhava.set(b.bhava, rashiIndex(b.rashi))
   }
 
-  const fill = paper ? '#FDF8F4' : 'var(--color-surface-raised)'
-  const line = paper ? '#4A3F6B' : 'var(--color-chart-line)'
-  const rim = paper ? '#2E273F' : 'var(--color-copper)'
-  const signFill = paper ? '#6B5B8C' : 'var(--color-light-copper)'
-  const planetColor = paper ? '#2E273F' : 'var(--color-ink)'
-  const lagnaFill = paper ? '#D69E68' : 'var(--color-copper)'
-  const highlight = paper ? 'rgba(214, 158, 104, 0.28)' : 'rgba(124, 77, 255, 0.18)'
+  const fill = paper ? '#FBEFE6' : 'var(--color-chart-field)'
+  const line = paper ? '#5C4750' : 'var(--color-chart-line)'
+  const rim = paper ? '#1B101D' : 'var(--color-chart-rim)'
+  const signFill = paper ? '#5C4750' : 'var(--color-text-secondary)'
+  const planetColor = paper ? '#1B101D' : 'var(--color-text)'
+  const lagnaFill = paper ? '#BF8466' : 'var(--color-copper)'
+  const highlight = paper
+    ? ''
+    : 'var(--color-chart-highlight)'
 
   return (
     <svg
@@ -70,7 +72,7 @@ export function ChartEastDiamond({
         <path
           d={CELL_PATH[activeBhava]}
           fill="none"
-          stroke={paper ? '#D69E68' : 'var(--color-gold)'}
+          stroke={paper ? '#BF8466' : 'var(--color-gold)'}
           strokeWidth="2.4"
         />
       )}
@@ -152,7 +154,7 @@ function HouseContents({
   const startY = y - ((lines.length - 1) * lineH) / 2
 
   return (
-    <text x={x} textAnchor="middle" fontFamily="var(--font-sans)" fontSize="10">
+    <text x={x} textAnchor="middle" fontFamily="var(--font-sans)" fontSize="11">
       {lines.map((line, i) => (
         <tspan
           key={`${line.text}-${i}`}

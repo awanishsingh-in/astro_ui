@@ -93,7 +93,7 @@ export function CalculationBasis({ basis, birthDetails, className }: Calculation
 
       {/* Birth details lead: they are the only input the user gave. */}
       <div className="rounded-card border border-gold-border bg-gold-soft p-4">
-        <p className="font-mono text-label uppercase text-gold-deep">Calculated from</p>
+        <p className="font-mono text-label uppercase text-silver-400">Calculated from</p>
         <p className="mt-2 text-sub font-medium text-ink">{birthDetails.fullName}</p>
         <p className="mt-1 font-mono text-data text-purple">
           {formatDateLong(birthDetails.date)}

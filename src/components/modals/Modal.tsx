@@ -1,5 +1,6 @@
 import { X } from 'lucide-react'
 import { useCallback, useRef, type ReactNode } from 'react'
+import { Button } from '@/components/common/Button'
 import { IconButton } from '@/components/common/IconButton'
 import { useFocusTrap } from '@/hooks/useFocusTrap'
 import { cn } from '@/utils/cn'
@@ -14,6 +15,8 @@ export interface ModalProps {
   /** Sticky action row at the foot of the panel. */
   footer?: ReactNode
   size?: 'sm' | 'md' | 'lg'
+  /** `icon` — default X control. `button` — text Close. */
+  closeMode?: 'icon' | 'button'
   className?: string
 }
 
@@ -35,6 +38,7 @@ export function Modal({
   children,
   footer,
   size = 'md',
+  closeMode = 'icon',
   className,
 }: ModalProps) {
   const panelRef = useRef<HTMLDivElement>(null)
@@ -50,8 +54,9 @@ export function Modal({
         aria-label={title}
         tabIndex={-1}
         className={cn(
-          'relative flex max-h-[85dvh] w-full flex-col animate-scale-in',
-          'rounded-panel border border-border bg-surface shadow-overlay outline-none',
+          'relative flex max-h-[min(85dvh,100%)] w-full flex-col animate-scale-in',
+          'rounded-panel border border-border/30 bg-card-gradient shadow-overlay outline-none',
+          'backdrop-blur-[16px]',
           SIZES[size],
           className,
         )}
@@ -61,7 +66,13 @@ export function Modal({
             <h2 className="text-heading font-semibold text-ink">{title}</h2>
             {description && <p className="text-sm text-muted text-pretty">{description}</p>}
           </div>
-          <IconButton label="Close" icon={<X />} onClick={onClose} size="sm" />
+          {closeMode === 'button' ? (
+            <Button variant="secondary" size="sm" className="shrink-0 rounded-full" onClick={onClose}>
+              Close
+            </Button>
+          ) : (
+            <IconButton label="Close" icon={<X />} onClick={onClose} size="sm" />
+          )}
         </header>
 
         <div className="min-h-0 flex-1 overflow-y-auto p-5">{children}</div>

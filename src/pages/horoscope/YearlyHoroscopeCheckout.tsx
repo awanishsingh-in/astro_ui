@@ -72,46 +72,12 @@ export function YearlyHoroscopeCheckout({
     }, 900)
   }
 
-  function goBack() {
-    if (paying) return
-    if (step === 'offer') {
-      onClose()
-      return
-    }
-    if (step === 'profiles') setStep('offer')
-    else if (step === 'cart') setStep('profiles')
-    else if (step === 'pay') setStep('cart')
-    else if (step === 'done') onClose()
-    window.scrollTo({ top: 0, behavior: 'smooth' })
-  }
-
-  const backLabel =
-    step === 'offer' || step === 'done'
-      ? '← Back to horoscope'
-      : step === 'profiles'
-        ? '← Back to offer'
-        : step === 'cart'
-          ? '← Back to profiles'
-          : '← Back to cart'
-
   return (
     <PageContainer width="content" className="pb-16 pt-6 sm:pt-10">
       <article className="mx-auto flex w-full max-w-lg flex-col gap-5 animate-rise">
-        <button
-          type="button"
-          onClick={goBack}
-          disabled={paying}
-          className="self-start text-xs text-muted underline-offset-2 hover:text-ink hover:underline disabled:opacity-50"
-        >
-          {backLabel}
-        </button>
-
         {step === 'offer' && (
           <Card padding="lg" className="flex flex-col gap-5 border-border/80 p-6 sm:gap-6 sm:p-8">
             <div className="space-y-2.5">
-              <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-gold-deep">
-                Yearly horoscope
-              </p>
               <h1 className="text-2xl font-semibold tracking-tight text-ink text-pretty sm:text-3xl">
                 Pay to see your yearly horoscope
               </h1>
@@ -121,7 +87,7 @@ export function YearlyHoroscopeCheckout({
             </div>
 
             <div className="rounded-2xl border border-copper/35 bg-copper/10 px-4 py-3.5">
-              <p className="text-sm font-semibold text-gold-deep">Offer</p>
+              <p className="text-sm font-semibold text-silver-400">Offer</p>
               <p className="mt-1.5 text-sm leading-relaxed text-ink text-pretty">
                 {inr(UNIT_PRICE)} per profile. Add 2 profiles and get 40% off.
               </p>
@@ -149,9 +115,6 @@ export function YearlyHoroscopeCheckout({
             className="flex flex-col gap-4 border-border/80 p-6 sm:p-6"
           >
             <div className="space-y-1.5">
-              <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-gold-deep">
-                Step 2 of 4
-              </p>
               <h1 className="text-2xl font-semibold text-ink text-pretty">
                 Who should get the yearly horoscope?
               </h1>
@@ -168,7 +131,7 @@ export function YearlyHoroscopeCheckout({
                   : 'border-copper/30 bg-copper/8 text-ink',
               )}
             >
-              <p className="font-semibold text-gold-deep">Offer</p>
+              <p className="font-semibold text-silver-400">Offer</p>
               <p className="mt-1 text-muted text-pretty">
                 Add 2 profiles and get 40% off — {inr(UNIT_PRICE)} each before discount.
               </p>
@@ -264,7 +227,7 @@ export function YearlyHoroscopeCheckout({
             <button
               type="button"
               onClick={() => setStep('profiles')}
-              className="inline-flex items-center gap-2 text-sm font-medium text-copper hover:underline"
+              className="inline-flex items-center gap-2 text-sm font-medium text-silver-300 hover:underline"
             >
               <Plus className="size-4" />
               Add more profiles
@@ -289,7 +252,7 @@ export function YearlyHoroscopeCheckout({
                 <dd>{inr(subtotal)}</dd>
               </div>
               {offerOn && (
-                <div className="flex justify-between text-gold-deep">
+                <div className="flex justify-between text-silver-400">
                   <dt>40% off</dt>
                   <dd>−{inr(discount)}</dd>
                 </div>
@@ -328,7 +291,7 @@ export function YearlyHoroscopeCheckout({
               </p>
             </div>
             <div className="flex items-start gap-3 rounded-2xl border border-border/80 px-4 py-3">
-              <ShieldCheck className="mt-0.5 size-5 shrink-0 text-gold-deep" aria-hidden />
+              <ShieldCheck className="mt-0.5 size-5 shrink-0 text-silver-400" aria-hidden />
               <p className="text-sm text-muted text-pretty">
                 Demo payment gateway · no real charge. Confirm to finish.
               </p>
@@ -359,7 +322,7 @@ export function YearlyHoroscopeCheckout({
 
         {step === 'done' && (
           <Card padding="lg" className="flex flex-col gap-4 border-border/80 p-6 sm:gap-5 sm:p-8">
-            <Sparkles className="size-6 text-copper" aria-hidden />
+            <Sparkles className="size-6 text-silver-300" aria-hidden />
             <h1 className="text-2xl font-semibold text-ink">Payment complete</h1>
             <p className="text-sm leading-relaxed text-muted text-pretty">
               Yearly horoscope is unlocked for {selected.map((p) => p.name).join(', ')}.
@@ -373,7 +336,7 @@ export function YearlyHoroscopeCheckout({
               Read yearly horoscope
             </Button>
             <Button variant="ghost" size="sm" className="rounded-full" onClick={onClose}>
-              Back to hub
+              Horoscope hub
             </Button>
           </Card>
         )}

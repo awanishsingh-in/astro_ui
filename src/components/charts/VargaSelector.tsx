@@ -127,7 +127,7 @@ function VargaRow({
           {vargaLabel(varga.code)} {varga.name}
         </span>
         {active && (
-          <span className="shrink-0 font-mono text-label uppercase text-copper">On</span>
+          <span className="shrink-0 font-mono text-label uppercase text-silver-300">On</span>
         )}
       </span>
       <span className="line-clamp-2 text-xs leading-snug text-muted text-pretty">

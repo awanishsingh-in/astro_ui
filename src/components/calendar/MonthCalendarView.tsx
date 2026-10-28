@@ -65,8 +65,8 @@ function shortTithi(tithi: string) {
 }
 
 function pillClass(kind: CalendarEventKind) {
-  if (kind === 'festival') return 'bg-copper/25 text-pale-copper border-copper/45'
-  return 'bg-navy-soft text-purple border-border/80'
+  if (kind === 'festival') return 'cal-festival-chip rg-chip'
+  return 'cal-event-chip bg-navy-soft text-purple border-border/80'
 }
 
 const YEAR_OPTIONS = Array.from({ length: 21 }, (_, i) => 2016 + i)
@@ -151,7 +151,7 @@ export function MonthCalendarView({
               <ChevronLeft className="size-4" />
             </Button>
             <div ref={monthMenuRef} className="relative">
-              <h2 className="min-w-[11rem] text-center text-heading font-semibold tracking-tight text-ink">
+              <h2 className="min-w-0 text-center text-heading font-semibold tracking-tight text-ink sm:min-w-[11rem]">
                 <button
                   type="button"
                   aria-haspopup="dialog"
@@ -160,7 +160,7 @@ export function MonthCalendarView({
                   onClick={monthMenu.toggle}
                   className={cn(
                     'inline-flex items-baseline gap-1.5 rounded-lg px-1.5 py-0.5',
-                    'transition hover:bg-copper/15 hover:text-copper',
+                    'transition hover:bg-copper/15 hover:text-silver-300',
                     'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-copper',
                   )}
                 >
@@ -228,7 +228,7 @@ export function MonthCalendarView({
                           className={cn(
                             'rounded-xl border px-1.5 py-2.5 text-center text-xs font-semibold transition sm:text-sm',
                             selectedMonth
-                              ? 'border-copper/60 bg-copper/20 text-copper'
+                              ? 'border-copper/60 bg-copper/20 text-silver-300'
                               : isOngoing
                                 ? 'border-copper/35 bg-copper/10 text-ink'
                                 : 'border-transparent text-ink hover:border-copper/30 hover:bg-copper/10',
@@ -236,7 +236,7 @@ export function MonthCalendarView({
                         >
                           {label}
                           {isOngoing && (
-                            <span className="mt-0.5 block font-mono text-[8px] font-semibold uppercase tracking-wide text-copper/80">
+                            <span className="mt-0.5 block font-mono text-[8px] font-semibold uppercase tracking-wide text-silver-300/80">
                               Now
                             </span>
                           )}
@@ -265,9 +265,9 @@ export function MonthCalendarView({
             <span
               className={cn(
                 'relative inline-flex items-center rounded-full border border-copper/45',
-                'bg-gradient-to-r from-[#7c4dff]/20 to-[#3a7bd5]/15',
-                'shadow-[0_0_0_1px_rgba(124,77,255,0.12),0_8px_20px_-12px_rgba(124,77,255,0.55)]',
-                'transition group-hover:border-copper/70 group-hover:from-[#7c4dff]/30 group-hover:to-[#3a7bd5]/25',
+                'bg-gradient-to-r from-primary/20 to-secondary/15',
+                'shadow-[0_0_0_1px_rgba(201,145,115,0.45),0_8_20_12_rgba(15,11,25,0.55)]',
+                'transition group-hover:border-copper/70 group-hover:from-primary/30 group-hover:to-secondary/25',
               )}
             >
               <select
@@ -288,7 +288,7 @@ export function MonthCalendarView({
               </select>
               <span
                 aria-hidden
-                className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[0.7em] text-copper"
+                className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[0.7em] text-silver-300"
               >
                 ▾
               </span>
@@ -301,9 +301,10 @@ export function MonthCalendarView({
             {WEEKDAYS.map((label) => (
               <div
                 key={label}
-                className="px-1.5 py-3 text-center font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-muted"
+                className="px-0.5 py-2.5 text-center font-mono text-[10px] font-semibold uppercase tracking-[0.08em] text-muted sm:px-1.5 sm:py-3 sm:tracking-[0.12em]"
               >
-                {label}
+                <span className="sm:hidden">{label.slice(0, 1)}</span>
+                <span className="hidden sm:inline">{label}</span>
               </div>
             ))}
           </div>
@@ -317,6 +318,8 @@ export function MonthCalendarView({
                 day.events.find((e) => e.kind === 'festival') ??
                 day.events.find((e) => e.kind === 'ekadashi') ??
                 day.events.find((e) => e.kind === 'vrat')
+              const catalogFestival =
+                headline?.kind === 'festival' ? festivalOnDate(day.date) : undefined
 
               return (
                 <button
@@ -324,25 +327,26 @@ export function MonthCalendarView({
                   type="button"
                   onClick={() => onSelect(day.date.slice(0, 10))}
                   className={cn(
-                    'relative flex min-h-[4.75rem] flex-col gap-1.5 p-2 text-left transition-colors sm:min-h-[5.5rem] sm:p-2.5',
+                    'relative flex min-h-[3.75rem] min-w-0 flex-col gap-1 p-1 text-left transition-colors sm:min-h-[5.5rem] sm:gap-1.5 sm:p-2.5',
                     !inMonth && 'bg-surface-sunken/30 opacity-45',
                     inMonth && 'bg-surface/90',
-                    isSelected && 'bg-copper/12 ring-1 ring-inset ring-copper/50',
+                    isSelected && 'rg-selected',
+                    isToday && inMonth && !isSelected && 'border border-[rgba(243,217,196,0.35)]',
                     !isSelected && inMonth && 'hover:bg-navy-soft/50',
                   )}
                 >
-                  <div className="flex w-full items-start justify-between gap-1">
+                  <div className="flex w-full flex-col items-start gap-0.5 sm:flex-row sm:items-start sm:justify-between sm:gap-1">
                     <span
                       className={cn(
-                        'inline-flex size-7 items-center justify-center rounded-full text-sm font-semibold',
-                        isToday && 'bg-copper text-midnight',
+                        'inline-flex size-6 items-center justify-center rounded-full text-xs font-semibold sm:size-7 sm:text-sm',
+                        isToday && 'rg-today',
                         !isToday && 'text-ink',
                       )}
                     >
                       {dayNum}
                     </span>
                     {inMonth && (
-                      <span className="pt-0.5 font-mono text-[9px] uppercase tracking-wide text-muted">
+                      <span className="max-w-full truncate font-mono text-[8px] uppercase tracking-wide text-muted sm:pt-0.5 sm:text-[9px]">
                         {shortTithi(day.tithi)}
                       </span>
                     )}
@@ -350,8 +354,9 @@ export function MonthCalendarView({
                   {inMonth && headline && (
                     <span
                       className={cn(
-                        'mt-auto line-clamp-2 rounded-md border px-2 py-1.5 text-[10px] font-medium leading-tight',
+                        'mt-auto line-clamp-1 rounded-md border px-1 py-1 text-[9px] font-medium leading-tight sm:line-clamp-2 sm:px-2 sm:py-1.5 sm:text-[10px]',
                         pillClass(headline.kind),
+                        catalogFestival?.category === 'major' && 'cal-festival-chip--major',
                       )}
                     >
                       {headline.name}
@@ -368,7 +373,7 @@ export function MonthCalendarView({
         <Card padding="lg" className="flex flex-col gap-5 border-border/80 sm:gap-6 sm:p-6">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0 space-y-1.5">
-              <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-gold-deep">
+              <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-silver-400">
                 {selected ? formatDayAndDate(selected.date) : 'Select a day'}
               </p>
               {selected && (
@@ -379,7 +384,7 @@ export function MonthCalendarView({
               )}
             </div>
             <span className="inline-flex shrink-0 items-center gap-1 rounded-full border border-border/80 px-2.5 py-1 font-mono text-[10px] uppercase tracking-wide text-muted">
-              <MapPin className="size-3 text-copper" aria-hidden />
+              <MapPin className="size-3 text-silver-300" aria-hidden />
               {locationLabel.split(',')[0]}
             </span>
           </div>
@@ -390,7 +395,7 @@ export function MonthCalendarView({
               <p className="mt-2 text-xs leading-relaxed text-muted text-pretty">{festival.blurb}</p>
               <Link
                 to={paths.calendarFestival(festival.id)}
-                className="mt-3 inline-flex text-sm font-medium text-gold-deep hover:underline"
+                className="mt-3 inline-flex text-sm font-medium text-silver-400 hover:underline"
               >
                 Read full details →
               </Link>
@@ -451,7 +456,7 @@ export function MonthCalendarView({
                 Find muhurat for this day
               </Button>
               <Button
-                variant="primary"
+                variant="secondary"
                 size="md"
                 className="w-full rounded-full"
                 iconLeft={<Download className="size-3.5" />}

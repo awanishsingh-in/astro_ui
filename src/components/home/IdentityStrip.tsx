@@ -40,7 +40,7 @@ export function IdentityStrip({ summary, nakshatra, className }: IdentityStripPr
         <span key={item.key} className="inline-flex min-w-0 items-baseline gap-1.5">
           <span className="font-mono text-label uppercase text-muted">{item.key}</span>
           {item.glyph && (
-            <span aria-hidden className="text-sm text-gold">
+            <span aria-hidden className="text-sm text-silver-300">
               {item.glyph}
             </span>
           )}

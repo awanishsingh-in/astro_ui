@@ -42,14 +42,16 @@ export function ChartSouthGrid({
     grahasByBhava.set(g.bhava, list)
   }
 
-  const fill = paper ? '#FDF8F4' : 'var(--color-surface-raised)'
-  const line = paper ? '#B88E58' : 'var(--color-chart-line)'
-  const rim = paper ? '#A07840' : 'var(--color-copper)'
-  const signFill = paper ? '#8B6914' : 'var(--color-light-copper)'
-  const planetColor = paper ? '#1B2A4A' : 'var(--color-ink)'
-  const lagnaFill = paper ? '#8B4513' : 'var(--color-copper)'
-  const highlight = paper ? 'rgba(184, 142, 88, 0.22)' : 'rgba(124, 77, 255, 0.18)'
-  const highlightStroke = paper ? '#C4894A' : 'var(--color-copper)'
+  const fill = paper ? '#FBEFE6' : 'var(--color-chart-field)'
+  const line = paper ? '#BF8466' : 'var(--color-chart-line)'
+  const rim = paper ? '#6E4234' : 'var(--color-chart-rim)'
+  const signFill = paper ? '#6E4234' : 'var(--color-text-secondary)'
+  const planetColor = paper ? '#2E1623' : 'var(--color-text)'
+  const lagnaFill = paper ? '#6E4234' : 'var(--color-copper)'
+  const highlight = paper
+    ? ''
+    : 'var(--color-chart-highlight)'
+  const highlightStroke = paper ? '#BF8466' : 'var(--color-copper)'
 
   const cell = 75
 
@@ -131,7 +133,7 @@ export function ChartSouthGrid({
                   width="24"
                   height="12"
                   rx="3"
-                  fill={paper ? 'rgba(124,77,255,0.14)' : 'rgba(124,77,255,0.28)'}
+                  fill={paper ? '' : 'var(--color-chart-highlight-dark)'}
                   stroke={lagnaFill}
                   strokeWidth="0.75"
                 />
@@ -191,8 +193,8 @@ function PlanetStack({
   }
 
   const crowded = codes.length >= 3
-  const fontSize = crowded ? 9 : 10.5
-  const lineH = crowded ? 11 : 13
+  const fontSize = crowded ? 10 : 11.5
+  const lineH = crowded ? 12 : 14
   // Leave room for sign + ASC chip along the top edge.
   const contentTop = y + 20
   const contentBottom = y + cell - 6

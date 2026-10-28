@@ -1,3 +1,5 @@
+export { NebulaBackground } from './NebulaBackground'
+export { CopperSphere } from './CopperSphere'
 export { CelestialBackground } from './CelestialBackground'
 export type { CelestialBackgroundProps, CelestialMotif } from './CelestialBackground'
 export { default as Galaxy } from './Galaxy'

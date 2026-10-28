@@ -1,0 +1,152 @@
+/* Calculator hub — purple nebula wash + staggered card entrance */
+
+.calc-hub-atmosphere {
+  background:
+    radial-gradient(ellipse 60% 45% at 88% 6%, rgba(184, 50, 122, 0.22) 0%, rgba(122, 31, 87, 0.1) 42%, transparent 70%),
+    radial-gradient(ellipse 45% 35% at 10% 22%, rgba(184, 50, 122, 0.12) 0%, transparent 62%),
+    radial-gradient(ellipse 65% 40% at 50% 100%, rgba(61, 18, 51, 0.35) 0%, transparent 72%),
+    linear-gradient(180deg, rgba(27, 16, 29, 0.22) 0%, transparent 50%);
+}
+
+.calc-hub-atmosphere::before {
+  content: '';
+  position: absolute;
+  right: -22%;
+  top: -14%;
+  width: 48vmin;
+  height: 48vmin;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(184, 50, 122, 0.22) 0%, rgba(122, 31, 87, 0.1) 50%, transparent 72%);
+  filter: blur(48px);
+}
+
+.calc-hub-atmosphere::after {
+  content: '';
+  position: absolute;
+  left: -20%;
+  bottom: 2%;
+  width: 38vmin;
+  height: 38vmin;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(122, 31, 87, 0.18) 0%, rgba(61, 18, 51, 0.12) 55%, transparent 74%);
+  filter: blur(44px);
+}
+
+.calc-hub-grid > * {
+  animation: rise 420ms var(--ease-out-soft) both;
+}
+
+.calc-hub-grid > *:nth-child(1) {
+  animation-delay: 40ms;
+}
+.calc-hub-grid > *:nth-child(2) {
+  animation-delay: 100ms;
+}
+.calc-hub-grid > *:nth-child(3) {
+  animation-delay: 160ms;
+}
+.calc-hub-grid > *:nth-child(4) {
+  animation-delay: 220ms;
+}
+.calc-hub-grid > *:nth-child(5) {
+  animation-delay: 280ms;
+}
+.calc-hub-grid > *:nth-child(6) {
+  animation-delay: 340ms;
+}
+
+.calc-hub-card {
+  --calc-accent: var(--color-copper);
+  --calc-accent-soft: color-mix(in srgb, var(--calc-accent) 28%, transparent);
+  --calc-accent-glow: color-mix(in srgb, var(--calc-accent) 55%, transparent);
+}
+
+.calc-hub-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--calc-accent) 18%, transparent) 0%,
+    transparent 42%,
+    transparent 100%
+  );
+  opacity: 0.55;
+  transition: opacity 280ms var(--ease-out-soft);
+  pointer-events: none;
+}
+
+.calc-hub-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    105deg,
+    transparent 35%,
+    color-mix(in srgb, var(--color-warm-white) 14%, transparent) 50%,
+    transparent 65%
+  );
+  background-size: 220% 100%;
+  background-position: 120% 0;
+  opacity: 0;
+  transition:
+    opacity 320ms var(--ease-out-soft),
+    background-position 700ms var(--ease-out-soft);
+  pointer-events: none;
+}
+
+.calc-hub-card:hover::before,
+.calc-hub-card:focus-visible::before {
+  opacity: 0.9;
+}
+
+.calc-hub-card:hover::after,
+.calc-hub-card:focus-visible::after {
+  opacity: 1;
+  background-position: -20% 0;
+}
+
+.calc-hub-card:hover .calc-hub-orb,
+.calc-hub-card:focus-visible .calc-hub-orb {
+  transform: scale(1.18);
+  opacity: 0.85;
+}
+
+.calc-hub-card:hover .calc-hub-icon,
+.calc-hub-card:focus-visible .calc-hub-icon {
+  transform: scale(1.06);
+  border-color: color-mix(in srgb, var(--calc-accent) 70%, transparent);
+  box-shadow: 0 0 28px -6px var(--calc-accent-glow);
+}
+
+.calc-hub-card:hover .calc-hub-arrow,
+.calc-hub-card:focus-visible .calc-hub-arrow {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .calc-hub-grid > * {
+    animation: none;
+  }
+
+  .calc-hub-card::after {
+    transition: none;
+  }
+
+  .calc-hub-card:hover,
+  .calc-hub-card:focus-visible {
+    transform: none;
+  }
+
+  .calc-hub-card:hover .calc-hub-orb,
+  .calc-hub-card:focus-visible .calc-hub-orb,
+  .calc-hub-card:hover .calc-hub-icon,
+  .calc-hub-card:focus-visible .calc-hub-icon,
+  .calc-hub-card:hover .calc-hub-arrow,
+  .calc-hub-card:focus-visible .calc-hub-arrow {
+    transform: none;
+  }
+}

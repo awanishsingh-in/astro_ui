@@ -76,10 +76,14 @@ export default function ChartPage() {
     setActiveBhava(bhava)
   }, [])
 
-  const selectGraha = useCallback((graha: GrahaCode) => {
-    setActiveBhava(1)
-    setActiveGraha((current) => (current === graha ? null : graha))
-  }, [])
+  const selectGraha = useCallback(
+    (graha: GrahaCode) => {
+      const placed = chartState.data?.grahas.find((g) => g.graha === graha)
+      if (placed) setActiveBhava(placed.bhava)
+      setActiveGraha((current) => (current === graha ? null : graha))
+    },
+    [chartState.data],
+  )
 
   const changeProfile = useCallback(
     (next: ChartProfile) => {
@@ -117,7 +121,7 @@ export default function ChartPage() {
   if (!user) return null
 
   return (
-    <PageContainer width="full" className="pb-8 pt-3 sm:pt-4">
+    <PageContainer width="wide" className="pb-8 pt-3 sm:pt-4">
       {chartState.status === 'error' ? (
         <ErrorState
           error={chartState.error}
@@ -145,9 +149,9 @@ export default function ChartPage() {
                   activeBhava={activeBhava}
                   onBhavaClick={selectBhava}
                   activeGraha={activeGraha}
+                  onGrahaClick={selectGraha}
                   onClearSelection={() => {
                     setActiveGraha(null)
-                    setActiveBhava(1)
                   }}
                   chartFrameRef={chartFrameRef}
                   detailUnlocked={detailUnlocked}

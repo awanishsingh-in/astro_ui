@@ -62,7 +62,7 @@ export function DrishtiPanel({
             />
 
             <div className="min-w-0">
-              <p className="font-mono text-label uppercase text-gold-soft-line">Drishti</p>
+              <p className="font-mono text-label uppercase text-silver-300">Drishti</p>
               <p className="mt-2 text-sub text-on-celestial text-pretty">
                 Every graha aspects the seventh bhava from itself. Mangal adds the 4th and 8th, Guru
                 the 5th and 9th, Shani the 3rd and 10th.
@@ -188,7 +188,7 @@ export function DrishtiPanel({
       {/* ── The working, spelled out for whichever graha is selected ── */}
       {selected && (
         <div className="rounded-card border border-gold-border bg-gold-soft p-4">
-          <p className="font-mono text-label uppercase text-gold-deep">The working</p>
+          <p className="font-mono text-label uppercase text-silver-400">The working</p>
           <p className="mt-2 text-sub text-ink text-pretty">
             {GRAHAS[selected.graha].name} stands in {bhavaRef(selected.sitsIn)} and aspects{' '}
             {selected.aspects.map(bhavaRef).join(', ')} — its {selected.by.join(', ')} drishti.
@@ -196,7 +196,7 @@ export function DrishtiPanel({
           <ul className="mt-3 space-y-1.5">
             {selected.aspects.map((bhava, index) => (
               <li key={bhava} className="flex gap-2 font-mono text-data text-purple">
-                <span className="text-gold-deep">{selected.by[index]}</span>
+                <span className="text-silver-400">{selected.by[index]}</span>
                 <span aria-hidden>→</span>
                 <span>
                   {bhavaRef(bhava)} · {BHAVA_SIGNIFIES[bhava]}

@@ -2,10 +2,10 @@ import type { ReactNode } from 'react'
 import { cn } from '@/utils/cn'
 
 export interface SectionHeaderProps {
-  /** Small mono label above the title, e.g. "RUNNING DASHA". */
+  /** Small gold uppercase label above the title. */
   eyebrow?: string
   title: ReactNode
-  /** One line of explanation. The product explains itself rather than decorating. */
+  /** One line of explanation. */
   description?: ReactNode
   /** Right-aligned control, e.g. a link or a small button. */
   action?: ReactNode
@@ -15,9 +15,9 @@ export interface SectionHeaderProps {
 }
 
 const TITLE_SIZES = {
-  sm: 'text-heading',
-  md: 'text-title',
-  lg: 'text-title lg:text-title-lg',
+  sm: 'font-serif text-heading',
+  md: 'font-serif text-title lg:text-title-lg',
+  lg: 'font-serif text-display lg:text-display-lg',
 } as const
 
 export function SectionHeader({
@@ -31,10 +31,12 @@ export function SectionHeader({
 }: SectionHeaderProps) {
   return (
     <div className={cn('flex items-start justify-between gap-4', className)}>
-      <div className="min-w-0 space-y-1.5">
-        {eyebrow && <p className="font-mono text-label uppercase text-muted">{eyebrow}</p>}
-        <Tag className={cn('text-ink text-balance', TITLE_SIZES[size])}>{title}</Tag>
-        {description && <p className="text-sub text-muted text-pretty">{description}</p>}
+      <div className="min-w-0 space-y-2">
+        {eyebrow && <p className="eyebrow">{eyebrow}</p>}
+        <Tag className={cn('text-text-primary text-balance', TITLE_SIZES[size])}>{title}</Tag>
+        {description && (
+          <p className="text-body text-text-secondary text-pretty max-w-prose">{description}</p>
+        )}
       </div>
       {action && <div className="shrink-0">{action}</div>}
     </div>

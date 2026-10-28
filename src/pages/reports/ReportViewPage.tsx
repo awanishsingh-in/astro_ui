@@ -1,10 +1,12 @@
 import { Download, Home } from 'lucide-react'
 import { Navigate, useNavigate, useParams } from 'react-router-dom'
 import { Button } from '@/components/common/Button'
+import { PaidReportBook } from '@/components/reports/PaidReportBook'
 import { useToast } from '@/components/feedback/toast-context'
 import { useAuth } from '@/auth/auth-context'
 import { buildPaidReport } from '@/data/reports-content'
 import { reportById } from '@/data/reports-hub'
+import { recordDownload } from '@/data/download-history'
 import {
   clearReportDraft,
   hasReportUnlocked,
@@ -16,7 +18,7 @@ import type { BirthDetails } from '@/types/user'
 import { normalizeGender } from '@/types/user'
 
 /**
- * Book-style paid report after unlock — download + go home.
+ * Book-style paid report after unlock — flip pages, download, or go home.
  */
 export default function ReportViewPage() {
   const { reportId = '' } = useParams<{ reportId: string }>()
@@ -29,7 +31,7 @@ export default function ReportViewPage() {
   if (!user) return null
   if (!topic) return <Navigate to={paths.reportsRoot} replace />
   if (!hasReportUnlocked(user.id, topic.id)) {
-    return <Navigate to={paths.reportIntro(topic.id)} replace />
+    return <Navigate to={paths.reportForm(topic.id)} replace />
   }
 
   const details: BirthDetails =
@@ -60,76 +62,63 @@ export default function ReportViewPage() {
       ...report.chapters.flatMap((ch) => [ch.title, ch.body, '']),
       report.closing,
     ]
+    const filename = `cyklos-report-${topic!.id}.txt`
     const blob = new Blob([lines.join('\n')], { type: 'text/plain;charset=utf-8' })
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = `${topic!.id}-report.txt`
+    a.download = filename
     a.click()
     URL.revokeObjectURL(url)
-    toast.success('Download started', { description: `${topic!.title} report saved.` })
+    recordDownload({
+      kind: 'report',
+      title: topic!.title,
+      subtitle: `For ${report.personName}`,
+      filename,
+    })
+    toast.success('Download started', {
+      description: `${topic!.title} saved to Downloads.`,
+    })
   }
 
   return (
-    <PageContainer width="content" className="pb-16 pt-4 sm:pt-6">
-      <article className="mx-auto max-w-2xl animate-rise space-y-8">
-        <button
-          type="button"
-          onClick={() => navigate(paths.reportsRoot, { replace: true })}
-          className="text-xs text-muted underline-offset-2 hover:text-ink hover:underline"
-        >
-          ← All reports
-        </button>
+    <PageContainer width="wide" className="pb-16 pt-4 sm:pt-6">
+      <article className="relative mx-auto max-w-5xl animate-rise space-y-6">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -left-16 -top-10 size-56 rounded-full bg-primary/8 blur-3xl"
+        />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -right-10 top-24 size-48 rounded-full bg-secondary/20 blur-3xl"
+        />
 
-        {/* Book plane */}
-        <div className="relative overflow-hidden rounded-sm border border-border/90 bg-[linear-gradient(180deg,color-mix(in_oklab,var(--color-surface)_92%,#f5efe4)_0%,var(--color-surface)_40%,color-mix(in_oklab,var(--color-surface)_96%,#ebe4d6)_100%)] shadow-[0_18px_40px_-28px_rgba(40,24,12,0.45)]">
-          <div
-            aria-hidden
-            className="pointer-events-none absolute inset-y-0 left-0 w-3 bg-gradient-to-r from-copper/25 to-transparent"
-          />
-          <div className="space-y-8 px-6 py-10 sm:px-10 sm:py-12">
-            <header className="space-y-3 border-b border-border/70 pb-6 text-center">
-              <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-gold-deep">
-                Cyklos report
-              </p>
-              <h1 className="font-serif text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
-                {report.title}
-              </h1>
-              <p className="text-sm text-muted">Prepared for {report.personName}</p>
-              <p className="mx-auto max-w-md text-sm leading-relaxed text-ink/80 text-pretty">
-                {report.standfirst}
-              </p>
-            </header>
-
-            <div className="space-y-8">
-              {report.chapters.map((chapter, i) => (
-                <section key={chapter.title} className="space-y-2">
-                  <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-muted">
-                    Chapter {i + 1}
-                  </p>
-                  <h2 className="font-serif text-xl font-semibold text-ink">{chapter.title}</h2>
-                  <p className="text-sm leading-relaxed text-ink/85 text-pretty sm:text-[15px]">
-                    {chapter.body}
-                  </p>
-                </section>
-              ))}
-            </div>
-
-            <footer className="border-t border-border/70 pt-6">
-              <p className="text-sm italic leading-relaxed text-muted text-pretty">{report.closing}</p>
-            </footer>
+        <header className="relative flex flex-wrap items-end justify-between gap-3">
+          <div className="space-y-1">
+            <p className="inline-flex items-center gap-1.5 font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-info">
+              <span className="size-1.5 rounded-full bg-info shadow-[0_0_10px_var(--color-info)]" />
+              Unlocked · ready to read
+            </p>
+            <h1 className="bg-gradient-to-r from-white via-accent to-primary bg-clip-text font-serif text-3xl font-semibold tracking-tight text-transparent sm:text-4xl">
+              {report.title}
+            </h1>
           </div>
-        </div>
+          <p className="rounded-full border border-primary/40 bg-primary/15 px-3 py-1 text-xs font-semibold text-silver-300">
+            For {report.personName}
+          </p>
+        </header>
 
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+        <PaidReportBook report={report} />
+
+        <div className="relative flex flex-col gap-2 sm:flex-row sm:items-center">
           <Button
-            variant="primary"
+            variant="secondary"
             size="lg"
-            className="w-full rounded-full sm:flex-1"
+            className="w-full rounded-full shadow-[0_16px_36px_-14px_rgba(201,145,115,0.55)] sm:flex-1"
             iconLeft={<Download className="size-4" />}
             onClick={downloadReport}
           >
-            Click to download
+            Download report
           </Button>
           <Button
             variant="secondary"
@@ -138,7 +127,7 @@ export default function ReportViewPage() {
             iconLeft={<Home className="size-4" />}
             onClick={() => {
               clearReportDraft()
-              navigate(paths.everything)
+              navigate(paths.ask)
             }}
           >
             Go to home page

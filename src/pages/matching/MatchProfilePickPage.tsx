@@ -1,7 +1,8 @@
 import { Search, Users, X } from 'lucide-react'
 import { useMemo, useState } from 'react'
-import { useNavigate, useSearchParams } from 'react-router-dom'
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { Avatar } from '@/components/common/Avatar'
+import { Button } from '@/components/common/Button'
 import { EmptyState } from '@/components/common/EmptyState'
 import { IconButton } from '@/components/common/IconButton'
 import { Input } from '@/components/forms/Input'
@@ -16,8 +17,10 @@ import {
 import { PageContainer } from '@/layouts/PageContainer'
 import { useProfiles } from '@/profiles/profiles-context'
 import { paths } from '@/routes/paths'
+import { emptyPerson } from '@/components/matching/PersonForm'
 import {
   readMatchDraft,
+  saveMatchDraft,
   saveMatchPick,
   type MatchPersonSlot,
 } from '@/utils/match-draft'
@@ -27,29 +30,28 @@ import { formatDateShort, formatTime12 } from '@/utils/format'
 type CategoryFilter = 'all' | ProfileRelation
 
 /**
- * Full-page picker - choose a saved chart to fill Person 1 or Person 2 on Matching.
+ * Full-page saved profiles — browse from account, or pick for Matching / calculators.
  */
 export default function MatchProfilePickPage() {
   const { user } = useAuth()
-  const { profiles } = useProfiles()
+  const { profiles, select } = useProfiles()
   const navigate = useNavigate()
+  const location = useLocation()
   const [params] = useSearchParams()
   const [query, setQuery] = useState('')
   const [category, setCategory] = useState<CategoryFilter>('all')
 
+  const browseMode = location.pathname === paths.savedProfiles
   const slotParam = params.get('for')
   const slot: MatchPersonSlot = slotParam === 'b' ? 'b' : 'a'
   const draft = readMatchDraft()
   const returnTo = draft?.returnTo ?? paths.matching
-  const personLabel =
-    returnTo === paths.matchingManglik
-      ? 'the chart'
-      : slot === 'a'
-        ? 'Person 1'
-        : 'Person 2'
-  // Don't offer the chart already filling the other person.
-  const takenByOther =
-    slot === 'a' ? draft?.b.profileId : draft?.a.profileId
+  // Don't offer the chart already filling the other person (pick mode only).
+  const takenByOther = browseMode
+    ? undefined
+    : slot === 'a'
+      ? draft?.b.profileId
+      : draft?.a.profileId
 
   const available = useMemo(
     () =>
@@ -92,8 +94,29 @@ export default function MatchProfilePickPage() {
   if (!user) return null
 
   const choose = (profileId: string) => {
+    if (browseMode) {
+      select(profileId)
+      navigate(paths.chart)
+      return
+    }
     saveMatchPick({ slot, profileId })
     navigate(returnTo, { replace: true })
+  }
+
+  const addSomeoneNew = () => {
+    if (browseMode) {
+      navigate(`${paths.profile}?add=1`)
+      return
+    }
+    // Clear this slot so Matching opens blank for manual entry.
+    const current = readMatchDraft()
+    saveMatchDraft({
+      a: slot === 'a' ? emptyPerson : (current?.a ?? emptyPerson),
+      b: slot === 'b' ? emptyPerson : (current?.b ?? emptyPerson),
+      focus: slot,
+      returnTo: current?.returnTo ?? returnTo,
+    })
+    navigate(returnTo)
   }
 
   const trimmedQuery = query.trim()
@@ -103,26 +126,17 @@ export default function MatchProfilePickPage() {
   return (
     <MatchThemeShell>
       <PageContainer width="content">
-        <button
-          type="button"
-          onClick={() => navigate(returnTo)}
-          className="inline-flex items-center gap-1.5 text-sm font-semibold text-copper hover:underline"
-        >
-          ← Back to Kundli Matching
-        </button>
-
-        <header className="mt-5 flex flex-wrap items-start justify-between gap-4">
+        <header className="flex flex-wrap items-start justify-between gap-4">
           <div className="min-w-0 space-y-2">
-            <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-copper">
-              Choosing {personLabel}
-            </p>
             <h1 className="font-serif text-4xl font-semibold tracking-tight text-ink sm:text-5xl">
-              Saved <span className="text-copper">kundlis</span>
+              Saved <span className="text-silver-300">profile</span>
             </h1>
             <p className="max-w-xl text-sm text-muted text-pretty">
-              {returnTo === paths.matchingManglik
-                ? 'Pick a saved chart for the Manglik dosha calculator.'
-                : `Pick who to match${draft?.a.name || draft?.b.name ? ` with ${[draft.a.name, draft.b.name].filter(Boolean).join(' / ')}` : ''}. Your other side is kept.`}
+              {browseMode
+                ? 'Your saved charts — open one anytime.'
+                : returnTo === paths.matchingManglik
+                  ? 'Pick a saved chart for the Manglik dosha calculator.'
+                  : `Pick who to match${draft?.a.name || draft?.b.name ? ` with ${[draft.a.name, draft.b.name].filter(Boolean).join(' / ')}` : ''}. Your other side is kept.`}
             </p>
           </div>
 
@@ -212,8 +226,17 @@ export default function MatchProfilePickPage() {
             }
             description={
               profiles.length === 0
-                ? 'Add someone from Profile, then return here to fill the match form.'
+                ? browseMode
+                  ? 'Add someone from Profile — they’ll show up here.'
+                  : 'Add someone from Profile, then return here to fill the match form.'
                 : 'The other person already uses your only saved chart. Add another profile to match against.'
+            }
+            action={
+              !browseMode && profiles.length === 0 ? (
+                <Button variant="primary" size="md" className="rounded-full" onClick={addSomeoneNew}>
+                  Enter birth details
+                </Button>
+              ) : undefined
             }
           />
         ) : filtered.length === 0 ? (
@@ -228,7 +251,9 @@ export default function MatchProfilePickPage() {
             }
             description={
               emptyAfterFilter
-                ? 'Try another category, or add someone new below.'
+                ? browseMode
+                  ? 'Try another category.'
+                  : 'Try another category, or add someone new below.'
                 : `No saved profile mentions “${trimmedQuery}”. Try another name or place.`
             }
           />
@@ -264,7 +289,7 @@ export default function MatchProfilePickPage() {
                                 <span className="truncate text-sub font-medium text-ink">
                                   {profile.name}
                                 </span>
-                                <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-copper">
+                                <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-silver-300">
                                   {RELATION_LABEL[profile.relation]}
                                 </span>
                               </span>
@@ -291,7 +316,7 @@ export default function MatchProfilePickPage() {
                               'transition hover:border-copper/50 hover:bg-copper/5',
                               'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-copper',
                               selected
-                                ? 'border-copper/60 bg-copper/10 shadow-[0_0_24px_-12px_rgba(124,77,255,0.45)]'
+                                ? 'border-copper/60 bg-copper/10 shadow-[0_0_24px_-12px_rgba(201,145,115,0.55)]'
                                 : 'border-border bg-surface',
                             )}
                           >
@@ -301,7 +326,7 @@ export default function MatchProfilePickPage() {
                                 <span className="truncate text-sub font-medium text-ink">
                                   {profile.name}
                                 </span>
-                                <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-copper">
+                                <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-silver-300">
                                   {RELATION_LABEL[profile.relation]}
                                 </span>
                               </span>
@@ -316,7 +341,7 @@ export default function MatchProfilePickPage() {
                               </span>
                             </span>
                             {selected && (
-                              <span className="shrink-0 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-copper">
+                              <span className="shrink-0 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-silver-300">
                                 Selected
                               </span>
                             )}
@@ -329,13 +354,15 @@ export default function MatchProfilePickPage() {
               </section>
             ))}
 
-            <button
-              type="button"
-              onClick={() => navigate(returnTo)}
-              className="flex w-full items-center justify-center gap-2 rounded-[1.15rem] border border-dashed border-border-strong px-4 py-4 text-sm font-semibold text-copper hover:border-copper/60 hover:bg-copper/5"
-            >
-              + Someone new: enter their birth details
-            </button>
+            {!browseMode && (
+              <button
+                type="button"
+                onClick={addSomeoneNew}
+                className="flex w-full items-center justify-center gap-2 rounded-[1.15rem] border border-dashed border-border-strong px-4 py-4 text-sm font-semibold text-silver-300 hover:border-copper/60 hover:bg-copper/5"
+              >
+                + Someone new: enter their birth details
+              </button>
+            )}
           </div>
         )}
       </PageContainer>

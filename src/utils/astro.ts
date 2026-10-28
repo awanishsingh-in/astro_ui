@@ -82,7 +82,7 @@ export function rashiIndex(name: RashiName): number {
 export function grahaToneClass(code: GrahaCode): string {
   switch (GRAHAS[code].nature) {
     case 'benefic':
-      return 'text-gold-deep'
+      return 'text-silver-400'
     case 'node':
       return 'text-muted'
     default:
@@ -98,7 +98,7 @@ export function grahaToneClass(code: GrahaCode): string {
 export function grahaToneClassDark(code: GrahaCode): string {
   switch (GRAHAS[code].nature) {
     case 'benefic':
-      return 'text-gold-soft-line'
+      return 'text-silver-300'
     case 'node':
       return 'text-on-celestial-faint'
     default:

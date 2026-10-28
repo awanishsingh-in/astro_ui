@@ -3,8 +3,18 @@ import { readings as seedReadings } from '@/data/readings'
 import type { Reading } from '@/types/readings'
 import { bhavaRef } from '@/utils/astro'
 
+/** Local file shared in Ask (kundli PDF, screenshot, PNG/JPG). */
+export interface ChatAttachment {
+  id: string
+  name: string
+  kind: 'pdf' | 'image'
+  /** Data URL for image thumbnails; omitted for PDFs in the demo. */
+  previewUrl?: string
+  sizeLabel: string
+}
+
 export type ThreadMessage =
-  | { id: string; role: 'user'; text: string }
+  | { id: string; role: 'user'; text: string; attachments?: ChatAttachment[] }
   | { id: string; role: 'assistant'; status: 'thinking'; label?: string }
   | { id: string; role: 'assistant'; status: 'done'; reading: Reading }
   | { id: string; role: 'assistant'; status: 'error'; question: string; message: string }

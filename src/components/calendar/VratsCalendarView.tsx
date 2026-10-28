@@ -60,7 +60,7 @@ function FilterSelect({
         className={cn(
           'relative inline-flex items-center rounded-full border border-border/80',
           'bg-surface px-3.5 py-1.5',
-          'shadow-[0_0_0_1px_rgba(124,77,255,0.06)]',
+          'shadow-[0_0_0_1px_rgba(201,145,115,0.45)]',
           'transition group-hover:border-copper/45 group-hover:bg-copper/10',
         )}
       >
@@ -85,7 +85,7 @@ function FilterSelect({
         </select>
         <span
           aria-hidden
-          className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[0.65em] text-copper"
+          className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[0.65em] text-silver-300"
         >
           ▾
         </span>
@@ -198,7 +198,7 @@ export function VratsCalendarView({
               className={cn(
                 'rounded-full border px-3.5 py-1.5 text-sm transition-colors',
                 filter === f.id
-                  ? 'border-copper/50 bg-copper/15 text-ink'
+                  ? 'rg-tab'
                   : 'border-border text-muted hover:text-ink',
               )}
             >
@@ -228,7 +228,7 @@ export function VratsCalendarView({
                   className={cn(
                     'flex w-full flex-col gap-2.5 rounded-2xl border px-4 py-4 text-left transition-colors sm:flex-row sm:items-center sm:justify-between',
                     active
-                      ? 'border-copper/45 bg-copper/12'
+                      ? 'rg-selected'
                       : 'border-border/80 bg-surface hover:bg-navy-soft/60',
                   )}
                 >
@@ -282,12 +282,12 @@ export function VratsCalendarView({
             </dl>
 
             <section className="space-y-1.5">
-              <h3 className="font-mono text-label uppercase text-gold-deep">What the fast involves</h3>
+              <h3 className="font-mono text-label uppercase text-silver-400">What the fast involves</h3>
               <p className="text-sm text-purple text-pretty">{selected.involves}</p>
             </section>
 
             <section className="space-y-1.5">
-              <h3 className="font-mono text-label uppercase text-gold-deep">Puja vidhi</h3>
+              <h3 className="font-mono text-label uppercase text-silver-400">Puja vidhi</h3>
               <p className="text-sm text-purple text-pretty">{selected.pujaVidhi}</p>
             </section>
 
@@ -322,7 +322,7 @@ export function VratsCalendarView({
         )}
 
         <Card padding="md" className="gap-2 border-border/80">
-          <p className="font-mono text-label uppercase text-gold-deep">Next 30 days</p>
+          <p className="font-mono text-label uppercase text-silver-400">Next 30 days</p>
           <ul className="space-y-1.5 text-sm text-ink">
             {upcoming.map((v) => (
               <li key={v.id}>

@@ -69,8 +69,8 @@ export function GalaxyBackdrop({
         )}
         style={{
           background: quiet
-            ? 'radial-gradient(90% 70% at 50% 0%, rgba(26, 15, 61, 0.55) 0%, transparent 58%), radial-gradient(70% 55% at 85% 75%, rgba(125, 72, 53, 0.28) 0%, transparent 60%)'
-            : 'radial-gradient(120% 90% at 18% 0%, rgba(26, 15, 61, 0.9) 0%, transparent 62%), radial-gradient(80% 60% at 88% 20%, rgba(124, 77, 255, 0.18) 0%, transparent 55%)',
+            ? 'radial-gradient(90% 70% at 50% 0%,  rgba(140,47,99,0.32) 0%, transparent 58%), radial-gradient(70% 55% at 85% 75%,  rgba(184,50,122,0.22) 0%, transparent 60%)'
+            : 'radial-gradient(120% 90% at 18% 0%,  rgba(46,22,35,0.45) 0%, transparent 62%), radial-gradient(80% 60% at 88% 20%,  rgba(200,86,46,0.35) 0%, transparent 55%)',
         }}
       />
 
@@ -79,7 +79,7 @@ export function GalaxyBackdrop({
         className="pointer-events-none absolute inset-0"
         style={{
           background: quiet
-            ? 'radial-gradient(ellipse 65% 50% at 50% 28%, rgba(8, 7, 17, 0.55) 0%, transparent 70%)'
+            ? 'radial-gradient(ellipse 65% 50% at 50% 28%,  rgba(242,215,199,0.22) 0%, transparent 70%)'
             : soft
               ? 'radial-gradient(ellipse 70% 60% at 50% 35%, color-mix(in srgb, var(--color-midnight) 48%, transparent) 0%, transparent 72%)'
               : 'radial-gradient(ellipse 48% 50% at 50% 40%, color-mix(in srgb, var(--color-midnight) 55%, transparent) 0%, transparent 68%)',

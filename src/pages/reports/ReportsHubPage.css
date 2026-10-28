@@ -1,0 +1,85 @@
+/* Reports hub — larger cards + staggered entrance */
+
+.reports-hub-grid > * {
+  animation: rise 420ms var(--ease-out-soft) both;
+}
+
+.reports-hub-grid > *:nth-child(1) {
+  animation-delay: 40ms;
+}
+.reports-hub-grid > *:nth-child(2) {
+  animation-delay: 100ms;
+}
+.reports-hub-grid > *:nth-child(3) {
+  animation-delay: 160ms;
+}
+.reports-hub-grid > *:nth-child(4) {
+  animation-delay: 220ms;
+}
+.reports-hub-grid > *:nth-child(5) {
+  animation-delay: 280ms;
+}
+.reports-hub-grid > *:nth-child(6) {
+  animation-delay: 340ms;
+}
+.reports-hub-grid > *:nth-child(7) {
+  animation-delay: 400ms;
+}
+.reports-hub-grid > *:nth-child(8) {
+  animation-delay: 460ms;
+}
+
+.reports-hub-card {
+  --report-accent: var(--color-primary);
+}
+
+.reports-hub-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    145deg,
+    color-mix(in srgb, var(--report-accent) 8%, transparent) 0%,
+    transparent 36%,
+    transparent 100%
+  );
+  opacity: 0.35;
+  pointer-events: none;
+  transition: opacity 280ms var(--ease-out-soft);
+}
+
+.reports-hub-card:hover::before,
+.reports-hub-card:focus-within::before {
+  opacity: 0.55;
+}
+
+.reports-hub-card:hover .reports-hub-orb,
+.reports-hub-card:focus-within .reports-hub-orb {
+  transform: scale(1.1);
+  opacity: 0.28;
+}
+
+.reports-hub-card:hover .reports-hub-icon,
+.reports-hub-card:focus-within .reports-hub-icon {
+  transform: scale(1.05);
+  box-shadow: 0 0 22px -8px color-mix(in srgb, var(--report-accent) 28%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reports-hub-grid > * {
+    animation: none;
+  }
+
+  .reports-hub-card:hover,
+  .reports-hub-card:focus-within {
+    transform: none;
+  }
+
+  .reports-hub-card:hover .reports-hub-orb,
+  .reports-hub-card:focus-within .reports-hub-orb,
+  .reports-hub-card:hover .reports-hub-icon,
+  .reports-hub-card:focus-within .reports-hub-icon {
+    transform: none;
+  }
+}

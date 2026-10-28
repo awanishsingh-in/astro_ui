@@ -49,7 +49,10 @@ export function SkeletonCard({
   return (
     <div
       aria-hidden
-      className={cn('flex gap-3 rounded-card border border-border bg-surface p-4', className)}
+      className={cn(
+        'flex gap-3 rounded-card border border-border/30 bg-card-gradient p-4 backdrop-blur-[12px]',
+        className,
+      )}
     >
       {withAvatar && <Skeleton shape="circle" className="size-9 shrink-0" />}
       <span className="min-w-0 flex-1 space-y-2.5">

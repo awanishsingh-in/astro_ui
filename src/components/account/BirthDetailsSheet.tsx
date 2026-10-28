@@ -158,7 +158,7 @@ export function BirthDetailsSheet({
               className={cn(
                 'inline-flex w-fit items-center gap-2 rounded-control border px-3 py-1.5 text-sm transition-colors duration-150 ease-out-soft',
                 timeUnknown
-                  ? 'border-copper/50 bg-pale-copper text-copper-shadow'
+                  ? 'border-copper/50 bg-pale-copper text-silver-300-shadow'
                   : 'border-border bg-transparent text-muted hover:border-border-strong hover:text-ink',
               )}
             >

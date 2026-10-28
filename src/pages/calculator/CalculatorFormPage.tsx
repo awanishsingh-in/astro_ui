@@ -1,4 +1,5 @@
-import { Calculator, Sparkles } from 'lucide-react'
+import type { CSSProperties } from 'react'
+import { Calculator } from 'lucide-react'
 import { useCallback, useEffect, useState } from 'react'
 import { Navigate, useLocation, useNavigate, useParams } from 'react-router-dom'
 import { Button } from '@/components/common/Button'
@@ -12,7 +13,11 @@ import {
 } from '@/components/matching/PersonForm'
 import { useToast } from '@/components/feedback/toast-context'
 import { useAuth } from '@/auth/auth-context'
-import { calculatorById, type CalculatorKind } from '@/data/calculator-hub'
+import {
+  CALCULATOR_ACCENT,
+  calculatorById,
+  type CalculatorKind,
+} from '@/data/calculator-hub'
 import { buildCalculatorResult } from '@/data/calculator-mock'
 import { PageContainer } from '@/layouts/PageContainer'
 import { useProfiles } from '@/profiles/profiles-context'
@@ -25,11 +30,9 @@ import {
   saveMatchDraft,
 } from '@/utils/match-draft'
 import { cn } from '@/utils/cn'
+import './CalculatorFormPage.css'
 
-/**
- * One calculator — single birth form + Check → result page.
- * Fits the immersive viewport (no page scroll); chrome Back returns to the prior screen.
- */
+/** One calculator — single birth form + Check → result page. */
 export default function CalculatorFormPage() {
   const { kind = '' } = useParams<{ kind: string }>()
   const card = calculatorById(kind)
@@ -42,6 +45,9 @@ export default function CalculatorFormPage() {
   const [person, setPerson] = useState<PersonDraft>(emptyPerson)
   const [errors, setErrors] = useState<PersonErrors>({})
   const [checking, setChecking] = useState(false)
+
+  const accent = card ? CALCULATOR_ACCENT[card.id] : CALCULATOR_ACCENT.manglik
+  const Icon = card?.icon
 
   useEffect(() => {
     const draft = readMatchDraft()
@@ -93,37 +99,67 @@ export default function CalculatorFormPage() {
   }, [card, location.state, navigate, person])
 
   if (!user) return null
-  if (!card) return <Navigate to={paths.calculatorRoot} replace />
+  if (!card || !Icon) return <Navigate to={paths.calculatorRoot} replace />
 
   return (
     <PageContainer
       width="content"
       flush
-      className="flex h-[calc(100dvh-3.5rem)] flex-col overflow-hidden px-5 py-3 md:px-6 lg:px-8 lg:py-4"
+      className="px-5 py-3 md:px-6 lg:px-8 lg:py-4"
     >
-      <article className="mx-auto flex h-full min-h-0 w-full max-w-xl flex-col gap-3 animate-rise">
-        <header className="relative shrink-0 overflow-hidden rounded-[1.35rem] border border-[#7c4dff]/35 px-4 py-3.5 sm:px-5 sm:py-4">
+      <article
+        className="calc-form-shell mx-auto flex w-full max-w-xl flex-col gap-3"
+        style={{ '--calc-accent': accent } as CSSProperties}
+      >
+        <header
+          className={cn(
+            'calc-form-hero relative shrink-0 overflow-hidden rounded-[1.5rem]',
+            'border border-[color-mix(in_srgb,var(--calc-accent)_42%,transparent)]',
+            'px-4 py-4 sm:px-5 sm:py-5',
+            'shadow-[0_18px_44px_-28px_var(--calc-accent-glow)]',
+          )}
+        >
           <div
             aria-hidden
-            className="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,rgba(124,77,255,0.28)_0%,rgba(15,12,36,0.92)_55%,rgba(58,123,213,0.2)_100%)]"
+            className="pointer-events-none absolute inset-0"
+            style={{
+              background: `linear-gradient(135deg, color-mix(in srgb, ${accent} 32%, transparent) 0%,  52%, color-mix(in srgb, var(--color-info) 22%, transparent) 100%)`,
+            }}
           />
           <div
             aria-hidden
-            className="pointer-events-none absolute -right-10 -top-12 h-28 w-28 rounded-full bg-[#7c4dff]/35 blur-3xl"
+            className="pointer-events-none absolute -right-8 -top-10 size-36 rounded-full opacity-50 blur-3xl motion-safe:animate-pulse-soft"
+            style={{ background: accent }}
           />
-          <div className="relative space-y-1.5">
-            <p className="inline-flex items-center gap-1.5 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-[#c4a0ff]">
-              <Sparkles className="size-3" aria-hidden />
-              {card.title}
-            </p>
-            <h1 className="font-serif text-2xl font-semibold tracking-tight text-white sm:text-3xl">
-              Enter the birth chart
-            </h1>
-            <p className="text-xs text-white/65 text-pretty sm:text-sm">{card.hint}</p>
+          <div
+            aria-hidden
+            className="pointer-events-none absolute -bottom-14 -left-10 size-32 rounded-full bg-secondary/25 blur-3xl"
+          />
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-x-6 top-0 h-px bg-gradient-to-r from-transparent via-[color-mix(in_srgb,var(--calc-accent)_70%,transparent)] to-transparent"
+          />
+
+          <div className="relative flex items-start gap-3.5">
+            <span
+              className={cn(
+                'inline-flex size-12 shrink-0 items-center justify-center rounded-2xl',
+                'border border-[color-mix(in_srgb,var(--calc-accent)_50%,transparent)]',
+                'bg-[color-mix(in_srgb,var(--calc-accent)_18%,transparent)]',
+                'text-[var(--calc-accent)] shadow-[0_0_28px_-8px_var(--calc-accent-glow)]',
+              )}
+            >
+              <Icon className="size-5" aria-hidden />
+            </span>
+            <div className="min-w-0 flex-1">
+              <h1 className="font-serif text-2xl font-semibold tracking-tight text-white sm:text-3xl">
+                Enter the birth chart
+              </h1>
+            </div>
           </div>
         </header>
 
-        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain rounded-[1.35rem]">
+        <div className="calc-form-card rounded-[1.5rem]">
           <PersonForm
             label="Birth chart"
             person={person}
@@ -134,25 +170,27 @@ export default function CalculatorFormPage() {
             }}
             hasSavedProfiles={profiles.length > 0}
             onUseSavedProfile={openSavedProfiles}
-            className="h-auto"
+            className={cn(
+              'h-auto border-[color-mix(in_srgb,var(--calc-accent)_32%,transparent)]',
+              'bg-[color-mix(in_srgb,var(--color-surface)_92%,var(--calc-accent))]',
+              'shadow-[0_16px_40px_-28px_var(--calc-accent-glow)]',
+            )}
           />
         </div>
 
-        <div className="shrink-0 pb-1">
-          <Button
-            variant="primary"
-            size="lg"
-            className={cn(
-              'w-full rounded-full',
-              'shadow-[0_14px_36px_-12px_rgba(124,77,255,0.9)]',
-            )}
-            loading={checking}
-            iconLeft={<Calculator className="size-4" />}
-            onClick={runCheck}
-          >
-            {checking ? 'Checking…' : 'Check'}
-          </Button>
-        </div>
+        <Button
+          variant="primary"
+          size="lg"
+          className={cn(
+            'calc-form-check w-full rounded-full',
+            'shadow-[0_14px_36px_-12px_var(--calc-accent-glow)]',
+          )}
+          loading={checking}
+          iconLeft={<Calculator className="size-4" />}
+          onClick={runCheck}
+        >
+          {checking ? 'Checking…' : `Check ${card.title}`}
+        </Button>
       </article>
     </PageContainer>
   )

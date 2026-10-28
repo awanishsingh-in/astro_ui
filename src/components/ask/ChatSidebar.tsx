@@ -66,7 +66,7 @@ export function ChatSidebar({
           aria-label={historyOpen ? undefined : 'New chat'}
         >
           <MessageSquarePlus
-            className={cn('size-4 shrink-0', historyOpen ? 'text-gold-deep' : undefined)}
+            className={cn('size-4 shrink-0', historyOpen ? 'text-silver-400' : undefined)}
           />
           {historyOpen && <span>New chat</span>}
         </button>
@@ -91,7 +91,7 @@ export function ChatSidebar({
               <X className="size-4" />
             ) : (
               <>
-                <History className="size-4 text-gold-deep" />
+                <History className="size-4 text-silver-400" />
                 <span className="leading-none">History</span>
               </>
             )}

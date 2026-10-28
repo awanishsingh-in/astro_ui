@@ -7,8 +7,8 @@ import {
   PremiumKundaliAdCard,
   type ChartKundaliDownloadContext,
 } from '@/components/charts/ChartKundaliDownloads'
-import { paths } from '@/routes/paths'
 import type { Chart, GrahaCode } from '@/types/astrology'
+import { navigateAskFromChart } from '@/utils/ask-from-chart'
 import { GRAHAS } from '@/utils/astro'
 import { cn } from '@/utils/cn'
 
@@ -66,8 +66,20 @@ export function ChartStrengthPanel({
     const q = `What does strength in my ${bhava}${ordinal(bhava)} house mean?${
       bindus != null ? ` Sarvashtakavarga shows ${bindus} bindus.` : ''
     }`
-    navigate(`${paths.ask}?q=${encodeURIComponent(q)}&from=chart&bhava=${bhava}`)
+    navigateAskFromChart(navigate, { q, bhava, returnSection: 'strength' })
   }
+
+  function askPlanet(code: GrahaCode, value: number, required: number) {
+    const q = `What does Shadbala strength for ${GRAHAS[code].english} mean in my chart? It shows ${value.toFixed(1)} rupa vs ${required.toFixed(1)} required.`
+    navigateAskFromChart(navigate, { q, returnSection: 'strength' })
+  }
+
+  const askCtaClass = cn(
+    'inline-flex w-full items-center justify-center gap-2 rounded-full px-3 py-2.5',
+    'btn-primary text-sm font-semibold',
+    'shadow-[0_0_22px_-6px_rgba(201,145,115,0.55)]',
+    'transition',
+  )
 
   return (
     <div className={cn('animate-rise space-y-4', className)}>
@@ -84,7 +96,9 @@ export function ChartStrengthPanel({
             onClick={() => setLens(tab.id)}
             className={cn(
               'rounded-full px-4 py-2 text-sm font-semibold transition',
-              lens === tab.id ? 'bg-copper text-white' : 'text-muted hover:text-ink',
+              lens === tab.id
+                ? 'bg-surface-raised text-ink shadow-[inset_0_0_0_1px_rgba(227,176,138,0.35)]'
+                : 'text-muted hover:text-ink',
             )}
           >
             {tab.label}
@@ -116,10 +130,7 @@ export function ChartStrengthPanel({
                   <button
                     key={e.bhava}
                     type="button"
-                    onClick={() => {
-                      onSelectBhava?.(e.bhava)
-                      askHouse(e.bhava, e.bindus)
-                    }}
+                    onClick={() => onSelectBhava?.(e.bhava)}
                     className="group relative flex min-w-0 flex-1 flex-col items-center justify-end"
                     style={{ height: '100%' }}
                     title={`House ${e.bhava} · ${e.bindus} bindus`}
@@ -128,10 +139,10 @@ export function ChartStrengthPanel({
                     <span
                       className={cn(
                         'w-full max-w-[2.5rem] rounded-t-md transition',
-                        isStrong && 'bg-[#3a7bd5]',
-                        isWeak && 'bg-[#d4848a]/80',
-                        !isStrong && !isWeak && 'bg-[#7c4dff]/55 group-hover:bg-[#7c4dff]/75',
-                        activeBhava === e.bhava && 'ring-2 ring-[#c4a0ff]',
+                        isStrong && 'bg-info',
+                        isWeak && 'bg-[#6E4234]/80',
+                        !isStrong && !isWeak && 'bg-blue-light/45 group-hover:bg-blue-light/65',
+                        activeBhava === e.bhava && 'ring-2 ring-blue-light/70',
                       )}
                       style={{ height: `${h}%` }}
                     />
@@ -143,15 +154,24 @@ export function ChartStrengthPanel({
 
             <div className="mt-4 flex flex-wrap gap-4 text-xs text-muted">
               <span className="inline-flex items-center gap-1.5">
-                <span className="size-2.5 rounded-sm bg-[#3a7bd5]" /> Strongest · {strongest.bhava}
+                <span className="size-2.5 rounded-sm bg-info" /> Strongest · {strongest.bhava}
                 {ordinal(strongest.bhava)} house, {strongest.bindus}
               </span>
               <span className="inline-flex items-center gap-1.5">
-                <span className="size-2.5 rounded-sm bg-[#d4848a]" /> Weakest · {weakest.bhava}
+                <span className="size-2.5 rounded-sm bg-[#6E4234]" /> Weakest · {weakest.bhava}
                 {ordinal(weakest.bhava)} house, {weakest.bindus}
               </span>
               <span className="inline-flex items-center gap-1.5">— · {mean} average</span>
             </div>
+
+            <button
+              type="button"
+              onClick={() => askHouse(strongest.bhava, strongest.bindus)}
+              className={cn(askCtaClass, 'mt-4')}
+            >
+              <MessageCircle className="size-3.5" />
+              Ask about this
+            </button>
 
             {downloads && (
               <div className="mt-5 border-t border-border/50 pt-4">
@@ -178,7 +198,7 @@ export function ChartStrengthPanel({
                       className={cn(
                         'rounded-full px-2.5 py-1 text-xs font-semibold transition',
                         bhinnGraha === code
-                          ? 'bg-copper text-white'
+                          ? 'bg-surface-raised text-ink shadow-[inset_0_0_0_1px_rgba(227,176,138,0.35)]'
                           : 'bg-surface-sunken text-muted hover:text-ink',
                       )}
                     >
@@ -188,17 +208,17 @@ export function ChartStrengthPanel({
                 </div>
               </div>
 
-              <div className="mt-5 grid grid-cols-6 gap-2 sm:grid-cols-12">
+              <div className="mt-5 grid grid-cols-4 gap-2 sm:grid-cols-6 lg:grid-cols-12">
                 {bhinn.houses.map((h) => (
                   <div
                     key={h.bhava}
                     className={cn(
-                      'rounded-xl border px-1 py-2 text-center',
+                      'min-w-0 rounded-xl border px-1 py-2 text-center',
                       h.bindus >= 5
-                        ? 'border-[#7c4dff]/40 bg-[#7c4dff]/25'
+                        ? 'border-info/40 bg-info-soft'
                         : h.bindus <= 3
                           ? 'border-border/50 bg-surface-sunken/40'
-                          : 'border-[#7c4dff]/20 bg-[#7c4dff]/10',
+                          : 'border-border/60 bg-surface-raised/50',
                     )}
                   >
                     <p className="font-mono text-[10px] text-muted">{h.bhava}</p>
@@ -210,11 +230,13 @@ export function ChartStrengthPanel({
               <button
                 type="button"
                 onClick={() => setPrastaraOpen((v) => !v)}
-                className="mt-5 flex w-full items-center justify-between rounded-xl border border-border/60 px-4 py-3 text-left text-sm font-medium text-ink"
+                className="mt-5 flex w-full items-center justify-between gap-3 rounded-xl border border-border/60 px-4 py-3 text-left text-sm font-medium text-ink"
               >
-                <span>Prastarashtakavarga · which planet gave each bindu</span>
+                <span className="min-w-0 flex-1 text-pretty">
+                  Prastarashtakavarga · which planet gave each bindu
+                </span>
                 <ChevronDown
-                  className={cn('size-4 text-muted transition', prastaraOpen && 'rotate-180')}
+                  className={cn('size-4 shrink-0 text-muted transition', prastaraOpen && 'rotate-180')}
                 />
               </button>
               {prastaraOpen && (
@@ -250,16 +272,29 @@ export function ChartStrengthPanel({
                 const reqPct = Math.min(100, (req / (req * 1.4)) * 100)
                 const ok = row.value >= req
                 return (
-                  <li key={row.graha} className="flex items-center gap-3">
-                    <PlanetGlyph code={row.graha} size="sm" className="shrink-0" />
-                    <span className="w-16 shrink-0 text-sm font-medium text-ink">
-                      {GRAHAS[row.graha].english}
-                    </span>
-                    <div className="relative h-2.5 min-w-0 flex-1 rounded-full bg-surface-sunken">
+                  <li
+                    key={row.graha}
+                    className="flex flex-col gap-1.5 sm:flex-row sm:items-center sm:gap-3"
+                  >
+                    <div className="flex items-center gap-2 sm:contents">
+                      <PlanetGlyph code={row.graha} size="sm" className="shrink-0" />
+                      <span className="min-w-0 flex-1 truncate text-sm font-medium text-ink sm:w-16 sm:flex-none sm:shrink-0">
+                        {GRAHAS[row.graha].english}
+                      </span>
+                      <span
+                        className={cn(
+                          'shrink-0 font-mono text-xs sm:hidden',
+                          ok ? 'text-ink' : 'text-[#6E4234]',
+                        )}
+                      >
+                        {row.value.toFixed(1)} / {req.toFixed(1)}
+                      </span>
+                    </div>
+                    <div className="relative h-2.5 min-w-0 w-full flex-1 rounded-full bg-surface-sunken">
                       <div
                         className={cn(
                           'absolute inset-y-0 left-0 rounded-full',
-                          ok ? 'bg-[#7c4dff]/70' : 'bg-[#d4848a]/70',
+                          ok ? 'bg-info/80' : 'bg-[#6E4234]/70',
                         )}
                         style={{ width: `${pct}%` }}
                       />
@@ -271,8 +306,8 @@ export function ChartStrengthPanel({
                     </div>
                     <span
                       className={cn(
-                        'w-16 shrink-0 text-right font-mono text-xs',
-                        ok ? 'text-ink' : 'text-[#d4848a]',
+                        'hidden w-16 shrink-0 text-right font-mono text-xs sm:block',
+                        ok ? 'text-ink' : 'text-[#6E4234]',
                       )}
                     >
                       {row.value.toFixed(1)} / {req.toFixed(1)}
@@ -283,10 +318,10 @@ export function ChartStrengthPanel({
             </ul>
             <div className="mt-4 flex flex-wrap gap-3 text-xs text-muted">
               <span className="inline-flex items-center gap-1.5">
-                <span className="size-2.5 rounded-sm bg-[#7c4dff]/70" /> Meets required
+                <span className="size-2.5 rounded-sm bg-info/80" /> Meets required
               </span>
               <span className="inline-flex items-center gap-1.5">
-                <span className="size-2.5 rounded-sm bg-[#d4848a]/70" /> Below required
+                <span className="size-2.5 rounded-sm bg-[#6E4234]/70" /> Below required
               </span>
               <span>| Required</span>
             </div>
@@ -312,7 +347,7 @@ export function ChartStrengthPanel({
                   <button
                     key={h.bhava}
                     type="button"
-                    onClick={() => askHouse(h.bhava)}
+                    onClick={() => onSelectBhava?.(h.bhava)}
                     className="flex min-w-0 flex-1 flex-col items-center justify-end"
                     style={{ height: '100%' }}
                   >
@@ -320,9 +355,9 @@ export function ChartStrengthPanel({
                     <span
                       className={cn(
                         'w-full max-w-[2.25rem] rounded-t-md',
-                        isStrong && 'bg-[#3a7bd5]',
-                        isWeak && 'bg-[#d4848a]/80',
-                        !isStrong && !isWeak && 'bg-[#7c4dff]/55',
+                        isStrong && 'bg-info',
+                        isWeak && 'bg-[#6E4234]/80',
+                        !isStrong && !isWeak && 'bg-blue-light/45',
                       )}
                       style={{ height: `${height}%` }}
                     />
@@ -333,22 +368,25 @@ export function ChartStrengthPanel({
             </div>
             <div className="mt-4 flex flex-wrap gap-4 text-xs text-muted">
               <span className="inline-flex items-center gap-1.5">
-                <span className="size-2.5 rounded-sm bg-[#3a7bd5]" /> Strongest ·{' '}
+                <span className="size-2.5 rounded-sm bg-info" /> Strongest ·{' '}
                 {strongestBhava.bhava}
                 {ordinal(strongestBhava.bhava)}
               </span>
               <span className="inline-flex items-center gap-1.5">
-                <span className="size-2.5 rounded-sm bg-[#d4848a]" /> Weakest · {weakestBhava.bhava}
+                <span className="size-2.5 rounded-sm bg-[#6E4234]" /> Weakest · {weakestBhava.bhava}
                 {ordinal(weakestBhava.bhava)}
               </span>
             </div>
             <button
               type="button"
-              onClick={() => askHouse(strongestBhava.bhava)}
-              className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#7c4dff] to-[#3a7bd5] px-3 py-2.5 text-sm font-semibold text-white"
+              onClick={() => {
+                const top = shadbala.reduce((a, b) => (b.value > a.value ? b : a))
+                askPlanet(top.graha, top.value, REQUIRED[top.graha] || 5)
+              }}
+              className={cn(askCtaClass, 'mt-4')}
             >
               <MessageCircle className="size-3.5" />
-              Ask about strongest house
+              Ask about this
             </button>
 
             {downloads && (

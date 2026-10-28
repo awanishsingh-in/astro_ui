@@ -55,7 +55,7 @@ export function ChartKundaliPanel({
   return (
     <div className={cn('animate-rise space-y-5', className)}>
       <div className="space-y-1.5">
-        <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-gold-deep">
+        <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-silver-400">
           Kundali
         </p>
         <h2 className="font-serif text-2xl font-semibold tracking-tight text-ink sm:text-3xl">
@@ -79,7 +79,7 @@ export function ChartKundaliPanel({
           active={premium}
           icon={<Sparkles className="size-5" />}
           title="Premium kundali"
-          hint="Same diamond · copper frame"
+          hint="Same diamond · purple frame"
           onClick={() => onModeChange('premium')}
           badge="Plus look"
         />
@@ -90,14 +90,14 @@ export function ChartKundaliPanel({
       <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(16rem,20rem)] lg:items-start">
         <div
           className={cn(
-            'overflow-hidden rounded-3xl border bg-surface/90 shadow-[0_18px_40px_-30px_rgba(20,12,8,0.55)]',
+            'chart-panel overflow-hidden rounded-3xl border bg-surface/90 shadow-[0_18px_40px_-30px_rgba(184,50,122,0.45)]',
             premium
-              ? 'border-copper/50 shadow-[0_0_40px_-18px_rgba(196, 160, 255,0.45)]'
+              ? 'border-[rgba(184,50,122,0.45)] shadow-[0_0_48px_-16px_rgba(184,50,122,0.5)]'
               : 'border-border/80',
           )}
         >
           <div className="flex items-center justify-between gap-3 border-b border-border/70 bg-surface-sunken/35 px-4 py-3 sm:px-5">
-            <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-gold-deep">
+            <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-silver-400">
               {premium ? 'Premium · ' : ''}
               {vargaLabel(varga)}
               {vargaMeta ? ` · ${vargaMeta.name}` : ''}
@@ -118,7 +118,7 @@ export function ChartKundaliPanel({
             >
               SVG
               {!planUnlocked && (
-                <span className="ml-1 font-mono text-[9px] uppercase tracking-[0.12em] text-gold-deep">
+                <span className="ml-1 font-mono text-[9px] uppercase tracking-[0.12em] text-silver-400">
                   Plus
                 </span>
               )}
@@ -142,7 +142,7 @@ export function ChartKundaliPanel({
         </div>
 
         <aside className="space-y-3 lg:sticky lg:top-20">
-          <div className="rounded-3xl border border-border/80 bg-surface/90 p-4 shadow-card sm:p-5">
+          <div className="chart-panel rounded-3xl border border-border/80 bg-surface/90 p-4 shadow-card sm:p-5">
             <ReadingNotes
               chart={chart}
               activeGraha={activeGraha}
@@ -156,7 +156,7 @@ export function ChartKundaliPanel({
               onClick={onClearSelection}
               className={cn(
                 'flex w-full items-center justify-center gap-2 rounded-full border border-copper/40',
-                'bg-copper/10 px-4 py-2.5 text-sm font-medium text-copper',
+                'bg-copper/10 px-4 py-2.5 text-sm font-medium text-silver-300',
                 'transition-colors hover:border-copper/55 hover:bg-copper/15',
               )}
             >
@@ -173,7 +173,7 @@ export function ChartKundaliPanel({
                 'transition-colors hover:border-copper/40 hover:bg-copper/10',
               )}
             >
-              <FileText aria-hidden className="size-4 text-copper" />
+              <FileText aria-hidden className="size-4 text-silver-300" />
               {detailUnlocked ? 'Open detailed report' : 'Get detailed report'}
             </button>
           )}
@@ -218,7 +218,7 @@ function ModeCard({
       className={cn(
         'relative flex items-start gap-3 rounded-2xl border px-4 py-4 text-left transition',
         active
-          ? 'border-copper/55 bg-copper/15 shadow-[0_0_28px_-14px_rgba(196, 160, 255,0.55)]'
+          ? 'border-copper/55 bg-copper/15 shadow-[0_0_28px_-14px_rgba(201,145,115,0.55)]'
           : 'border-border/80 bg-surface/80 hover:border-copper/35 hover:bg-copper/8',
       )}
     >
@@ -226,7 +226,7 @@ function ModeCard({
         className={cn(
           'inline-flex size-11 shrink-0 items-center justify-center rounded-full border',
           active
-            ? 'border-copper/45 bg-copper/20 text-copper'
+            ? 'border-copper/45 bg-copper/20 text-silver-300'
             : 'border-border bg-surface-sunken/50 text-muted',
         )}
       >
@@ -236,7 +236,7 @@ function ModeCard({
         <span className="flex items-center gap-2">
           <span className="block text-base font-semibold text-ink">{title}</span>
           {badge && (
-            <span className="rounded-full border border-copper/35 bg-copper/10 px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.12em] text-gold-deep">
+            <span className="rounded-full border border-copper/35 bg-copper/10 px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.12em] text-silver-400">
               {badge}
             </span>
           )}

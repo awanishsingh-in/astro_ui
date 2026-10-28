@@ -295,8 +295,8 @@ export function ChartWheel({
                   fill="transparent"
                   className={cn(
                     onBhavaClick && 'cursor-pointer',
-                    onBhavaClick && !dark && 'hover:fill-[var(--color-chart-field)]',
-                    onBhavaClick && dark && 'hover:fill-[var(--color-indigo-royal)]',
+                    onBhavaClick && !dark && 'hover:fill-chart-field',
+                    onBhavaClick && dark && 'hover:fill-indigo-royal',
                   )}
                   onClick={onBhavaClick ? () => onBhavaClick(bhava) : undefined}
                   role={onBhavaClick ? 'button' : undefined}

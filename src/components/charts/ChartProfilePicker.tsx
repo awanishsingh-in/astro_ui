@@ -91,7 +91,7 @@ export function ChartProfilePicker({
                       'transition-[border-color,background-color,box-shadow,transform] duration-150 ease-out-soft',
                       'active:scale-[0.99]',
                       active
-                        ? 'border-copper/55 bg-copper/12 shadow-[0_0_24px_-12px_rgba(196, 160, 255,0.55)]'
+                        ? 'border-blue-light/40 bg-info-soft'
                         : 'border-border bg-surface/90 hover:border-border-strong hover:bg-navy-soft/80',
                     )}
                   >
@@ -103,8 +103,8 @@ export function ChartProfilePicker({
                           'absolute -right-1 -bottom-1 inline-grid size-5 place-items-center',
                           'rounded-full border text-[10px] leading-none',
                           active
-                            ? 'border-copper/50 bg-copper/20 text-gold-deep'
-                            : 'border-border-strong bg-surface text-gold',
+                            ? 'border-blue-light/45 bg-surface text-ink'
+                            : 'border-border-strong bg-surface text-muted',
                         )}
                       >
                         {rashiGlyph(lagnaOf[profile.id] as never)}
@@ -116,7 +116,7 @@ export function ChartProfilePicker({
                         {profile.name}
                       </span>
                       <span className="block truncate font-mono text-label uppercase text-muted">
-                        <span className="text-gold-deep">{lagnaOf[profile.id]}</span>
+                        <span className="text-text-secondary">{lagnaOf[profile.id]}</span>
                         {' · '}
                         {formatDateShort(profile.birthDetails.date)}
                         {' · '}
@@ -128,7 +128,7 @@ export function ChartProfilePicker({
                         <span className="block truncate text-xs text-muted">{profile.note}</span>
                       )}
                     </span>
-                    {active && <Check aria-hidden className="size-4 shrink-0 text-gold-deep" />}
+                    {active && <Check aria-hidden className="size-4 shrink-0 text-info" />}
                   </button>
                 </li>
               )
@@ -148,14 +148,14 @@ export function ChartProfilePicker({
           navigate(`${paths.profile}?add=1`)
         }}
         className={cn(
-          'flex w-full items-center gap-3 rounded-card border border-dashed border-copper/40 p-3',
-          'text-sub font-medium text-copper transition-colors',
-          'hover:border-copper/60 hover:bg-copper/10',
+          'flex w-full items-center gap-3 rounded-card border border-dashed border-border/80 p-3',
+          'text-sub font-medium text-text-secondary transition-colors',
+          'hover:border-border-strong hover:bg-surface-raised/50 hover:text-ink',
         )}
       >
         <span
           aria-hidden
-          className="inline-flex size-9 items-center justify-center rounded-full border border-copper/30 bg-copper/15"
+          className="inline-flex size-9 items-center justify-center rounded-full border border-border bg-surface"
         >
           <Plus className="size-4" />
         </span>

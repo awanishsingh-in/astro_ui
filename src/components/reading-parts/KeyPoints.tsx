@@ -19,7 +19,7 @@ export function KeyPoints({ points, variant = 'cards', className }: KeyPointsPro
       <ul className={cn('space-y-3', className)}>
         {points.map((point, index) => (
           <li key={point} className="flex gap-4">
-            <span aria-hidden className="mt-0.5 shrink-0 font-mono text-label text-gold-deep">
+            <span aria-hidden className="mt-0.5 shrink-0 font-mono text-label text-silver-400">
               {String(index + 1).padStart(2, '0')}
             </span>
             <span className="text-sub text-purple text-pretty">{point}</span>
@@ -38,7 +38,7 @@ export function KeyPoints({ points, variant = 'cards', className }: KeyPointsPro
         >
           <span
             aria-hidden
-            className="inline-flex size-7 items-center justify-center rounded-full bg-gold-soft font-mono text-label font-semibold text-gold-deep"
+            className="inline-flex size-7 items-center justify-center rounded-full bg-gold-soft font-mono text-label font-semibold text-silver-400"
           >
             {index + 1}
           </span>

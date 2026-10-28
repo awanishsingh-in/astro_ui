@@ -3,16 +3,27 @@ import { NAKSHATRAS } from '@/data/nakshatras'
 import type { CalculatorKind } from '@/data/calculator-hub'
 import type { BirthDetails } from '@/types/user'
 
+export interface CalculatorRemedyBlock {
+  title: string
+  body?: string
+  items?: string[]
+}
+
 export interface CalculatorResult {
   kind: CalculatorKind
   name: string
   title: string
+  /** Short status line under the icon, e.g. "Person is not Manglik." */
+  statusLine: string
   verdict: string
   tone: 'clear' | 'present' | 'watch'
   summary: string
+  /** Closing line for the detail card (reference-style “Hence…”). */
+  conclusion: string
   detail: string
   points: string[]
   caveat: string
+  remedies?: CalculatorRemedyBlock[]
   askPrompt: string
 }
 
@@ -45,14 +56,18 @@ export function buildCalculatorResult(
     return {
       kind,
       name: label,
-      title: 'Manglik / Kuja dosha',
+      title: 'Mangal Dosha',
+      statusLine: present ? 'Person is Manglik.' : 'Person is not Manglik.',
       verdict: present ? 'Manglik indicated' : 'Not Manglik',
       tone: present ? 'present' : 'clear',
       summary: present
         ? `${label} shows Mars in a classical Manglik house.`
         : `${label} does not show classical Manglik dosha.`,
+      conclusion: present
+        ? 'Hence Mangal Dosha is indicated in the Lagna chart from this Mars placement.'
+        : 'Hence Mangal Dosha is present neither in Lagna Chart nor in Moon Chart.',
       detail: mars
-        ? `Mars sits in house ${mars.bhava} (${mars.rashi}). Classical reading watches houses 1, 2, 4, 7, 8, and 12.`
+        ? `Mars sits in house ${mars.bhava} (${mars.rashi}). Classical reading watches houses 1, 2, 4, 7, 8, and 12 — often called the First, Second, Fourth, Seventh, Eighth, and Twelfth.`
         : 'Mars could not be placed on this chart.',
       points: [
         mars ? `Mars · bh ${mars.bhava} · ${mars.rashi}` : 'Mars placement unavailable',
@@ -61,6 +76,20 @@ export function buildCalculatorResult(
       ],
       caveat:
         'Manglik is a house-based Mars reading. It is not a verdict on a person or a marriage.',
+      remedies: [
+        {
+          title: 'Before marriage (needs to be performed before marriage)',
+          body: 'Many traditions suggest fasting on Tuesdays, Mars mantras, and temple visits for Hanuman or Mangal before fixing a date — always with a trusted priest or astrologer.',
+        },
+        {
+          title: 'After marriage (can be performed after marriage)',
+          items: [
+            'Kumbh Vivah or similar symbolic rites, where the tradition allows',
+            'Charity of red lentils, jaggery, or copper on Tuesdays',
+            'Calm partnership habits matter more than fear of a label',
+          ],
+        },
+      ],
       askPrompt: `Tell me more about Manglik dosha in ${label}'s chart and what to watch in partnerships.`,
     }
   }
@@ -71,11 +100,15 @@ export function buildCalculatorResult(
       kind,
       name: label,
       title: 'Kaal Sarp yoga',
+      statusLine: present ? 'Kaal Sarp pattern is present.' : 'No full Kaal Sarp pattern.',
       verdict: present ? 'Kaal Sarp pattern present' : 'No full Kaal Sarp',
       tone: present ? 'watch' : 'clear',
       summary: present
         ? `${label} shows grahas closed between Rahu and Ketu in this demo reading.`
         : `${label} does not show a full Kaal Sarp enclosure in this reading.`,
+      conclusion: present
+        ? 'Hence the Rahu–Ketu axis appears to enclose the grahas in this reading.'
+        : 'Hence a full Kaal Sarp enclosure is not indicated in this reading.',
       detail:
         'Kaal Sarp is read when all planets sit on one side of the Rahu–Ketu axis. Schools name many subtypes; this calculator reports presence, not subtype.',
       points: [
@@ -96,11 +129,17 @@ export function buildCalculatorResult(
       kind,
       name: label,
       title: 'Sade Sati',
+      statusLine: present
+        ? `Person is in the ${labels[phase].toLowerCase()}.`
+        : 'Person is not in Sade Sati.',
       verdict: labels[phase],
       tone: present ? (phase === 2 ? 'watch' : 'present') : 'clear',
       summary: present
         ? `${label} is in the ${labels[phase].toLowerCase()} of Saturn’s Sade Sati in this demo.`
         : `${label} is outside Sade Sati in this demo transit window.`,
+      conclusion: present
+        ? `Hence Saturn’s Sade Sati reads as ${labels[phase].toLowerCase()} in this demo window.`
+        : 'Hence Sade Sati is not active in this demo transit window.',
       detail:
         'Sade Sati is Saturn’s transit across the moon sign and the signs before and after — roughly seven and a half years. Phase matters more than a single yes/no.',
       points: [
@@ -119,11 +158,15 @@ export function buildCalculatorResult(
       kind,
       name: label,
       title: 'Pitra dosha',
+      statusLine: present ? 'Pitra markers are present.' : 'No strong Pitra markers.',
       verdict: present ? 'Markers present' : 'No strong Pitra markers',
       tone: present ? 'present' : 'clear',
       summary: present
         ? `${label} shows ancestral / Pitra markers in this demo reading.`
         : `${label} does not show strong Pitra markers in this reading.`,
+      conclusion: present
+        ? 'Hence ancestral / Pitra markers are flagged in this demo reading.'
+        : 'Hence no strong Pitra markers are indicated in this reading.',
       detail:
         'Pitra dosha is read from combinations involving the 9th house, Sun, and nodes — a reminder to honour lineage, not a curse.',
       points: [
@@ -144,11 +187,18 @@ export function buildCalculatorResult(
       kind,
       name: label,
       title: 'Birth time sensitivity',
+      statusLine:
+        sensitivity > 70
+          ? 'Chart is highly time-sensitive.'
+          : sensitivity > 55
+            ? 'Chart is moderately time-sensitive.'
+            : 'Chart holds fairly steady nearby.',
       verdict: `Sensitivity · ${sensitivity}/100`,
       tone,
       summary: `${label}'s lagna and house cusps ${
         sensitivity > 70 ? 'shift quickly' : 'hold fairly steady'
       } when the clock moves a few minutes.`,
+      conclusion: `Hence birth-time sensitivity reads about ${sensitivity}/100 in this demo.`,
       detail:
         'Birth-time rectification asks how much the rising sign and house lords change with small time edits. High sensitivity means a verified time matters more.',
       points: [
@@ -171,11 +221,17 @@ export function buildCalculatorResult(
     kind,
     name: label,
     title: 'Moon nakshatra',
+    statusLine: nak
+      ? `Moon nakshatra · ${nak.name}, pada ${nak.pada}.`
+      : 'Nakshatra could not be read.',
     verdict: nak ? `${nak.name} · pada ${nak.pada}` : 'Nakshatra unavailable',
     tone: 'clear',
     summary: nak
       ? `${label}'s Moon sits in ${nak.name}, pada ${nak.pada}${meta?.lord ? ` (lord ${meta.lord})` : ''}.`
       : `${label}'s Moon nakshatra could not be read from this chart.`,
+    conclusion: nak
+      ? `Hence the natal Moon reads from ${nak.name} (pada ${nak.pada}).`
+      : 'Hence Moon nakshatra could not be placed on this chart.',
     detail:
       'The natal Moon nakshatra shapes temperament, dasha starts, and muhurat choices. Pada refines the quarter of that mansion.',
     points: [

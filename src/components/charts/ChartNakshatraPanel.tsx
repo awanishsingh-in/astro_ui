@@ -19,7 +19,7 @@ export function ChartNakshatraPanel({ chart, className }: ChartNakshatraPanelPro
   return (
     <div className={cn('animate-rise space-y-5', className)}>
       <div className="space-y-1.5">
-        <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-gold-deep">
+        <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-silver-400">
           Charts
         </p>
         <h2 className="font-serif text-2xl font-semibold tracking-tight text-ink sm:text-3xl">
@@ -35,7 +35,7 @@ export function ChartNakshatraPanel({ chart, className }: ChartNakshatraPanelPro
         <article
           className={cn(
             'relative overflow-hidden rounded-3xl border border-border/80',
-            'bg-[radial-gradient(90%_80%_at_80%_0%,rgba(180,140,90,0.2),transparent_50%),var(--color-surface)]',
+            'bg-[radial-gradient(90%_80%_at_80%_0%,,transparent_50%),var(--color-surface)]',
             'px-5 py-7 sm:px-8 sm:py-9',
           )}
         >
@@ -52,7 +52,7 @@ export function ChartNakshatraPanel({ chart, className }: ChartNakshatraPanelPro
             <div className="space-y-3">
               <div className="inline-flex items-center gap-2 rounded-full border border-copper/35 bg-copper/12 px-3 py-1">
                 <PlanetGlyph code="Mo" size="sm" />
-                <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-gold-deep">
+                <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-silver-400">
                   Chandra nakshatra
                 </span>
               </div>
@@ -78,7 +78,7 @@ export function ChartNakshatraPanel({ chart, className }: ChartNakshatraPanelPro
                   className={cn(
                     'flex size-11 items-center justify-center rounded-xl border font-mono text-sm font-semibold transition',
                     p === moon.nakshatra.pada
-                      ? 'border-copper bg-copper/20 text-copper'
+                      ? 'border-copper bg-copper/20 text-silver-300'
                       : 'border-border/70 bg-surface-sunken/40 text-muted',
                   )}
                 >

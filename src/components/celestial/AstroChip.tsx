@@ -48,7 +48,11 @@ export function AstroChip({
       <span
         className={cn(
           'shrink-0 font-mono text-label uppercase',
-          dark ? 'text-on-celestial-faint' : 'text-muted',
+          label.toUpperCase() === 'CHANDRA'
+            ? 'text-silver-300'
+            : dark
+              ? 'text-silver-400'
+              : 'text-muted',
         )}
       >
         {label}
@@ -56,7 +60,7 @@ export function AstroChip({
       {glyph && (
         <span
           aria-hidden
-          className={cn('shrink-0 text-sm', dark ? 'text-gold-soft-line' : 'text-gold')}
+          className={cn('shrink-0 text-sm', dark ? 'text-silver-300' : 'text-silver-300')}
         >
           {glyph}
         </span>

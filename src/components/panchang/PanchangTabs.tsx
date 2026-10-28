@@ -5,17 +5,15 @@ export type PanchangTabId =
   | 'tithi'
   | 'timings'
   | 'muhurat'
-  | 'downloads'
   | 'alerts'
 
 export type TimingsSubId = 'choghadiya' | 'hora' | 'rahu'
 
 export const PANCHANG_TABS: { id: PanchangTabId; label: string }[] = [
-  { id: 'today', label: 'Today' },
+  { id: 'today', label: 'Panchang' },
   { id: 'tithi', label: 'Tithi & nakshatra' },
   { id: 'timings', label: 'Timings' },
   { id: 'muhurat', label: 'Muhurat' },
-  { id: 'downloads', label: 'Downloads' },
   { id: 'alerts', label: 'Alerts' },
 ]
 

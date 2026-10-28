@@ -153,9 +153,9 @@ export function ReadingNotes({ chart, activeGraha, activeBhava, className }: Rea
 
 function Fact({ label, value, valueClass }: { label: string; value: string; valueClass?: string }) {
   return (
-    <div className="bg-surface p-3">
+    <div className="min-w-0 bg-surface p-2.5 sm:p-3">
       <dt className="font-mono text-label uppercase text-muted">{label}</dt>
-      <dd className={cn('mt-0.5 text-sm text-ink', valueClass)}>{value}</dd>
+      <dd className={cn('mt-0.5 text-xs text-ink text-pretty sm:text-sm', valueClass)}>{value}</dd>
     </div>
   )
 }

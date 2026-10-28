@@ -30,7 +30,7 @@ export function PageContainer({
   return (
     <div
       className={cn(
-        'mx-auto w-full px-5 md:px-6 lg:px-8',
+        'mx-auto w-full min-w-0 px-4 sm:px-5 md:px-6 lg:px-8',
         WIDTHS[width],
         !flush && 'py-6 lg:py-10',
         className,

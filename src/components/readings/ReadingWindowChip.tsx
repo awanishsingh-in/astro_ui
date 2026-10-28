@@ -22,7 +22,7 @@ export function ReadingWindowChip({ window, withDriver = false, className }: Rea
       className={cn(
         'inline-flex flex-wrap items-center gap-x-1.5 gap-y-0.5 rounded-xs',
         'border border-gold-border bg-gold-soft px-2 py-1',
-        'font-mono text-label uppercase text-gold-deep',
+        'font-mono text-label uppercase text-silver-400',
         className,
       )}
     >

@@ -1,4 +1,4 @@
-import { ArrowLeft, CalendarPlus } from 'lucide-react'
+import { CalendarPlus } from 'lucide-react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { Button } from '@/components/common/Button'
 import { Card } from '@/components/common/Card'
@@ -30,7 +30,7 @@ export default function FestivalDetailPage() {
           description="That observance is not in the Cyklos almanac yet."
           action={
             <Button variant="secondary" to={paths.calendar}>
-              Back to Calendar
+              Open calendar
             </Button>
           }
         />
@@ -71,15 +71,6 @@ export default function FestivalDetailPage() {
 
       <div className="mt-8 grid gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(16rem,18rem)] xl:items-start">
         <Card padding="lg" className="gap-6 border-border/80">
-          <button
-            type="button"
-            onClick={() => navigate(`${paths.calendar}?view=festivals`)}
-            className="inline-flex items-center gap-1.5 text-sm text-muted hover:text-ink"
-          >
-            <ArrowLeft className="size-4" aria-hidden />
-            Back to festivals
-          </button>
-
           <div>
             <h2 className="font-serif text-title text-ink lg:text-title-lg">{festival.name}</h2>
             <p className="mt-1 text-sm text-muted">
@@ -94,14 +85,14 @@ export default function FestivalDetailPage() {
           </div>
 
           <section className="space-y-2">
-            <h3 className="font-mono text-label uppercase tracking-[0.12em] text-gold-deep">
+            <h3 className="font-mono text-label uppercase tracking-[0.12em] text-silver-400">
               Significance
             </h3>
             <p className="text-sub text-purple text-pretty">{festival.significance}</p>
           </section>
 
           <section className="space-y-3">
-            <h3 className="font-mono text-label uppercase tracking-[0.12em] text-gold-deep">
+            <h3 className="font-mono text-label uppercase tracking-[0.12em] text-silver-400">
               Timings today
             </h3>
             <dl className="space-y-2">
@@ -118,7 +109,7 @@ export default function FestivalDetailPage() {
           </section>
 
           <section className="space-y-2">
-            <h3 className="font-mono text-label uppercase tracking-[0.12em] text-gold-deep">
+            <h3 className="font-mono text-label uppercase tracking-[0.12em] text-silver-400">
               Rituals & regional variants
             </h3>
             <p className="text-sm text-purple text-pretty">{festival.rituals}</p>
@@ -127,13 +118,13 @@ export default function FestivalDetailPage() {
 
         <aside className="space-y-4 xl:sticky xl:top-6">
           <Card padding="lg" className="gap-3 border-border/80">
-            <p className="font-mono text-label uppercase text-gold-deep">This day</p>
+            <p className="font-mono text-label uppercase text-silver-400">This day</p>
             <p className="text-sm text-muted text-pretty">{festival.blurb}</p>
           </Card>
 
           {festival.relatedIds && festival.relatedIds.length > 0 && (
             <Card padding="lg" className="gap-2 border-border/80">
-              <p className="font-mono text-label uppercase text-gold-deep">Related</p>
+              <p className="font-mono text-label uppercase text-silver-400">Related</p>
               <ul className="space-y-2">
                 {festival.relatedIds.map((relatedId) => {
                   const related = festivalById(relatedId)

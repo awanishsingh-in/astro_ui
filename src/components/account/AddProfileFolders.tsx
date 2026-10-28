@@ -31,7 +31,7 @@ function FolderGrid({
 }) {
   return (
     <ul
-      className="mx-auto grid w-full max-w-5xl grid-cols-4 gap-3 sm:gap-4"
+      className="mx-auto grid w-full max-w-5xl grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4"
       role="listbox"
       aria-label="Profile folders"
     >
@@ -49,15 +49,15 @@ function FolderGrid({
                 onSelect(relation)
               }}
               className={cn(
-                'flex h-full min-h-[15rem] w-full flex-col items-center justify-center gap-5 rounded-card border border-border',
-                'bg-surface/90 px-3 py-6 text-center transition-[border-color,background-color,box-shadow]',
-                'hover:border-copper/45 hover:bg-copper/10 hover:shadow-[0_0_28px_-10px_rgba(124, 77, 255,0.5)]',
-                'active:scale-[0.99] sm:min-h-[17.5rem] sm:gap-6 sm:px-4 sm:py-8',
+                'flex h-full min-h-[10.5rem] w-full flex-col items-center justify-center gap-3 rounded-card border border-border',
+                'bg-surface/90 px-2.5 py-5 text-center transition-[border-color,background-color,box-shadow]',
+                'hover:border-copper/45 hover:bg-copper/10 hover:shadow-[0_0_28px_-10px_rgba(201,145,115,0.55)]',
+                'active:scale-[0.99] sm:min-h-[14rem] sm:gap-5 sm:px-4 sm:py-7 lg:min-h-[17.5rem] lg:gap-6 lg:py-8',
               )}
             >
               <span
                 aria-hidden
-                className="inline-flex size-12 shrink-0 items-center justify-center rounded-control border border-border bg-surface-sunken text-gold-deep sm:size-14"
+                className="inline-flex size-12 shrink-0 items-center justify-center rounded-control border border-border bg-surface-sunken text-silver-400 sm:size-14"
               >
                 <Icon className="size-6 sm:size-7" strokeWidth={1.75} />
               </span>
@@ -79,7 +79,7 @@ function FolderGrid({
 
 /**
  * First step of Add profile — pick a folder (Family / Friend / Relative / Other).
- * Four tall folders in one centered row.
+ * Four folders — 2×2 on phones, one row from `lg` up.
  */
 export function AddProfileFolders({ isOpen, onClose, onSelect }: AddProfileFoldersProps) {
   return (
@@ -89,7 +89,7 @@ export function AddProfileFolders({ isOpen, onClose, onSelect }: AddProfileFolde
       title="Add profile"
       description="Choose a folder for this chart."
       size="lg"
-      className="mx-auto w-full max-w-5xl translate-x-6 sm:translate-x-8 lg:translate-x-12"
+      className="mx-auto w-full max-w-5xl"
     >
       <FolderGrid onSelect={onSelect} />
     </Modal>

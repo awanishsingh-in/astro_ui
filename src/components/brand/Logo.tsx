@@ -11,7 +11,7 @@ export function LogoMark({ className, title }: { className?: string; title?: str
       alt={title ?? ''}
       role={title ? undefined : 'presentation'}
       draggable={false}
-      className={cn('size-7 object-contain object-center', className)}
+      className={cn('logo-mark size-7 object-contain object-center', className)}
     />
   )
 }

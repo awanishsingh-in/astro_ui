@@ -20,29 +20,24 @@ export interface ProgressIndicatorProps {
 }
 
 /**
- * Sign-up progress. On mobile it is one compact line; on desktop it fills the
- * left panel so the auth screens are never a form on blank ground.
+ * Multi-step progress — constellation-style dots connected by faint gold lines.
  */
 export function ProgressIndicator({
   steps,
   current,
   variant = 'bar',
-  tone = 'light',
+  tone: _tone = 'dark',
   stagger = false,
   className,
 }: ProgressIndicatorProps) {
   const total = steps.length
   const clamped = Math.min(Math.max(current, 0), total - 1)
-  const dark = tone === 'dark'
 
   if (variant === 'bar') {
     return (
-      <div className={cn('space-y-2', className)}>
+      <div className={cn('space-y-3', className)}>
         <p
-          className={cn(
-            'font-mono text-label uppercase',
-            dark ? 'text-on-celestial-muted' : 'text-muted',
-          )}
+          className="eyebrow text-silver-300"
           role="status"
           aria-live="polite"
         >
@@ -54,41 +49,29 @@ export function ProgressIndicator({
           aria-valuemax={total}
           aria-valuenow={clamped + 1}
           aria-label={steps[clamped]?.label}
-          className="flex gap-1.5"
+          className="flex items-center gap-0"
         >
           {steps.map((step, index) => {
             const filled = index <= clamped
-            const current = index === clamped
+            const isCurrent = index === clamped
             return (
-              <span
-                key={step.id}
-                className={cn(
-                  'relative h-1 flex-1 overflow-hidden rounded-full',
-                  filled
-                    ? dark
-                      ? 'bg-copper/20'
-                      : 'bg-navy/15'
-                    : dark
-                      ? 'bg-celestial-line'
-                      : 'bg-border',
-                )}
-              >
-                {filled && (
+              <span key={step.id} className="flex flex-1 items-center last:flex-none">
+                <span
+                  className={cn(
+                    'relative inline-flex size-2.5 shrink-0 rounded-full transition-all duration-[250ms] ease-out-soft',
+                    filled ? 'bg-primary shadow-glow' : 'bg-border/40',
+                    isCurrent && 'size-3 motion-safe:animate-pulse-soft',
+                  )}
+                  title={step.label}
+                />
+                {index < total - 1 && (
                   <span
                     className={cn(
-                      'absolute inset-y-0 left-0 w-full rounded-full',
-                      dark ? 'bg-copper' : 'bg-navy',
-                      current && 'motion-safe:animate-auth-shimmer',
+                      'mx-1 h-px flex-1',
+                      index < clamped
+                        ? 'bg-primary/50'
+                        : 'bg-border/25',
                     )}
-                    style={
-                      current
-                        ? {
-                            backgroundImage:
-                              'linear-gradient(90deg, var(--color-copper) 0%, var(--color-light-copper) 50%, var(--color-copper) 100%)',
-                            backgroundSize: '200% 100%',
-                          }
-                        : undefined
-                    }
                   />
                 )}
               </span>
@@ -108,7 +91,7 @@ export function ProgressIndicator({
           <li
             key={step.id}
             className={cn(
-              'flex items-center gap-3 motion-safe:transition-[opacity,transform] motion-safe:duration-300',
+              'flex items-center gap-3 motion-safe:transition-[opacity,transform] motion-safe:duration-[250ms]',
               stagger && 'motion-safe:animate-auth-step',
             )}
             style={stagger ? { animationDelay: `${140 + index * 100}ms` } : undefined}
@@ -117,38 +100,25 @@ export function ProgressIndicator({
               aria-hidden
               className={cn(
                 'inline-flex size-7 shrink-0 items-center justify-center rounded-full border',
-                'font-mono text-[11px] transition-all duration-300 ease-out-soft',
-                done &&
-                  (dark
-                    ? 'border-light-copper bg-copper text-midnight shadow-glow'
-                    : 'border-navy bg-navy text-on-celestial'),
+                'font-mono text-[11px] transition-all duration-[250ms] ease-out-soft',
+                done && 'border-primary bg-gold-gradient text-on-primary shadow-glow',
                 active &&
-                  (dark
-                    ? 'scale-110 border-light-copper bg-gradient-to-b from-light-copper to-copper text-midnight shadow-glow motion-safe:animate-pulse-soft'
-                    : 'scale-110 border-navy bg-navy text-on-celestial shadow-glow'),
+                  'scale-110 border-primary bg-gold-gradient text-on-primary shadow-glow motion-safe:animate-pulse-soft',
                 !done &&
                   !active &&
-                  (dark
-                    ? 'border-celestial-line text-on-celestial-faint'
-                    : 'border-border-strong text-muted'),
+                  'border-border/40 text-text-muted',
               )}
             >
-              {done ? <Check className="size-3.5" /> : index + 1}
+              {done ? <Check className="size-3.5" strokeWidth={1.5} /> : index + 1}
             </span>
             <span
               className={cn(
-                'text-sub transition-colors duration-300',
+                'text-sub transition-colors duration-[250ms]',
                 active
-                  ? dark
-                    ? 'font-semibold text-on-celestial'
-                    : 'font-semibold text-ink'
+                  ? 'font-semibold text-text-primary'
                   : done
-                    ? dark
-                      ? 'text-on-celestial-muted'
-                      : 'text-purple'
-                    : dark
-                      ? 'text-on-celestial-faint'
-                      : 'text-muted',
+                    ? 'text-text-secondary'
+                    : 'text-text-muted',
               )}
             >
               {step.label}

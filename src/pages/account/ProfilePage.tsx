@@ -282,20 +282,35 @@ export default function ProfilePage() {
     try {
       if (editingProfile) {
         profiles.update(editingProfile.id, data)
+        setEditingProfile(undefined)
         setAddFormVisibleInChrome(false)
+        setInlineAddOpen(false)
         profileSheet.close()
         toast.success(`${data.name} updated`)
       } else {
+        // Stay on Profile — never open My Chart after submit.
         const created = profiles.add(data)
         profiles.select(created.id)
         setPendingRelation(null)
+        setEditingProfile(undefined)
         setInlineAddOpen(false)
         setAddFormVisibleInChrome(false)
         profileSheet.close()
+        setParams(
+          (prev) => {
+            const next = new URLSearchParams(prev)
+            next.delete('add')
+            next.delete('relation')
+            next.delete('form')
+            next.delete('edit')
+            return next
+          },
+          { replace: true },
+        )
         toast.success(`${created.name} added`, {
-          description: 'Opening their chart.',
+          description: 'Open anytime from Saved profiles.',
         })
-        navigate(paths.chart)
+        navigate(paths.savedProfiles)
       }
     } catch (caught) {
       toast.error('Could not save profile', {
@@ -330,21 +345,41 @@ export default function ProfilePage() {
   if (!user) return null
 
   const self = profiles.profiles.find((p) => p.id === 'self')
+  const selected = profiles.selected
+  const isSelf = selected.id === 'self'
+  const birth = isSelf ? user.birthDetails : selected.birthDetails
   const DeleteOverlay = isDesktop ? Modal : BottomSheet
 
   return (
     <>
       <PageContainer width="reading">
-        <article className="mx-auto w-full max-w-reading animate-rise space-y-8">
+        <article
+          key={selected.id}
+          className="mx-auto w-full max-w-reading animate-rise space-y-8"
+        >
           <header className="space-y-1">
-            <p className="font-mono text-label uppercase text-muted">Profile</p>
-            <h1 className="font-serif text-title font-normal text-ink text-balance lg:text-title-lg">
-              You
-            </h1>
-            <p className="text-sub text-purple text-pretty">
-              You and the birth details your chart is built from — plus charts for people you care
-              about.
-            </p>
+            {inlineAddOpen ? (
+              <>
+                <h1 className="font-serif text-title font-normal text-ink text-balance lg:text-title-lg">
+                  Add profile
+                </h1>
+                <p className="text-sub text-purple text-pretty">
+                  Enter birth details for someone new — this won’t change{' '}
+                  {isSelf ? 'your' : `${selected.name}’s`} chart.
+                </p>
+              </>
+            ) : (
+              <>
+                <h1 className="font-serif text-title font-normal text-ink text-balance lg:text-title-lg">
+                  {isSelf ? 'You' : selected.name}
+                </h1>
+                <p className="text-sub text-purple text-pretty">
+                  {isSelf
+                    ? 'You and the birth details your chart is built from — plus charts for people you care about.'
+                    : `${RELATION_LABEL[selected.relation]} chart — birth details used for readings about ${selected.name}.`}
+                </p>
+              </>
+            )}
           </header>
 
           {/* Friend / Relative / Other — form on the page, not a popup. */}
@@ -369,64 +404,117 @@ export default function ProfilePage() {
             </div>
           </section>
 
-          {/* ── Primary account ── */}
-          <CelestialCard motifs={['stars', 'orbits']} tone="midnight" seed={user.phone} padding="lg">
+          {/* ── Selected chart — You stays visually distinct ── */}
+          <CelestialCard
+            motifs={['stars', 'orbits']}
+            tone="midnight"
+            seed={isSelf ? user.phone : selected.id}
+            padding="lg"
+            className={cn(
+              isSelf &&
+                'ring-1 ring-copper/35 shadow-[0_0_40px_-18px_rgba(201,145,115,0.55)]',
+            )}
+          >
             <div className="flex min-w-0 items-center gap-4">
               <div className="relative shrink-0">
                 <Avatar
-                  name={user.fullName}
-                  initials={user.initials}
-                  src={user.photoUrl}
+                  name={isSelf ? user.fullName : selected.name}
+                  initials={isSelf ? user.initials : undefined}
+                  src={isSelf ? user.photoUrl : undefined}
                   size="xl"
-                  className="border-gold-border/50 text-on-celestial"
-                />
-                <button
-                  type="button"
-                  disabled={isUploading}
-                  onClick={() => fileRef.current?.click()}
-                  aria-label="Upload profile photo"
                   className={cn(
-                    'absolute -bottom-1 -right-1 inline-flex size-9 items-center justify-center',
-                    'rounded-full border border-gold-border bg-copper text-midnight shadow-glow',
-                    'transition-transform hover:scale-105 active:scale-95',
-                    'disabled:pointer-events-none disabled:opacity-60',
+                    'text-on-celestial',
+                    isSelf
+                      ? 'border-copper/50 shadow-[0_0_24px_-6px_rgba(201,145,115,0.55)]'
+                      : 'border-celestial-line/60',
                   )}
-                >
-                  <Camera className="size-4" aria-hidden />
-                </button>
+                />
+                {isSelf && (
+                  <button
+                    type="button"
+                    disabled={isUploading}
+                    onClick={() => fileRef.current?.click()}
+                    aria-label="Upload profile photo"
+                    className={cn(
+                      'absolute -bottom-1 -right-1 inline-flex size-9 items-center justify-center',
+                      'rounded-full border border-gold-border bg-copper text-midnight shadow-glow',
+                      'transition-transform hover:scale-105 active:scale-95',
+                      'disabled:pointer-events-none disabled:opacity-60',
+                    )}
+                  >
+                    <Camera className="size-4" aria-hidden />
+                  </button>
+                )}
               </div>
 
               <div className="min-w-0 flex-1 space-y-2">
                 <div>
-                  <p className="truncate text-heading font-semibold text-on-celestial">
-                    {user.fullName}
-                  </p>
-                  <p className="font-mono text-data text-on-celestial-muted">
-                    {formatPhone(user.phone)}
-                  </p>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  <Button
-                    variant="celestialGhost"
-                    size="sm"
-                    loading={isUploading}
-                    onClick={() => fileRef.current?.click()}
-                    iconLeft={<ImagePlus className="size-4" />}
+                  <p
+                    className={cn(
+                      'mb-1 inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5',
+                      'font-mono text-[10px] font-semibold uppercase tracking-[0.14em]',
+                      isSelf
+                        ? 'border-copper/45 bg-copper/20 text-silver-300'
+                        : 'border-celestial-line/50 bg-white/5 text-on-celestial-muted',
+                    )}
                   >
-                    {user.photoUrl ? 'Change photo' : 'Add photo'}
-                  </Button>
-                  {user.photoUrl && (
+                    {isSelf ? 'You · primary chart' : RELATION_LABEL[selected.relation]}
+                  </p>
+                  <p className="truncate text-heading font-semibold text-on-celestial">
+                    {isSelf ? user.fullName : selected.name}
+                  </p>
+                  {isSelf ? (
+                    <p className="font-mono text-data text-on-celestial-muted">
+                      {formatPhone(user.phone)}
+                    </p>
+                  ) : selected.note ? (
+                    <p className="text-sm text-on-celestial-muted text-pretty">{selected.note}</p>
+                  ) : null}
+                </div>
+                {isSelf && (
+                  <div className="flex flex-wrap gap-2">
                     <Button
                       variant="celestialGhost"
                       size="sm"
-                      disabled={isUploading}
-                      onClick={removePhoto}
-                      iconLeft={<Trash2 className="size-4" />}
+                      loading={isUploading}
+                      onClick={() => fileRef.current?.click()}
+                      iconLeft={<ImagePlus className="size-4" />}
                     >
-                      Remove
+                      {user.photoUrl ? 'Change photo' : 'Add photo'}
                     </Button>
-                  )}
-                </div>
+                    {user.photoUrl && (
+                      <Button
+                        variant="celestialGhost"
+                        size="sm"
+                        disabled={isUploading}
+                        onClick={removePhoto}
+                        iconLeft={<Trash2 className="size-4" />}
+                      >
+                        Remove
+                      </Button>
+                    )}
+                  </div>
+                )}
+                {!isSelf && (
+                  <div className="flex flex-wrap gap-2">
+                    <Button
+                      variant="celestialGhost"
+                      size="sm"
+                      onClick={() => openEdit(selected)}
+                      iconLeft={<Pencil className="size-4" />}
+                    >
+                      Edit chart
+                    </Button>
+                    <Button
+                      variant="celestialGhost"
+                      size="sm"
+                      onClick={() => viewProfile(selected)}
+                      iconLeft={<Eye className="size-4" />}
+                    >
+                      Open kundli
+                    </Button>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -434,35 +522,39 @@ export default function ProfilePage() {
               tone="dark"
               className="mt-5"
               items={[
-                { label: 'Born', value: formatDateShort(user.birthDetails.date) },
+                { label: 'Born', value: formatDateShort(birth.date) },
                 {
                   label: 'At',
-                  value: user.birthDetails.timeUnknown
-                    ? 'time unknown'
-                    : formatTime12(user.birthDetails.time),
+                  value: birth.timeUnknown ? 'time unknown' : formatTime12(birth.time),
                 },
-                { label: 'In', value: user.birthDetails.place.label.split(',')[0] },
+                { label: 'In', value: birth.place.label.split(',')[0] },
               ]}
             />
           </CelestialCard>
 
-          <input
-            ref={fileRef}
-            type="file"
-            accept={PROFILE_PHOTO_ACCEPT}
-            className="sr-only"
-            onChange={(event) => onPickPhoto(event.target.files?.[0])}
-          />
+          {isSelf && (
+            <input
+              ref={fileRef}
+              type="file"
+              accept={PROFILE_PHOTO_ACCEPT}
+              className="sr-only"
+              onChange={(event) => onPickPhoto(event.target.files?.[0])}
+            />
+          )}
 
           <div className="flex items-center justify-between gap-3">
             <div>
               <p className="text-sub font-semibold text-ink">Birth details</p>
-              <p className="text-xs text-muted">Used to calculate your chart.</p>
+              <p className="text-xs text-muted">
+                {isSelf
+                  ? 'Used to calculate your chart.'
+                  : `Used to calculate ${selected.name}’s chart.`}
+              </p>
             </div>
             <Button
               variant="secondary"
               size="sm"
-              onClick={birthSheet.open}
+              onClick={() => (isSelf ? birthSheet.open() : openEdit(selected))}
               iconLeft={<Cake className="size-4" />}
             >
               Edit
@@ -470,33 +562,31 @@ export default function ProfilePage() {
           </div>
 
           <DetailList>
-            <DetailRow label="Name" value={user.birthDetails.fullName} />
+            <DetailRow label="Name" value={birth.fullName} />
             <DetailRow
               label="Gender"
               value={
-                user.birthDetails.gender
-                  ? GENDER_LABEL[normalizeGender(user.birthDetails.gender) ?? 'other']
+                birth.gender
+                  ? GENDER_LABEL[normalizeGender(birth.gender) ?? 'other']
                   : 'Not set'
               }
             />
-            <DetailRow label="Date of birth" value={formatDateLong(user.birthDetails.date)} />
+            <DetailRow label="Date of birth" value={formatDateLong(birth.date)} />
             <DetailRow
               label="Time of birth"
               value={
-                user.birthDetails.timeUnknown
-                  ? 'Not known — noon assumed'
-                  : formatTime12(user.birthDetails.time)
+                birth.timeUnknown ? 'Not known — noon assumed' : formatTime12(birth.time)
               }
             />
             <DetailRow
               label="Birth place"
-              value={user.birthDetails.place.label}
-              note={`${user.birthDetails.place.latitude.toFixed(2)}°N ${user.birthDetails.place.longitude.toFixed(2)}°E`}
+              value={birth.place.label}
+              note={`${birth.place.latitude.toFixed(2)}°N ${birth.place.longitude.toFixed(2)}°E`}
             />
           </DetailList>
 
           {/* ── Manage additional profiles ── */}
-          <section className="space-y-4 border-t border-border pt-8">
+          <section id="profile-manage" className="space-y-4 border-t border-border pt-8 scroll-mt-20">
             <div>
               <p className="text-sub font-semibold text-ink">Manage</p>
               <p className="text-xs text-muted text-pretty">
@@ -650,11 +740,19 @@ function ProfileCard({
     <div
       className={cn(
         'rounded-card border p-3 transition-colors sm:p-4',
-        selected ? 'border-gold bg-gold-soft/50' : 'border-border bg-surface',
+        isPrimary
+          ? 'border-copper/50 bg-copper/10 shadow-[0_0_24px_-16px_rgba(201,145,115,0.55)]'
+          : selected
+            ? 'border-gold bg-gold-soft/50'
+            : 'border-border bg-surface',
       )}
     >
       <div className="flex items-start gap-3">
-        <Avatar name={profile.name} size="md" />
+        <Avatar
+          name={profile.name}
+          size="md"
+          className={isPrimary ? 'border-copper/45' : undefined}
+        />
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
             <p className="truncate text-sub font-medium text-ink">{profile.name}</p>
@@ -662,7 +760,7 @@ function ProfileCard({
               {isPrimary ? 'You' : RELATION_LABEL[profile.relation]}
             </Badge>
             {selected && (
-              <span className="inline-flex items-center gap-1 font-mono text-[10px] uppercase tracking-wider text-gold-deep">
+              <span className="inline-flex items-center gap-1 font-mono text-[10px] uppercase tracking-wider text-silver-400">
                 <Check className="size-3" aria-hidden />
                 Active
               </span>

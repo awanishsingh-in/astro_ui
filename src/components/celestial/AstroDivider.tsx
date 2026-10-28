@@ -17,7 +17,7 @@ export interface AstroDividerProps {
 export function AstroDivider({ label, tone = 'light', className }: AstroDividerProps) {
   const dark = tone === 'dark'
   const line = dark ? 'bg-celestial-line' : 'bg-border'
-  const mark = dark ? 'text-gold-soft-line' : 'text-gold'
+  const mark = dark ? 'text-silver-300' : 'text-silver-300'
 
   return (
     <div className={cn('flex min-w-0 items-center gap-3', className)} role="separator">

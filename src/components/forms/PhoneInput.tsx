@@ -141,16 +141,16 @@ export function PhoneInput({
           zIndex: 9999,
         }}
         className={cn(
-          'flex flex-col overflow-hidden rounded-2xl border shadow-[0_24px_48px_-16px_rgba(0,0,0,0.75)]',
+          'flex flex-col overflow-hidden rounded-2xl border shadow-[0_24px_48px_-16px_rgba(201,145,115,0.55)]',
           adventure
-            ? 'border-[#5b3d9a] bg-[#0e0820] text-white'
+            ? 'border-[#5C4750] bg-surface text-white'
             : 'border-border bg-surface text-ink',
         )}
       >
         <div
           className={cn(
             'flex shrink-0 items-center gap-2 border-b px-3 py-2.5',
-            adventure ? 'border-white/10 bg-[#0e0820]' : 'border-border bg-surface',
+            adventure ? 'border-white/10 bg-surface' : 'border-border bg-surface',
           )}
         >
           <Search
@@ -166,8 +166,8 @@ export function PhoneInput({
             className={cn(
               'min-w-0 flex-1 bg-transparent text-sm outline-none',
               adventure
-                ? 'text-white placeholder:text-white/35'
-                : 'text-ink placeholder:text-faint',
+                ? 'text-white placeholder:text-text-muted'
+                : 'text-ink placeholder:text-text-muted',
             )}
           />
         </div>
@@ -175,7 +175,7 @@ export function PhoneInput({
         <ul
           className={cn(
             'min-h-0 flex-1 overflow-y-auto overscroll-contain py-1',
-            adventure ? 'bg-[#0e0820]' : 'bg-surface',
+            adventure ? 'bg-surface' : 'bg-surface',
           )}
         >
           {filtered.length === 0 ? (
@@ -196,10 +196,10 @@ export function PhoneInput({
                       'flex w-full items-center gap-2.5 px-3 py-2.5 text-left text-sm transition-colors',
                       adventure
                         ? active
-                          ? 'bg-[#7c4dff]/30 text-white'
+                          ? 'bg-blue-glow/25 text-blue-light'
                           : 'text-white/90 hover:bg-white/8'
                         : active
-                          ? 'bg-copper/15 text-ink'
+                          ? 'bg-info-soft text-ink'
                           : 'hover:bg-navy-soft/70',
                     )}
                   >
@@ -210,7 +210,7 @@ export function PhoneInput({
                     <span
                       className={cn(
                         'font-mono text-xs',
-                        adventure ? 'text-[#c4a0ff]' : 'text-muted',
+                        adventure ? 'text-blue-light' : 'text-muted',
                       )}
                     >
                       +{country.dial}
@@ -219,7 +219,7 @@ export function PhoneInput({
                       <Check
                         className={cn(
                           'size-3.5 shrink-0',
-                          adventure ? 'text-[#c4a0ff]' : 'text-copper',
+                          adventure ? 'text-blue-light' : 'text-info',
                         )}
                         aria-hidden
                       />
@@ -240,11 +240,11 @@ export function PhoneInput({
         className={cn(
           'flex h-control-lg items-stretch overflow-hidden rounded-control border bg-surface',
           'transition-[border-color,box-shadow] duration-200 ease-out-soft',
-          'focus-within:border-copper focus-within:shadow-glow',
+          'focus-within:border-blue-glow focus-within:shadow-focus',
           hasError ? 'border-critical' : 'border-border',
           disabled && 'bg-surface-sunken text-faint',
           adventure &&
-            'h-14 rounded-2xl border-[#5b3d9a]/70 bg-[#140d2c] focus-within:border-[#c4a0ff] focus-within:shadow-[0_0_0_3px_rgba(124,77,255,0.25)]',
+            'h-14 rounded-2xl border-blue-light/35 bg-surface-raised/80 focus-within:border-blue-glow focus-within:shadow-[0_0_0_3px_rgba(201,145,115,0.4),0_0_28px_-6px_rgba(201,145,115,0.55)]',
           className,
         )}
       >
@@ -259,7 +259,7 @@ export function PhoneInput({
           className={cn(
             'flex shrink-0 items-center gap-1 border-r px-2.5 font-mono text-data-lg transition-colors sm:px-3',
             adventure
-              ? 'border-[#5b3d9a]/70 text-[#c4a0ff] hover:bg-white/5'
+              ? 'border-[#5C4750]/70 text-blue-light hover:bg-white/5'
               : 'border-border text-purple hover:bg-navy-soft/60',
             disabled && 'pointer-events-none opacity-60',
           )}
@@ -289,8 +289,8 @@ export function PhoneInput({
           onChange={(event) => onChange(event.target.value)}
           className={cn(
             'h-full min-w-0 flex-1 bg-transparent px-3.5 font-mono text-data-lg text-ink outline-none',
-            'placeholder:text-faint',
-            adventure && 'text-white placeholder:text-white/35',
+            'placeholder:text-text-muted',
+            adventure && 'text-white placeholder:text-text-muted',
           )}
         />
       </div>

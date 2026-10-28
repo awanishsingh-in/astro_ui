@@ -1,5 +1,21 @@
-/** Session flag so Back from Profile reopens the avatar account menu. */
+/** Session flag to reopen the avatar account menu after certain navigations. */
 export const REOPEN_AVATAR_MENU_KEY = 'cyklos_reopen_avatar_menu'
+
+/** Open an account panel from anywhere (e.g. Panchang → Downloads history). */
+export const OPEN_ACCOUNT_PANEL_EVENT = 'cyklos-open-account-panel'
+
+export type OpenableAccountPanel =
+  | 'profile'
+  | 'settings'
+  | 'languages'
+  | 'help'
+  | 'upgrade-plan'
+  | 'usage'
+  | 'billing'
+  | 'terms'
+  | 'policies'
+  | 'privacy'
+  | 'downloads'
 
 export function requestAvatarMenuReopen(): void {
   try {
@@ -17,4 +33,10 @@ export function consumeAvatarMenuReopen(): boolean {
   } catch {
     return false
   }
+}
+
+export function requestAccountPanel(panel: OpenableAccountPanel): void {
+  window.dispatchEvent(
+    new CustomEvent(OPEN_ACCOUNT_PANEL_EVENT, { detail: { panel } }),
+  )
 }

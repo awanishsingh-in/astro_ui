@@ -1,3 +1,5 @@
+import { recordDownload } from '@/data/download-history'
+
 function icsDate(iso: string): string {
   return iso.slice(0, 10).replace(/-/g, '')
 }
@@ -53,15 +55,22 @@ export function downloadSimpleEventIcs({
     .filter(Boolean)
     .join('\r\n')
 
+  const savedName = filename.endsWith('.ics') ? filename : `${filename}.ics`
   const blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' })
   const url = URL.createObjectURL(blob)
   const anchor = document.createElement('a')
   anchor.href = url
-  anchor.download = filename.endsWith('.ics') ? filename : `${filename}.ics`
+  anchor.download = savedName
   document.body.appendChild(anchor)
   anchor.click()
   anchor.remove()
   URL.revokeObjectURL(url)
+  recordDownload({
+    kind: 'calendar',
+    title,
+    subtitle: `Calendar · ${dateIso.slice(0, 10)}`,
+    filename: savedName,
+  })
 }
 
 /** Google Calendar template URL for an all-day event. */
@@ -128,13 +137,20 @@ export function downloadEventsIcs(
     'END:VCALENDAR',
   ].join('\r\n')
 
+  const savedName = filename.endsWith('.ics') ? filename : `${filename}.ics`
   const blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' })
   const url = URL.createObjectURL(blob)
   const anchor = document.createElement('a')
   anchor.href = url
-  anchor.download = filename.endsWith('.ics') ? filename : `${filename}.ics`
+  anchor.download = savedName
   document.body.appendChild(anchor)
   anchor.click()
   anchor.remove()
   URL.revokeObjectURL(url)
+  recordDownload({
+    kind: 'calendar',
+    title: calendarName,
+    subtitle: `${events.length} event${events.length === 1 ? '' : 's'} · .ics`,
+    filename: savedName,
+  })
 }

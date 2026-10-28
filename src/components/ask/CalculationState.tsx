@@ -72,7 +72,7 @@ export function CalculationState({
           {question}
         </h1>
 
-        <div className="mt-8 w-full max-w-[300px] rounded-card bg-[#FDF8F4] p-2">
+        <div className="mt-8 w-full max-w-[300px] rounded-card bg-[#FBEFE6] p-2">
           <ChartDiamond
             chart={chart}
             tone="paper"

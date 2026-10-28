@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cyklos Light Reference</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+/* =========================================================
+   CYKLOS — LIGHT MODE "DAWN"  (reference for Cursor)
+   Copy these tokens + component classes 1:1.
+   ========================================================= */
+:root[data-theme="light"]{
+  color-scheme: light;
+  /* base */
+  --bg:#FBF9F8;
+  --sky:linear-gradient(180deg,#EDE3F3 0%,#F6E6EC 38%,#FBF0E9 70%,rgba(251,249,248,0) 100%);
+  --surface:#FFFFFF;
+  --surface-2:#F7F3F2;
+  --surface-sel:#FBF3F1;
+  /* ink */
+  --ink:#1F1426;
+  --ink-2:#574A5E;
+  --muted:#8C8093;
+  --line:rgba(31,20,38,.07);
+  --line-2:rgba(31,20,38,.12);
+  /* brand */
+  --aubergine:#4B2545;
+  --aubergine-soft:rgba(75,37,69,.07);
+  --rg:linear-gradient(135deg,#E2B394 0%,#B97556 30%,#93553B 58%,#B07052 80%,#D49F80 100%);
+  --rg-line:linear-gradient(90deg,#E2B394,#AE6F52 50%,#E2B394);
+  --rg-text:#8E5236;
+  --eyebrow:#9A5D42;
+  /* depth */
+  --sh-1:0 1px 2px rgba(31,20,38,.04),0 6px 20px -10px rgba(75,37,69,.14);
+  --sh-2:0 2px 4px rgba(31,20,38,.05),0 18px 40px -16px rgba(75,37,69,.24);
+  --sh-cta:inset 0 1px 0 rgba(255,255,255,.45),0 0 0 1px rgba(140,82,56,.35),0 10px 24px -10px rgba(174,111,82,.6);
+  --ring:0 0 0 4px rgba(174,111,82,.16);
+  /* night card */
+  --night:radial-gradient(65% 70% at 88% 0%,rgba(190,60,130,.42),transparent 60%),
+          radial-gradient(50% 60% at 0% 100%,rgba(232,190,159,.16),transparent 60%),
+          linear-gradient(160deg,#2B1631 0%,#160C1B 100%);
+}
+*{box-sizing:border-box;margin:0}
+body{background:var(--bg);color:var(--ink);font-family:Manrope,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+.serif{font-family:"Cormorant Garamond",Georgia,serif;font-weight:600;letter-spacing:-.01em}
+.eyebrow{font:600 11px/1 Manrope;letter-spacing:.18em;text-transform:uppercase;color:var(--eyebrow)}
+.mono{font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.12em;color:var(--muted)}
+
+/* ---------- layout ---------- */
+.app{display:grid;grid-template-columns:272px 1fr;min-height:100vh}
+.side{background:var(--surface);border-right:1px solid var(--line);padding:20px 16px;display:flex;flex-direction:column;gap:22px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:600;font-size:18px;padding:4px 8px}
+.logo{width:30px;height:30px;border-radius:50%;background:var(--rg);box-shadow:var(--sh-cta)}
+.nav{display:flex;flex-direction:column;gap:2px}
+.nav a{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:12px;color:var(--ink-2);text-decoration:none;font-size:15px;font-weight:500;position:relative;transition:background .2s,color .2s}
+.nav a svg{width:18px;height:18px;stroke:var(--muted);fill:none;stroke-width:1.6}
+.nav a:hover{background:var(--surface-2);color:var(--ink)}
+.nav a.on{background:var(--aubergine-soft);color:var(--aubergine);font-weight:600}
+.nav a.on svg{stroke:var(--aubergine)}
+.nav a.on::before{content:"";position:absolute;left:0;top:9px;bottom:9px;width:3px;border-radius:3px;background:var(--rg)}
+.main{position:relative;overflow:hidden}
+.main::before{content:"";position:absolute;inset:0 0 auto 0;height:560px;background:var(--sky);pointer-events:none}
+.orbits{position:absolute;right:-160px;top:-180px;width:760px;opacity:1;pointer-events:none}
+.wrap{position:relative;max-width:1060px;margin:0 auto;padding:64px 40px 80px}
+
+/* ---------- hero ---------- */
+h1.hello{font-size:64px;line-height:1.02;color:var(--ink)}
+h1.hello em{font-style:normal;background:var(--rg);-webkit-background-clip:text;background-clip:text;color:transparent}
+.sub{color:var(--ink-2);font-size:16px;margin-top:10px}
+
+/* ---------- composer ---------- */
+.composer{margin-top:32px;position:relative;border-radius:22px;background:rgba(255,255,255,.88);backdrop-filter:blur(14px);box-shadow:var(--sh-2),0 0 0 6px rgba(237,227,243,.5);padding:14px 18px 14px}
+.composer::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;background:var(--rg-line);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;opacity:.7;pointer-events:none}
+.zod{font-family:'Segoe UI Symbol','Noto Sans Symbols 2','DejaVu Sans',serif;display:flex;justify-content:space-between;color:var(--muted);font-size:15px;padding:2px 8px 12px;border-bottom:1px solid var(--line)}
+.zod span{cursor:pointer;transition:color .2s}.zod span:hover{color:var(--rg-text)}
+.crow{display:flex;align-items:center;gap:12px;padding-top:14px}
+.crow input{flex:1;border:0;background:transparent;font:500 16px Manrope;color:var(--ink);outline:none}
+.crow input::placeholder{color:var(--muted)}
+.send{width:42px;height:42px;border-radius:50%;border:0;background:var(--rg);box-shadow:var(--sh-cta);color:#fff;display:grid;place-items:center;cursor:pointer}
+
+/* ---------- buttons ---------- */
+.btn{font:600 15px Manrope;border-radius:14px;padding:13px 22px;cursor:pointer;display:inline-flex;align-items:center;gap:8px;transition:transform .15s,box-shadow .25s,background-position .6s}
+.btn-primary{border:0;color:#fff;background:var(--rg);background-size:180% 180%;box-shadow:var(--sh-cta);text-shadow:0 1px 1px rgba(90,45,25,.35)}
+.btn-primary:hover{background-position:100% 50%;box-shadow:inset 0 1px 0 rgba(255,255,255,.5),0 0 0 1px rgba(140,82,56,.4),0 14px 30px -10px rgba(174,111,82,.7)}
+.btn-primary:active{transform:translateY(1px)}
+.btn-outline{position:relative;background:var(--surface);border:0;color:var(--rg-text);box-shadow:var(--sh-1)}
+.btn-outline::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;background:var(--rg-line);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;opacity:.75}
+.btn-outline:hover{background:#FDF6F2}
+.btn-ghost{background:transparent;border:0;color:var(--aubergine);padding:10px 14px}
+.btn-ghost:hover{background:var(--aubergine-soft)}
+
+/* ---------- tabs / chips ---------- */
+.tabs{display:inline-flex;gap:4px;padding:5px;border-radius:14px;background:var(--surface-2);border:1px solid var(--line)}
+.tabs button{border:0;background:transparent;font:500 14px Manrope;color:var(--ink-2);padding:9px 16px;border-radius:10px;cursor:pointer}
+.tabs button.on{background:var(--surface);color:var(--aubergine);font-weight:700;box-shadow:var(--sh-1)}
+.chip{display:inline-flex;align-items:center;gap:6px;font:500 13px Manrope;padding:7px 12px;border-radius:999px;background:var(--surface-2);border:1px solid var(--line);color:var(--ink)}
+
+/* ---------- cards ---------- */
+.section{margin-top:56px}
+.section-head{display:flex;justify-content:space-between;align-items:end;margin-bottom:18px}
+.section-head h2{font-size:32px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.card{position:relative;background:var(--surface);border-radius:20px;padding:22px;border:1px solid var(--line);box-shadow:var(--sh-1);transition:transform .2s,box-shadow .25s}
+.card:hover{transform:translateY(-2px);box-shadow:var(--sh-2)}
+.card h3{font-size:28px;margin:8px 0 6px}
+.card p{color:var(--ink-2);font-size:14px;line-height:1.55}
+.card .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+.glyphs{display:inline-flex;gap:6px;padding:7px 11px;border-radius:999px;background:var(--aubergine-soft);color:var(--aubergine);font-size:14px}
+.tick{width:24px;height:24px;border-radius:50%;background:var(--rg);box-shadow:var(--sh-cta);display:grid;place-items:center;color:#fff;font-size:13px}
+.lock{width:24px;height:24px;border-radius:50%;border:1px solid var(--line-2);display:grid;place-items:center;color:var(--muted)}
+.card.sel{background:linear-gradient(180deg,#FFFFFF 0%,var(--surface-sel) 100%);box-shadow:var(--sh-2)}
+.card.sel::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:1.5px;background:var(--rg-line);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none}
+.card.sel::after{content:"";position:absolute;right:0;top:0;width:60%;height:70%;border-radius:0 20px 0 0;background:radial-gradient(60% 60% at 100% 0%,rgba(214,150,190,.18),transparent 70%);pointer-events:none}
+.card.locked h3,.card.locked p{opacity:.72}
+.meta{display:flex;align-items:center;gap:8px;margin-top:16px}
+.icontile{width:46px;height:46px;border-radius:14px;background:var(--aubergine-soft);display:grid;place-items:center;color:var(--aubergine)}
+
+/* ---------- night card ---------- */
+.night{background:var(--night);color:#FBF7F5;border-radius:24px;padding:32px;position:relative;overflow:hidden;box-shadow:0 30px 60px -30px rgba(43,22,49,.6)}
+.night .eyebrow{color:#EBC3A6}
+.night h3{font-size:40px;margin:12px 0 4px}
+.night p{color:#D6CAD8;line-height:1.65;max-width:620px}
+.night .pill{display:inline-block;padding:6px 12px;border-radius:999px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);font-size:13px;color:#F3E6EC;margin-right:6px}
+.stars{position:absolute;inset:0;background-image:radial-gradient(1px 1px at 20% 30%,#fff8,transparent),radial-gradient(1px 1px at 70% 20%,#fff9,transparent),radial-gradient(1.4px 1.4px at 85% 60%,#ffd9ec,transparent),radial-gradient(1px 1px at 40% 80%,#fff7,transparent),radial-gradient(1px 1px at 60% 50%,#fff6,transparent),radial-gradient(1.2px 1.2px at 92% 15%,#fff,transparent);pointer-events:none}
+
+/* ---------- list row (history) ---------- */
+.row{display:flex;gap:16px;align-items:flex-start;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:18px 20px;box-shadow:var(--sh-1)}
+.row .q{font-size:22px}
+.row .p{color:var(--ink-2);font-size:14px;margin-top:2px}
+.row .acts{margin-left:auto;display:flex;gap:4px}
+
+@media (max-width:900px){.app{grid-template-columns:1fr}.side{display:none}.grid{grid-template-columns:1fr}h1.hello{font-size:44px}.wrap{padding:40px 16px}}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="side">
+    <div class="brand"><span class="logo"></span>Cyklos</div>
+    <nav class="nav">
+      <a class="on" href="#"><svg viewBox="0 0 24 24"><path d="M4 20 20 4M14 4h6v6"/></svg>Ask</a>
+      <a href="#"><svg viewBox="0 0 24 24"><path d="M4 20h4L20 8l-4-4L4 16z"/></svg>New chat</a>
+      <a href="#"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/></svg>History</a>
+      <a href="#"><svg viewBox="0 0 24 24"><path d="M6 3h12v18l-6-4-6 4z"/></svg>Your Past</a>
+    </nav>
+    <div class="eyebrow" style="padding:0 12px">Features</div>
+    <nav class="nav">
+      <a href="#"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/></svg>My Chart</a>
+      <a href="#"><svg viewBox="0 0 24 24"><path d="M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 10c0 5.5-7 10-7 10z"/></svg>Matching</a>
+      <a href="#"><svg viewBox="0 0 24 24"><path d="M15 4a8 8 0 1 0 5 13A7 7 0 0 1 15 4z"/></svg>Horoscope</a>
+      <a href="#"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>Calendar</a>
+      <a href="#"><svg viewBox="0 0 24 24"><path d="M4 18h16M7 14a5 5 0 0 1 10 0M12 4v3"/></svg>Panchang &amp; muhurat</a>
+      <a href="#"><svg viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 7h6"/></svg>Reports</a>
+    </nav>
+  </aside>
+
+  <main class="main">
+    <!-- celestial line art: aubergine at low opacity, never black glyphs -->
+    <svg class="orbits" viewBox="0 0 760 760" fill="none">
+      <g stroke="#4B2545" stroke-opacity=".10">
+        <circle cx="380" cy="380" r="120"/><circle cx="380" cy="380" r="200"/>
+        <circle cx="380" cy="380" r="285"/><circle cx="380" cy="380" r="370"/>
+      </g>
+      <defs>
+        <radialGradient id="pearl" cx=".35" cy=".3"><stop offset="0" stop-color="#fff"/><stop offset=".55" stop-color="#EBDDE6"/><stop offset="1" stop-color="#B49BAE"/></radialGradient>
+        <radialGradient id="sun" cx=".35" cy=".3"><stop offset="0" stop-color="#FFF4EA"/><stop offset=".4" stop-color="#E7B48F"/><stop offset="1" stop-color="#9C5E43"/></radialGradient>
+      </defs>
+      <circle cx="380" cy="380" r="26" fill="url(#sun)"/>
+      <circle cx="380" cy="380" r="54" fill="#E7B48F" fill-opacity=".12"/>
+      <circle cx="500" cy="380" r="7" fill="url(#pearl)"/>
+      <circle cx="245" cy="240" r="9" fill="url(#pearl)"/>
+      <circle cx="560" cy="580" r="6" fill="url(#pearl)"/>
+      <circle cx="130" cy="520" r="8" fill="url(#pearl)"/>
+      <g fill="#4B2545" fill-opacity=".35" font-size="16" font-family="serif">
+        <text x="372" y="16">♈︎</text><text x="660" y="300">♋︎</text><text x="120" y="160">♑︎</text><text x="610" y="640">♎︎</text>
+      </g>
+    </svg>
+
+    <div class="wrap">
+      <div class="eyebrow">Wednesday · 14 October</div>
+      <h1 class="hello serif" style="margin-top:14px">Welcome, <em>Pallavi.</em></h1>
+      <p class="sub">Ask anything — every answer names the house and planets it was read from.</p>
+
+      <div class="composer">
+        <div class="zod"><span>♈︎</span><span>♉︎</span><span>♊︎</span><span>♋︎</span><span>♌︎</span><span>♍︎</span><span>♎︎</span><span>♏︎</span><span>♐︎</span><span>♑︎</span><span>♒︎</span><span>♓︎</span></div>
+        <div class="crow">
+          <input placeholder="Message Cyklos…">
+          <button class="send" aria-label="Send">↑</button>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:22px;align-items:center">
+        <button class="btn btn-primary">Calculate my chart</button>
+        <button class="btn btn-outline">Download report</button>
+        <button class="btn btn-ghost">View</button>
+        <div class="tabs" style="margin-left:auto"><button class="on">Panchang</button><button>Tithi</button><button>Timings</button><button>Muhurat</button></div>
+      </div>
+
+      <!-- Your Past style cards -->
+      <section class="section">
+        <div class="section-head"><h2 class="serif">Your past</h2><span class="mono">3 OF 6 SELECTED</span></div>
+        <div class="grid">
+          <div class="card sel">
+            <div class="top"><span class="glyphs">☾ ♀︎</span><span class="tick">✓</span></div>
+            <div class="mono">BHAVA 5</div>
+            <h3 class="serif">Love</h3>
+            <p>How you fell for people, what made bonds stick, and the emotional patterns your chart held.</p>
+          </div>
+          <div class="card locked">
+            <div class="top"><span class="glyphs">♄︎ ☿︎</span><span class="lock">⌂</span></div>
+            <div class="mono">BHAVA 10</div>
+            <h3 class="serif">Career</h3>
+            <p>Job shifts, ambition and turning points where your chart pushed growth or change.</p>
+            <div class="meta mono">LOCKED · PLAN TO CHANGE</div>
+          </div>
+          <div class="card sel">
+            <div class="top"><span class="glyphs">☉︎ ♄︎</span><span class="tick">✓</span></div>
+            <div class="mono">BHAVA 1</div>
+            <h3 class="serif">Health &amp; Wellbeing</h3>
+            <p>Energy, rest and balance — past rhythms in body and mind your chart still echoes.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Night card: the ONE dark surface allowed per light page -->
+      <section class="section">
+        <div class="night">
+          <div class="stars"></div>
+          <div style="position:relative">
+            <span class="pill">✦ Daily</span><span class="pill">Scorpio · Vrischika</span>
+            <h3 class="serif">Today for Scorpio</h3>
+            <p>Slow beats sudden today — pick one move and stick with it. Keep the middle of the day for the one decision that matters; leave evenings for review.</p>
+            <div style="margin-top:22px"><button class="btn btn-primary">Ask about this</button></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- History row + icon tiles -->
+      <section class="section">
+        <div class="section-head"><h2 class="serif">Chat history</h2></div>
+        <div class="row">
+          <div class="icontile">◌</div>
+          <div>
+            <div class="q serif">Is this year good for a job change?</div>
+            <div class="p">Read from your 10th house and the running Shukra antar.</div>
+            <div class="mono" style="margin-top:8px">7 SEP 2026 · BH 10</div>
+          </div>
+          <div class="acts"><button class="btn btn-ghost">View</button><button class="btn btn-ghost">Chat</button></div>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:16px"><span class="chip">Sun</span><span class="chip">Moon</span><span class="chip">Saturn (R)</span></div>
+      </section>
+    </div>
+  </main>
+</div>
+</body>
+</html>

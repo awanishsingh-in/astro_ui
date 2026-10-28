@@ -35,7 +35,7 @@ export function RecentReadings({ readings, totalReadings, className }: RecentRea
         action={
           <Link
             to={paths.readings}
-            className="hidden min-h-11 shrink-0 items-center px-1 text-sm font-semibold text-navy transition-colors hover:text-gold-deep sm:inline-flex"
+            className="hidden min-h-11 shrink-0 items-center px-1 text-sm font-semibold text-silver-300 transition-colors hover:text-silver-400 sm:inline-flex"
           >
             By bhava
           </Link>
@@ -63,10 +63,10 @@ export function RecentReadings({ readings, totalReadings, className }: RecentRea
             variant="secondary"
             size="md"
             fullWidth
-            to={paths.everything}
+            to={paths.readings}
             iconRight={<ArrowRight className="size-4" />}
           >
-            Explore everything · {pluralise(totalReadings, 'reading')}
+            View all readings · {pluralise(totalReadings, 'reading')}
           </Button>
         </>
       )}

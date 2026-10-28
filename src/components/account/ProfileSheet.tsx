@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Button } from '@/components/common/Button'
+import { BirthTimeCompact } from '@/components/forms/BirthWheels'
 import { Field } from '@/components/forms/Field'
 import { Input } from '@/components/forms/Input'
 import { PlaceField } from '@/components/forms/PlaceField'
@@ -60,10 +61,9 @@ export function ProfileSheet({
   const desktop = useIsDesktop()
   const [name, setName] = useState('')
   const [relation, setRelation] = useState<ProfileRelation>(defaultRelation)
-  const [note, setNote] = useState('')
   const [gender, setGender] = useState<Gender | ''>('')
   const [date, setDate] = useState('')
-  const [time, setTime] = useState('')
+  const [time, setTime] = useState('12:00')
   const [timeUnknown, setTimeUnknown] = useState(false)
   const [place, setPlace] = useState<BirthPlace | null>(null)
   const [errors, setErrors] = useState<Errors>({})
@@ -76,10 +76,9 @@ export function ProfileSheet({
         ? 'family'
         : (editing?.relation ?? defaultRelation),
     )
-    setNote(editing?.note ?? '')
     setGender(normalizeGender(editing?.birthDetails.gender) ?? '')
     setDate(editing?.birthDetails.date ?? '')
-    setTime(editing?.birthDetails.time ?? '')
+    setTime(editing?.birthDetails.time || '12:00')
     setTimeUnknown(Boolean(editing?.birthDetails.timeUnknown))
     setPlace(editing?.birthDetails.place ?? null)
     setErrors({})
@@ -105,7 +104,8 @@ export function ProfileSheet({
     await onSave({
       name: name.trim(),
       relation,
-      note: note.trim() || undefined,
+      // Keep an existing note on edit; new profiles no longer collect one.
+      note: editing?.note,
       birthDetails: {
         fullName: name.trim(),
         date,
@@ -123,7 +123,7 @@ export function ProfileSheet({
     : 'Family, a friend, a relative — anyone whose chart you want to read.'
 
   const fields = (
-    <div className="space-y-5">
+    <div className="space-y-4">
       <Field label="Name" error={errors.name}>
         <Input
           autoComplete="off"
@@ -136,7 +136,7 @@ export function ProfileSheet({
         />
       </Field>
 
-      <div className="grid gap-5 sm:grid-cols-2">
+      <div className="grid gap-4 sm:grid-cols-2">
         <Field label="Relationship">
           <Select
             options={RELATIONS.map((value) => ({ value, label: RELATION_LABEL[value] }))}
@@ -160,56 +160,76 @@ export function ProfileSheet({
         </Field>
       </div>
 
-      <Field label="Note" help="Optional — “Mother”, “Colleague”.">
+      <Field label="Date of birth" error={errors.date}>
         <Input
-          autoComplete="off"
-          placeholder="How you know them"
-          value={note}
-          onChange={(event) => setNote(event.target.value)}
+          type="date"
+          mono
+          max={new Date().toISOString().slice(0, 10)}
+          value={date}
+          onChange={(event) => {
+            setDate(event.target.value)
+            clear('date')
+          }}
         />
       </Field>
 
-      <div className="grid gap-5 sm:grid-cols-2">
-        <Field label="Date of birth" error={errors.date}>
-          <Input
-            type="date"
-            mono
-            max={new Date().toISOString().slice(0, 10)}
-            value={date}
-            onChange={(event) => {
-              setDate(event.target.value)
-              clear('date')
+      <Field
+        appearance="plain"
+        label="Time of birth"
+        error={errors.time}
+        labelHidden
+        help={
+          timeUnknown
+            ? 'Noon is used instead. You can add an exact time later.'
+            : undefined
+        }
+      >
+        <div className="space-y-2">
+          <BirthTimeCompact
+            value={time}
+            disabled={timeUnknown}
+            onChange={(next) => {
+              setTime(next)
+              clear('time')
             }}
           />
-        </Field>
-
-        <Field label="Time of birth" error={errors.time}>
-          <div className="space-y-2.5">
-            <Input
-              type="time"
-              mono
-              value={time}
-              disabled={timeUnknown}
-              onChange={(event) => {
-                setTime(event.target.value)
-                clear('time')
-              }}
-            />
-            <label className="flex w-fit cursor-pointer items-center gap-2.5 text-sm text-purple">
-              <input
-                type="checkbox"
-                checked={timeUnknown}
-                onChange={(event) => {
-                  setTimeUnknown(event.target.checked)
-                  clear('time')
-                }}
-                className="size-4 accent-[var(--color-navy)]"
-              />
-              Time unknown
-            </label>
-          </div>
-        </Field>
-      </div>
+          <button
+            type="button"
+            aria-pressed={timeUnknown}
+            onClick={() => {
+              setTimeUnknown((prev) => !prev)
+              clear('time')
+            }}
+            className={cn(
+              'inline-flex w-fit items-center gap-2 rounded-lg border px-2.5 py-1 text-xs transition-colors',
+              timeUnknown
+                ? 'border-copper/40 bg-copper/15 text-silver-300'
+                : 'border-border text-muted hover:border-border-strong hover:text-ink',
+            )}
+          >
+            <span
+              aria-hidden
+              className={cn(
+                'flex size-3.5 items-center justify-center rounded-xs border',
+                timeUnknown ? 'border-copper bg-copper text-white' : 'border-border',
+              )}
+            >
+              {timeUnknown && (
+                <svg viewBox="0 0 12 12" className="size-2" fill="none">
+                  <path
+                    d="M2.5 6.2 4.8 8.5 9.5 3.5"
+                    stroke="currentColor"
+                    strokeWidth="1.6"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              )}
+            </span>
+            Time unknown
+          </button>
+        </div>
+      </Field>
 
       <Field
         label="Birth place"
@@ -248,15 +268,12 @@ export function ProfileSheet({
 
   if (presentation === 'inline') {
     if (!isOpen) return null
+    // Page header already titles the add flow — keep the card as fields + actions only.
     return (
       <section
         aria-label={title}
         className="animate-rise space-y-5 rounded-panel border border-border bg-surface p-5 shadow-card sm:p-6"
       >
-        <header className="space-y-1 border-b border-border pb-4">
-          <h2 className="text-heading font-semibold text-ink">{title}</h2>
-          <p className="text-sm text-muted text-pretty">{description}</p>
-        </header>
         {fields}
         <div className="border-t border-border pt-4">{actions}</div>
       </section>

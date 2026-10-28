@@ -18,7 +18,7 @@ export function ChartKpPanel({ chart, className }: ChartKpPanelProps) {
   return (
     <div className={cn('animate-rise space-y-5', className)}>
       <div className="space-y-1.5">
-        <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-gold-deep">
+        <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-silver-400">
           KP
         </p>
         <h2 className="font-serif text-2xl font-semibold tracking-tight text-ink sm:text-3xl">
@@ -32,11 +32,11 @@ export function ChartKpPanel({ chart, className }: ChartKpPanelProps) {
       <article
         className={cn(
           'relative overflow-hidden rounded-3xl border border-copper/35',
-          'bg-[radial-gradient(100%_80%_at_0%_0%,rgba(196, 160, 255,0.18),transparent_55%),var(--color-surface)]',
+          'bg-[radial-gradient(100%_80%_at_0%_0%,,transparent_55%),var(--color-surface)]',
           'px-5 py-6 sm:px-7 sm:py-7',
         )}
       >
-        <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-gold-deep">
+        <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-silver-400">
           Ruling star
         </p>
         <p className="mt-2 font-serif text-3xl font-semibold text-ink">
@@ -65,7 +65,7 @@ export function ChartKpPanel({ chart, className }: ChartKpPanelProps) {
                   i > 0 && 'border-t border-border/60',
                 )}
               >
-                <span className="flex size-9 shrink-0 items-center justify-center rounded-full border border-copper/30 bg-copper/10 font-mono text-xs font-semibold text-copper">
+                <span className="flex size-9 shrink-0 items-center justify-center rounded-full border border-copper/30 bg-copper/10 font-mono text-xs font-semibold text-silver-300">
                   {b.bhava}
                 </span>
                 <div className="min-w-0 flex-1">

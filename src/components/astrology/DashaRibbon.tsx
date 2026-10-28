@@ -52,7 +52,7 @@ export function DashaRibbon({ periods, onSelect, className }: DashaRibbonProps) 
                   aria-hidden
                   className={cn(
                     'text-sm leading-none',
-                    period.current ? 'text-gold-soft-line' : 'text-on-celestial-muted',
+                    period.current ? 'text-silver-300' : 'text-on-celestial-muted',
                   )}
                 >
                   {GRAHAS[period.graha].glyph}
@@ -66,7 +66,7 @@ export function DashaRibbon({ periods, onSelect, className }: DashaRibbonProps) 
                   <span
                     className={cn(
                       'block max-w-full truncate font-mono text-[9px] uppercase',
-                      period.current ? 'text-gold-soft-line' : 'text-on-celestial-faint',
+                      period.current ? 'text-silver-300' : 'text-on-celestial-faint',
                     )}
                   >
                     {period.name}
@@ -110,7 +110,7 @@ export function DashaNow({
     <div className={cn('flex min-w-0 items-start gap-3', className)}>
       <PlanetGlyph code={graha} size="lg" tone="dark" className="shrink-0" />
       <div className="min-w-0">
-        <p className="font-mono text-label uppercase text-gold-soft-line">Running today</p>
+        <p className="font-mono text-label uppercase text-silver-300">Running today</p>
         <p className="mt-1 font-mono text-data-lg text-on-celestial">{path}</p>
         <p className="mt-1 text-sm text-on-celestial-muted text-pretty">{closes}</p>
       </div>

@@ -2,7 +2,9 @@
  * Minimal printable panchang PDF for the Downloads tab (demo, no external library).
  */
 
-export type PanchangDownloadRange = 'day' | 'week' | 'month' | 'year'
+import { recordDownload } from '@/data/download-history'
+
+export type PanchangDownloadRange = 'day' | 'week' | 'month' | 'year' | 'custom'
 
 function escapePdfText(value: string) {
   return value.replace(/\\/g, '\\\\').replace(/\(/g, '\\(').replace(/\)/g, '\\)')
@@ -58,6 +60,8 @@ function rangeLabel(range: PanchangDownloadRange) {
       return 'month'
     case 'year':
       return 'year'
+    case 'custom':
+      return 'custom'
   }
 }
 
@@ -65,6 +69,7 @@ export function panchangFilename(
   citySlug: string,
   range: PanchangDownloadRange,
   dateIso: string,
+  endDateIso?: string,
 ) {
   const month = dateIso.slice(5, 7)
   const year = dateIso.slice(0, 4)
@@ -83,6 +88,10 @@ export function panchangFilename(
     'dec',
   ]
   const mon = monthNames[Number(month) - 1] ?? 'sep'
+  if (range === 'custom') {
+    const end = endDateIso && endDateIso !== dateIso ? `-${endDateIso}` : ''
+    return `panchang-${citySlug}-custom-${dateIso}${end}.pdf`
+  }
   if (range === 'day') return `panchang-${citySlug}-${dateIso}.pdf`
   if (range === 'week') return `panchang-${citySlug}-week-${dateIso}.pdf`
   if (range === 'month') return `panchang-${citySlug}-${mon}-${year}.pdf`
@@ -93,18 +102,25 @@ export function downloadPanchangPdf({
   place,
   dateIso,
   range,
+  endDateIso,
 }: {
   place: string
   dateIso: string
   range: PanchangDownloadRange
+  /** Inclusive end date when `range` is `custom`. */
+  endDateIso?: string
 }) {
   const citySlug = place.split(',')[0]?.trim().toLowerCase().replace(/\s+/g, '-') || 'delhi'
-  const filename = panchangFilename(citySlug, range, dateIso)
+  const filename = panchangFilename(citySlug, range, dateIso, endDateIso)
+  const dateLine =
+    range === 'custom' && endDateIso && endDateIso !== dateIso
+      ? `Dates: ${dateIso} → ${endDateIso}`
+      : `Date: ${dateIso}`
   const lines = [
     'Cyklos — Panchang',
     place,
     `Range: ${rangeLabel(range)}`,
-    `Date: ${dateIso}`,
+    dateLine,
     '',
     'Tithi · Nakshatra · Yoga · Karana',
     'Sunrise / Sunset · Rahu kaal',
@@ -118,5 +134,12 @@ export function downloadPanchangPdf({
   link.download = filename
   link.click()
   URL.revokeObjectURL(url)
+  const city = place.split(',')[0]?.trim() || 'Delhi'
+  recordDownload({
+    kind: 'panchang',
+    title: `Panchang · ${rangeLabel(range)}`,
+    subtitle: `${city} · ${dateLine.replace(/^Dates?:\s*/, '')}`,
+    filename,
+  })
   return filename
 }

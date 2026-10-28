@@ -64,7 +64,7 @@ function FilterSelect({
         className={cn(
           'relative inline-flex items-center rounded-full border border-border/80',
           'bg-surface px-3.5 py-1.5',
-          'shadow-[0_0_0_1px_rgba(124,77,255,0.06)]',
+          'shadow-[0_0_0_1px_rgba(201,145,115,0.45)]',
           'transition group-hover:border-copper/45 group-hover:bg-copper/10',
         )}
       >
@@ -89,7 +89,7 @@ function FilterSelect({
         </select>
         <span
           aria-hidden
-          className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[0.65em] text-copper"
+          className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[0.65em] text-silver-300"
         >
           ▾
         </span>
@@ -180,7 +180,7 @@ export function FestivalsCalendarView({
               className={cn(
                 'rounded-full border px-3.5 py-1.5 text-sm transition-colors',
                 category === c.id
-                  ? 'border-copper/50 bg-copper/15 text-ink'
+                  ? 'rg-tab'
                   : 'border-border text-muted hover:border-border-strong hover:text-ink',
               )}
             >
@@ -202,7 +202,7 @@ export function FestivalsCalendarView({
                   </p>
                   <Link
                     to={paths.calendarFestival(festival.id)}
-                    className="block text-sub font-semibold text-ink hover:text-gold-deep"
+                    className="block text-sub font-semibold text-ink hover:text-silver-400"
                   >
                     {festival.name}
                   </Link>
@@ -233,7 +233,7 @@ export function FestivalsCalendarView({
 
       <aside className="space-y-4 xl:sticky xl:top-6">
         <Card padding="lg" className="gap-3 border-border/80">
-          <p className="font-mono text-label uppercase tracking-[0.12em] text-gold-deep">
+          <p className="font-mono text-label uppercase tracking-[0.12em] text-silver-400">
             Next 30 days
           </p>
           <ul className="space-y-2">
@@ -248,7 +248,7 @@ export function FestivalsCalendarView({
         </Card>
 
         <Card padding="lg" className="gap-2 border-border/80">
-          <p className="font-mono text-label uppercase tracking-[0.12em] text-gold-deep">
+          <p className="font-mono text-label uppercase tracking-[0.12em] text-silver-400">
             Traditions
           </p>
           <ul className="space-y-1.5">

@@ -6,6 +6,7 @@ import { Badge } from '@/components/common/Badge'
 import { Button } from '@/components/common/Button'
 import { Card } from '@/components/common/Card'
 import { RemindCalendarChoice } from '@/components/calendar/RemindCalendarChoice'
+import { MuhuratPersonalizedShell } from '@/components/panchang/MuhuratPersonalizedShell'
 import { useToast } from '@/components/feedback/toast-context'
 import {
   buildGenericMuhuratResults,
@@ -31,7 +32,7 @@ function muhuratDateIso(dateLabel: string): string {
   return `${parsed.getFullYear()}-${String(parsed.getMonth() + 1).padStart(2, '0')}-${String(parsed.getDate()).padStart(2, '0')}`
 }
 
-type MuhuratScreen = 'home' | 'lookup' | 'generic' | 'personalised' | 'saved'
+type MuhuratScreen = 'hub' | 'home' | 'lookup' | 'generic' | 'personalised' | 'saved'
 
 function QualityBars({ value, max = 5 }: { value: number; max?: number }) {
   return (
@@ -77,16 +78,18 @@ export function MuhuratFlow({
   locationLabel,
   isPremium,
   dateIso,
+  onSelectDay,
 }: {
   locationLabel: string
   isPremium: boolean
   /** Calendar / panchang day this muhurat view is anchored to. */
   dateIso: string
+  onSelectDay: (iso: string) => void
 }) {
   const toast = useToast()
   const navigate = useNavigate()
   const { user } = useAuth()
-  const [screen, setScreen] = useState<MuhuratScreen>(isPremium ? 'home' : 'lookup')
+  const [screen, setScreen] = useState<MuhuratScreen>('hub')
   const [purpose, setPurpose] = useState<MuhuratPurposeId>('griha-pravesh')
   const [fromDate, setFromDate] = useState('01 Oct 2026')
   const [toDate, setToDate] = useState('31 Oct 2026')
@@ -160,7 +163,6 @@ export function MuhuratFlow({
         items={saved}
         filter={savedFilter}
         onFilter={setSavedFilter}
-        onBack={() => setScreen(isPremium ? 'home' : 'lookup')}
         onRemind={(item) => {
           if (!user) {
             toast.info('Sign in to set a push reminder')
@@ -240,49 +242,64 @@ export function MuhuratFlow({
         rows={personalRows}
         onChange={() => setScreen('lookup')}
         onSave={(row) => saveWindow(row, true)}
-        onHome={() => setScreen('home')}
+        onHome={() => setScreen('hub')}
       />
     )
   }
 
   if (screen === 'home' && isPremium) {
     return (
-      <PremiumHomeView
-        locationLabel={city}
-        dayLabel={dayLabel}
-        savedCount={saved.filter((s) => !s.past).length}
-        onPick={(id) => {
-          setPurpose(id)
-          setScreen('lookup')
-        }}
-        onCustom={() => {
-          setPurpose('other')
-          setScreen('lookup')
-        }}
-        onSaved={() => setScreen('saved')}
-        onSeeToday={() => runSearch('griha-pravesh')}
-      />
+      <div className="space-y-6">
+        <PremiumHomeView
+          locationLabel={city}
+          dayLabel={dayLabel}
+          savedCount={saved.filter((s) => !s.past).length}
+          onPick={(id) => {
+            setPurpose(id)
+            setScreen('lookup')
+          }}
+          onCustom={() => {
+            setPurpose('other')
+            setScreen('lookup')
+          }}
+          onSaved={() => setScreen('saved')}
+          onSeeToday={() => runSearch('griha-pravesh')}
+        />
+      </div>
     )
   }
 
+  if (screen === 'lookup') {
+    return (
+      <div className="space-y-6">
+        <LookupView
+          purpose={purpose}
+          onPurpose={setPurpose}
+          fromDate={fromDate}
+          toDate={toDate}
+          city={city}
+          onFrom={setFromDate}
+          onTo={setToDate}
+          onCity={setCity}
+          isPremium={isPremium}
+          onSubmit={() => runSearch()}
+          onSeePremiumDiff={() => {
+            toast.info('Personalised muhurat', {
+              description: 'Premium re-ranks windows against dasha, transits and your doshas.',
+              action: { label: 'Account', onClick: () => navigate(paths.account) },
+            })
+          }}
+        />
+      </div>
+    )
+  }
+
+  // Hub — date selection, expandable cards, personalized pay / download chrome
   return (
-    <LookupView
-      purpose={purpose}
-      onPurpose={setPurpose}
-      fromDate={fromDate}
-      toDate={toDate}
-      city={city}
-      onFrom={setFromDate}
-      onTo={setToDate}
-      onCity={setCity}
-      isPremium={isPremium}
-      onSubmit={() => runSearch()}
-      onSeePremiumDiff={() => {
-        toast.info('Personalised muhurat', {
-          description: 'Premium re-ranks windows against dasha, transits and your doshas.',
-          action: { label: 'Account', onClick: () => navigate(paths.account) },
-        })
-      }}
+    <MuhuratPersonalizedShell
+      dateIso={dateIso}
+      locationLabel={city}
+      onSelectDay={onSelectDay}
     />
   )
 }
@@ -683,7 +700,7 @@ function PremiumHomeView({
             <button
               type="button"
               onClick={onSaved}
-              className="text-xs text-copper underline-offset-2 hover:underline"
+              className="text-xs text-silver-300 underline-offset-2 hover:underline"
             >
               All saved
             </button>
@@ -713,7 +730,7 @@ function PremiumHomeView({
                 <button
                   type="button"
                   onClick={onCustom}
-                  className="text-sm text-copper underline-offset-2 hover:underline"
+                  className="text-sm text-silver-300 underline-offset-2 hover:underline"
                 >
                   {q}
                 </button>
@@ -734,14 +751,12 @@ function SavedMuhuratsView({
   items,
   filter,
   onFilter,
-  onBack,
   onRemind,
   onRemove,
 }: {
   items: SavedMuhurat[]
   filter: 'all' | 'self' | 'family' | 'upcoming'
   onFilter: (f: 'all' | 'self' | 'family' | 'upcoming') => void
-  onBack: () => void
   onRemind: (item: SavedMuhurat) => void
   onRemove: (id: string) => void
 }) {
@@ -764,16 +779,7 @@ function SavedMuhuratsView({
   return (
     <Card padding="lg" className="gap-4 border-border/80">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-3">
-          <button
-            type="button"
-            onClick={onBack}
-            className="text-xs text-muted underline-offset-2 hover:underline"
-          >
-            Back
-          </button>
-          <h2 className="text-heading font-semibold text-ink">Saved muhurats</h2>
-        </div>
+        <h2 className="text-heading font-semibold text-ink">Saved muhurats</h2>
         <div className="flex flex-wrap gap-1.5">
           {chips.map((c) => (
             <button

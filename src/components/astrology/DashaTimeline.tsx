@@ -69,7 +69,7 @@ export function DashaTimeline({ dasha, className }: DashaTimelineProps) {
       */}
       {opened?.children && (
         <section aria-label={`${opened.name} antardashas`} className="space-y-1.5">
-          <p className="font-mono text-label uppercase text-gold-deep">
+          <p className="font-mono text-label uppercase text-silver-400">
             {opened.name} · {opened.children.length} antardashas
           </p>
           <ol className="space-y-1.5 border-l border-border pl-4">
@@ -113,7 +113,7 @@ function SubPeriod({ period, parentLabel }: { period: DashaPeriod; parentLabel: 
                 pratyantar.current ? 'text-ink' : 'text-muted',
               )}
             >
-              <span className="w-3 shrink-0 text-gold-deep">{pratyantar.current ? '›' : ''}</span>
+              <span className="w-3 shrink-0 text-silver-400">{pratyantar.current ? '›' : ''}</span>
               <span className="min-w-0 flex-1 truncate">
                 {parentLabel} — {period.name} — {pratyantar.name}
               </span>

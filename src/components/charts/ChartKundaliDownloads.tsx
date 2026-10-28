@@ -43,7 +43,7 @@ export function DownloadKundaliButton({
           ayanamsa: context.ayanamsa,
         })
         toast.success('Kundali downloaded', {
-          description: 'Basic chart summary saved to your device.',
+          description: 'Saved to your device and Download history.',
         })
       }}
     >
@@ -130,33 +130,33 @@ export function PremiumKundaliAdCard({
   return (
     <aside
       className={cn(
-        'relative overflow-hidden rounded-[1.5rem] border border-[#7c4dff]/35',
-        'bg-[linear-gradient(160deg,#1a0f3d_0%,#0f0c24_45%,#12182e_100%)]',
-        'shadow-[0_18px_40px_-24px_rgba(124,77,255,0.65)]',
+        'night-card premium-ad relative overflow-hidden rounded-[1.5rem] border border-primary/35',
+        'bg-[linear-gradient(160deg,var(--color-surface-raised)_0%,var(--color-surface)_45%,#0f1a2e_100%)]',
+        'shadow-[0_18px_40px_-24px_rgba(201,145,115,0.55)]',
         compact ? 'px-3.5 py-3.5 sm:px-4 sm:py-4' : 'px-4 py-4 sm:px-5 sm:py-5',
         className,
       )}
     >
       <div
         aria-hidden
-        className="pointer-events-none absolute -right-10 -top-12 h-32 w-32 rounded-full bg-[#7c4dff]/30 blur-3xl"
+        className="pointer-events-none absolute -right-10 -top-12 h-32 w-32 rounded-full bg-primary/8 blur-3xl"
       />
       <div
         aria-hidden
-        className="pointer-events-none absolute -bottom-14 -left-8 h-28 w-28 rounded-full bg-[#3a7bd5]/25 blur-3xl"
+        className="pointer-events-none absolute -bottom-14 -left-8 h-28 w-28 rounded-full bg-secondary/25 blur-3xl"
       />
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 opacity-[0.12]"
         style={{
           backgroundImage:
-            'radial-gradient(circle at 1px 1px, rgba(196,160,255,0.55) 1px, transparent 0)',
+            'radial-gradient(circle at 1px 1px,  1px, transparent 0)',
           backgroundSize: '14px 14px',
         }}
       />
 
       <div className={cn('relative text-center', compact ? 'space-y-2.5' : 'space-y-3')}>
-        <p className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/5 px-2.5 py-1 font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-[#c4a0ff]">
+        <p className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/5 px-2.5 py-1 font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-silver-300">
           <Sparkles className="size-3" aria-hidden />
           Premium
         </p>

@@ -36,7 +36,7 @@ export function ChartInsightPanel({ insight, className }: ChartInsightPanelProps
 
       {/* ── The running period, under its own graha ── */}
       <PlanetOrbitCard activeGraha={insight.dashaGraha} align="right">
-        <p className="font-mono text-label uppercase text-gold-deep">Running period</p>
+        <p className="font-mono text-label uppercase text-silver-400">Running period</p>
 
         <div className="mt-2 flex items-center gap-3">
           <span
@@ -90,7 +90,7 @@ export function ChartInsightPanel({ insight, className }: ChartInsightPanelProps
 
         <Link
           to={paths.chart}
-          className="mt-1 inline-flex items-center gap-1.5 text-sm font-semibold text-navy hover:text-gold-deep"
+          className="mt-1 inline-flex items-center gap-1.5 text-sm font-semibold text-silver-300 hover:text-silver-400"
         >
           See the working
           <ArrowUpRight aria-hidden className="size-3.5" />
@@ -134,7 +134,7 @@ function Highlight({
           <p
             className={cn(
               'shrink-0 font-mono text-label uppercase',
-              tone === 'strong' ? 'text-gold-deep' : 'text-muted',
+              tone === 'strong' ? 'text-silver-400' : 'text-muted',
             )}
           >
             <span className="text-data">{highlight.value}</span> {unit}

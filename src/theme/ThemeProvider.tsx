@@ -12,45 +12,46 @@ import {
   persistThemePreference,
   readThemePreference,
   resolveTheme,
-  type ResolvedTheme,
+  toggleThemePreference,
   type ThemePreference,
 } from './theme'
 
+/**
+ * Dark (default) + Light appearance.
+ */
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [preference, setPreferenceState] = useState<ThemePreference>(() =>
-    typeof window === 'undefined' ? 'system' : readThemePreference(),
-  )
-  const [resolved, setResolved] = useState<ResolvedTheme>(() =>
-    typeof window === 'undefined' ? 'dark' : resolveTheme(readThemePreference()),
-  )
+  const [preference, setPreferenceState] = useState<ThemePreference>(() => readThemePreference())
+  const resolved = resolveTheme(preference)
 
   const setPreference = useCallback((next: ThemePreference) => {
     setPreferenceState(next)
     persistThemePreference(next)
-    const value = resolveTheme(next)
-    setResolved(value)
-    applyResolvedTheme(value)
+    applyResolvedTheme(resolveTheme(next))
+  }, [])
+
+  const toggleTheme = useCallback(() => {
+    setPreferenceState((prev) => {
+      const next = toggleThemePreference(prev)
+      persistThemePreference(next)
+      applyResolvedTheme(resolveTheme(next))
+      return next
+    })
   }, [])
 
   useEffect(() => {
-    applyResolvedTheme(resolveTheme(preference))
-  }, [preference])
-
-  useEffect(() => {
-    if (preference !== 'system') return
-    const media = window.matchMedia('(prefers-color-scheme: dark)')
-    const onChange = () => {
-      const value = resolveTheme('system')
-      setResolved(value)
-      applyResolvedTheme(value)
-    }
-    media.addEventListener('change', onChange)
-    return () => media.removeEventListener('change', onChange)
-  }, [preference])
+    applyResolvedTheme(resolved)
+  }, [resolved])
 
   const value = useMemo(
-    () => ({ preference, resolved, setPreference }),
-    [preference, resolved, setPreference],
+    () => ({
+      theme: resolved,
+      preference,
+      resolved,
+      setTheme: setPreference,
+      setPreference,
+      toggleTheme,
+    }),
+    [preference, resolved, setPreference, toggleTheme],
   )
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>

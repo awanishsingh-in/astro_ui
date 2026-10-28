@@ -1,4 +1,5 @@
 import type { VratEntry } from '@/types/astrology'
+import { recordDownload } from '@/data/download-history'
 
 function icsDate(iso: string): string {
   return iso.slice(0, 10).replace(/-/g, '')
@@ -56,15 +57,22 @@ export function downloadVratCalendarIcs(
   calendarName = 'Cyklos vrats',
 ): void {
   if (vrats.length === 0) return
+  const savedName = filename.endsWith('.ics') ? filename : `${filename}.ics`
   const blob = new Blob([buildVratCalendarIcs(vrats, calendarName)], {
     type: 'text/calendar;charset=utf-8',
   })
   const url = URL.createObjectURL(blob)
   const anchor = document.createElement('a')
   anchor.href = url
-  anchor.download = filename.endsWith('.ics') ? filename : `${filename}.ics`
+  anchor.download = savedName
   document.body.appendChild(anchor)
   anchor.click()
   anchor.remove()
   URL.revokeObjectURL(url)
+  recordDownload({
+    kind: 'calendar',
+    title: calendarName,
+    subtitle: `${vrats.length} vrat${vrats.length === 1 ? '' : 's'} · .ics`,
+    filename: savedName,
+  })
 }

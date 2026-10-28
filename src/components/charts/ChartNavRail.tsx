@@ -26,7 +26,8 @@ export interface ChartNavRailProps {
 }
 
 /**
- * Top of My Chart — pill tabs + compact profile switcher.
+ * Top of My Chart — text tabs (gold underline when active) + profile switcher.
+ * Solid gold is reserved for primary CTAs, not section chrome.
  */
 export function ChartNavRail({
   controller,
@@ -40,8 +41,8 @@ export function ChartNavRail({
   return (
     <div
       className={cn(
-        'sticky top-0 z-20 -mx-1 rounded-2xl border border-border/50',
-        'bg-surface/90 px-2 py-2 shadow-card backdrop-blur-xl sm:mx-0 sm:px-3',
+        'sticky top-0 z-20 -mx-1 rounded-2xl border border-border/60',
+        'bg-surface/95 px-2 py-2 shadow-card backdrop-blur-xl sm:mx-0 sm:px-3',
         className,
       )}
     >
@@ -64,14 +65,20 @@ export function ChartNavRail({
                 tabIndex={active ? 0 : -1}
                 onClick={() => setValue(tab.id)}
                 className={cn(
-                  'relative shrink-0 rounded-full px-3.5 py-2 text-sm transition-all duration-200',
-                  'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-copper',
+                  'relative shrink-0 px-3.5 py-2 text-sm transition-colors duration-200',
+                  'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-focus-ring)]',
                   active
-                    ? 'bg-copper font-semibold text-white shadow-sm'
-                    : 'font-medium text-muted hover:bg-navy-soft/60 hover:text-ink',
+                    ? 'font-semibold text-text'
+                    : 'font-medium text-silver-400 hover:text-text',
                 )}
               >
                 {tab.label}
+                {active && (
+                  <span
+                    aria-hidden
+                    className="absolute inset-x-2.5 bottom-0 h-[2px] rounded-full bg-gradient-to-r from-[#f3d9c4] via-[#bf8466] to-[#9e6650] shadow-[0_0_14px_rgba(201,145,115,0.45)]"
+                  />
+                )}
               </button>
             )
           })}

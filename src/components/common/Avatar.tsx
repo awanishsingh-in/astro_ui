@@ -30,7 +30,7 @@ export function Avatar({ name, initials, src, size = 'md', className }: AvatarPr
     return (
       <span
         className={cn(
-          'inline-flex shrink-0 overflow-hidden rounded-full border border-border bg-navy-soft',
+          'avatar-ring inline-flex shrink-0 overflow-hidden rounded-full border border-border bg-navy-soft',
           SIZES[size],
           className,
         )}
@@ -44,7 +44,7 @@ export function Avatar({ name, initials, src, size = 'md', className }: AvatarPr
     <span
       className={cn(
         'inline-flex shrink-0 items-center justify-center rounded-full',
-        'bg-navy-soft border border-border font-mono font-semibold text-navy',
+        'bg-navy-soft border border-border font-mono font-semibold text-silver-300',
         SIZES[size],
         className,
       )}

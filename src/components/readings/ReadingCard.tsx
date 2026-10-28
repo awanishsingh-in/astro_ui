@@ -57,7 +57,7 @@ export function ReadingCard({
         {/* ── Where in the chart this came from ── */}
         <span className="flex items-center justify-between gap-3">
           {showBhava && answer.source.bhava !== undefined ? (
-            <span className="min-w-0 truncate font-mono text-label uppercase text-gold-deep">
+            <span className="min-w-0 truncate font-mono text-label uppercase text-silver-400">
               {bhavaRef(answer.source.bhava)} · {BHAVA_SIGNIFIES[answer.source.bhava]}
             </span>
           ) : (
@@ -82,7 +82,7 @@ export function ReadingCard({
             {reading.question}
           </span>
           {saved && (
-            <span className="mt-0.5 shrink-0 font-mono text-label uppercase text-gold-deep">
+            <span className="mt-0.5 shrink-0 font-mono text-label uppercase text-silver-400">
               Saved
             </span>
           )}

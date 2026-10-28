@@ -12,7 +12,7 @@ import {
   type ChartYogaItem,
   type DoshaSeverity,
 } from '@/data/yoga-dosha-mock'
-import { paths } from '@/routes/paths'
+import { navigateAskFromChart } from '@/utils/ask-from-chart'
 import type { Chart } from '@/types/astrology'
 import { cn } from '@/utils/cn'
 
@@ -40,11 +40,11 @@ export function ChartYogaDoshaPanel({ chart, downloads, className }: ChartYogaDo
     bundle.yogas.find((y) => y.id === selectedYogaId) ?? bundle.yogas[0] ?? null
 
   function askYoga(yoga: ChartYogaItem) {
-    navigate(`${paths.ask}?q=${encodeURIComponent(yoga.askPrompt)}&from=chart`)
+    navigateAskFromChart(navigate, { q: yoga.askPrompt, returnSection: 'yoga' })
   }
 
   function askDosha(dosha: ChartDoshaCard) {
-    navigate(`${paths.ask}?q=${encodeURIComponent(dosha.askPrompt)}&from=chart`)
+    navigateAskFromChart(navigate, { q: dosha.askPrompt, returnSection: 'yoga' })
   }
 
   return (
@@ -104,7 +104,7 @@ export function ChartYogaDoshaPanel({ chart, downloads, className }: ChartYogaDo
                   <button
                     type="button"
                     onClick={() => askDosha(dosha)}
-                    className="inline-flex items-center gap-1 text-sm font-medium text-copper hover:underline"
+                    className="inline-flex items-center gap-1 text-sm font-medium text-silver-300 hover:underline"
                   >
                     {dosha.remediesHint}
                     <ArrowUpRight className="size-3.5" aria-hidden />
@@ -138,7 +138,7 @@ export function ChartYogaDoshaPanel({ chart, downloads, className }: ChartYogaDo
                       className={cn(
                         'flex w-full items-center gap-3 rounded-2xl border px-4 py-3.5 text-left transition',
                         active
-                          ? 'border-copper bg-copper text-white shadow-[0_12px_28px_-16px_rgba(124,77,255,0.65)]'
+                          ? 'border-copper bg-copper text-white shadow-[0_12px_28px_-16px_rgba(201,145,115,0.55)]'
                           : 'border-border/70 bg-surface text-ink hover:border-copper/40 hover:bg-copper/5',
                       )}
                     >
@@ -170,7 +170,7 @@ export function ChartYogaDoshaPanel({ chart, downloads, className }: ChartYogaDo
           {selected && (
             <div className="space-y-3">
               <article className="rounded-[1.75rem] border border-border/70 bg-surface p-5 shadow-card sm:p-6">
-                <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-copper">
+                <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-silver-300">
                   {selected.family}
                 </p>
                 <h3 className="mt-2 font-serif text-3xl font-semibold tracking-tight text-ink">
@@ -203,7 +203,7 @@ export function ChartYogaDoshaPanel({ chart, downloads, className }: ChartYogaDo
                 <button
                   type="button"
                   onClick={() => askYoga(selected)}
-                  className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#7c4dff] to-[#3a7bd5] px-3 py-2.5 text-sm font-semibold text-white shadow-[0_10px_22px_-14px_rgba(124,77,255,0.65)] transition hover:from-[#8b5cff] hover:to-[#4a8be5]"
+                  className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl btn-primary px-3 py-2.5 text-sm font-semibold shadow-[0_10px_22px_-14px_rgba(201,145,115,0.55)] transition"
                 >
                   <MessageCircle className="size-3.5" aria-hidden />
                   Ask about this yoga
@@ -231,7 +231,7 @@ function StatusBadge({
     <span
       className={cn(
         'shrink-0 rounded-full px-2.5 py-1 text-[11px] font-semibold',
-        status === 'present' && 'bg-[#7c4dff]/20 text-[#c4a0ff]',
+        status === 'present' && 'bg-primary/20 text-silver-300',
         status === 'cancelled' && 'bg-positive/15 text-positive',
         status === 'absent' && 'bg-surface-sunken text-muted',
       )}

@@ -36,7 +36,7 @@ export function ChatUnlockCard({
       <span
         className={cn(
           'inline-flex size-10 shrink-0 items-center justify-center rounded-full',
-          dark ? 'bg-midnight/60 text-gold-soft-line' : 'bg-midnight/50 text-gold',
+          dark ? 'bg-midnight/60 text-silver-300' : 'bg-midnight/50 text-silver-300',
         )}
       >
         <Lock className="size-4" aria-hidden />
@@ -58,8 +58,8 @@ export function ChatUnlockCard({
         className={cn(
           'shrink-0 rounded-full border px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.12em]',
           dark
-            ? 'border-gold-soft-line/40 text-gold-soft-line'
-            : 'border-gold/50 text-gold',
+            ? 'border-gold-soft-line/40 text-silver-300'
+            : 'border-gold/50 text-silver-300',
         )}
       >
         Paid

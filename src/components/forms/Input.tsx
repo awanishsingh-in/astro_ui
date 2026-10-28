@@ -34,14 +34,10 @@ const SIZES: Record<InputSize, { shell: string; text: string; pad: string }> = {
 }
 
 const TONE_SHELL: Record<NonNullable<BaseProps['tone']>, string> = {
-  surface:
-    'bg-surface border-border focus-within:border-copper focus-within:shadow-focus',
-  sunken:
-    'bg-surface-sunken border-border focus-within:border-copper focus-within:shadow-focus',
-  celestial:
-    'bg-[var(--color-field)] border-[var(--color-field-border)] shadow-[inset_0_1px_0_var(--color-field-inset)] focus-within:border-copper focus-within:shadow-focus',
-  adventure:
-    'border-white/10 bg-[#0e0820] focus-within:border-[#c4a0ff]/50 focus-within:shadow-[0_0_0_3px_rgba(124,77,255,0.2)]',
+  surface: 'input-astro',
+  sunken: 'input-astro',
+  celestial: 'input-astro',
+  adventure: 'input-astro',
 }
 
 /** One control, three heights. `lg` is what the birth-details form uses. */
@@ -63,12 +59,12 @@ export function Input({
   return (
     <div
       className={cn(
-        'flex items-center overflow-hidden rounded-card border',
-        'transition-[border-color,box-shadow,background-color] duration-200 ease-out-soft',
+        'flex items-center overflow-hidden rounded-control border',
+        'transition-[border-color,box-shadow,background-color] duration-250 ease-out-soft',
         size.shell,
         TONE_SHELL[tone],
-        hasError && 'border-critical focus-within:border-critical',
-        rest.disabled && 'bg-surface-sunken text-faint opacity-60',
+        hasError && 'border-error focus-within:border-error focus-within:shadow-none',
+        rest.disabled && 'bg-surface-accent text-text-disabled opacity-60',
         className,
       )}
     >
@@ -87,7 +83,7 @@ export function Input({
           aria-hidden
           className={cn(
             'flex shrink-0 items-center pl-3.5 [&_svg]:size-4',
-            tone === 'celestial' ? 'text-gold/70' : tone === 'adventure' ? 'text-[#c4a0ff]/70' : 'text-muted',
+            tone === 'celestial' || tone === 'adventure' ? 'text-blue-light/80' : 'text-muted',
           )}
         >
           {icon}
@@ -100,8 +96,8 @@ export function Input({
         className={cn(
           'h-full min-w-0 flex-1 bg-transparent outline-none',
           tone === 'adventure'
-            ? 'text-white placeholder:text-white/35'
-            : 'text-ink placeholder:text-faint',
+            ? 'text-white placeholder:text-text-muted'
+            : 'text-ink placeholder:text-text-muted',
           size.pad,
           mono ? 'font-mono' : size.text,
           mono && (inputSize === 'sm' ? 'text-data' : 'text-data-lg'),
@@ -115,7 +111,7 @@ export function Input({
         <span
           className={cn(
             'flex h-full items-center pr-3.5 [&_svg]:size-5',
-            tone === 'celestial' ? 'text-gold/70' : tone === 'adventure' ? 'text-[#c4a0ff]/70' : 'text-muted',
+            tone === 'celestial' || tone === 'adventure' ? 'text-blue-light/80' : 'text-muted',
           )}
         >
           {suffix}

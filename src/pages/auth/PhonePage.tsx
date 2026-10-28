@@ -12,13 +12,7 @@ import { normalisePhone, validatePhone } from '@/services/auth.service'
 import { toAppError } from '@/services/client'
 import type { AuthIntent } from '@/auth/auth-context'
 
-const ADVENTURE_BTN_READY =
-  'rounded-2xl border-0 bg-gradient-to-r from-[#7c4dff] to-[#3a7bd5] text-white shadow-[0_12px_32px_-12px_rgba(124,77,255,0.75)] hover:from-[#8b5cff] hover:to-[#4a8be5] active:from-[#6b3de8] active:to-[#2f6bc0] focus-visible:outline-[#c4a0ff]'
-
-const ADVENTURE_BTN_DULL =
-  'rounded-2xl border-0 bg-gradient-to-r from-[#7c4dff]/70 to-[#3a7bd5]/70 text-white shadow-[0_8px_24px_-14px_rgba(124,77,255,0.45)] hover:from-[#7c4dff]/70 hover:to-[#3a7bd5]/70'
-
-/** Phone entry — adventure split with animated sky + purple/cyan form. */
+/** Phone entry — adventure split with animated sky + form. */
 export default function PhonePage({ intent }: { intent: AuthIntent }) {
   const { sendCode } = useAuth()
   const navigate = useNavigate()
@@ -87,10 +81,10 @@ export default function PhonePage({ intent }: { intent: AuthIntent }) {
     >
       <form onSubmit={handleSubmit} noValidate className="flex w-full flex-col gap-7">
         <header className="space-y-2">
-          <h1 className="text-3xl font-bold uppercase tracking-tight text-white sm:text-4xl">
+          <h1 className="text-chrome text-3xl font-bold uppercase tracking-tight sm:text-4xl">
             {isSignUp ? 'Sign up' : 'Sign in'}
           </h1>
-          <p className="text-sm text-white/55">Enter your phone number</p>
+          <p className="text-sm text-text-secondary">Enter your phone number</p>
         </header>
 
         <Field
@@ -118,12 +112,12 @@ export default function PhonePage({ intent }: { intent: AuthIntent }) {
         <div className="mt-4 space-y-5 sm:mt-6">
           <Button
             type="submit"
-            variant="ghost"
+            variant="primary"
             fullWidth
             size="lg"
             loading={isSending}
             disabled={!phoneReady || isSending}
-            className={phoneReady ? ADVENTURE_BTN_READY : ADVENTURE_BTN_DULL}
+            className="h-14 text-base font-bold tracking-wide"
           >
             {isSending ? 'Sending code' : isSignUp ? 'Sign up' : 'Send code'}
           </Button>
@@ -132,7 +126,7 @@ export default function PhonePage({ intent }: { intent: AuthIntent }) {
             {isSignUp ? 'Already have an account? ' : 'New to Cyklos? '}
             <Link
               to={isSignUp ? paths.signIn : paths.signUp}
-              className="font-semibold text-[#c4a0ff] hover:text-white"
+              className="font-semibold text-silver-300 hover:text-white"
             >
               {isSignUp ? 'Sign in' : 'Create an account'}
             </Link>
@@ -140,7 +134,7 @@ export default function PhonePage({ intent }: { intent: AuthIntent }) {
 
           <p className="text-center text-xs text-white/35 text-pretty">
             By continuing you agree to our{' '}
-            <span className="text-[#c4a0ff]">Terms and Conditions</span>
+            <span className="text-blue-light">Terms and Conditions</span>
           </p>
         </div>
       </form>

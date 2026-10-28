@@ -12,14 +12,14 @@ export function ZodiacOrbitRing() {
     <svg
       aria-hidden
       viewBox="0 0 100 100"
-      className="pointer-events-none absolute inset-[2%] size-[96%] opacity-90"
+      className="zodiac-orbit-ring pointer-events-none absolute inset-[2%] size-[96%] opacity-90"
     >
       <circle
         cx="50"
         cy="50"
         r={R}
         fill="none"
-        stroke="rgba(229, 200, 117, 0.08)"
+        stroke="var(--orbit-line, rgba(237,230,239,0.18))"
         strokeWidth="0.35"
       />
       <g
@@ -44,11 +44,12 @@ export function ZodiacOrbitRing() {
               }}
             >
               <text
+                className="zodiac-orbit-glyph"
                 x={x}
                 y={y}
                 textAnchor="middle"
                 dominantBaseline="central"
-                fill="rgba(250, 248, 241, 0.2)"
+                fill="currentColor"
                 fontSize="3.2"
               >
                 {rashi.glyph}

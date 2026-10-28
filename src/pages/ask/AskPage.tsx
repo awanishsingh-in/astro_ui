@@ -7,6 +7,7 @@ import {
   titleFromQuestion,
   useChatSessions,
   type ChatSession,
+  type ChatAttachment,
   type ThreadMessage,
 } from '@/ask/chat-store'
 import { AskMenu } from '@/components/ask/AskMenu'
@@ -31,12 +32,12 @@ import { chartSeedFor } from '@/data/profiles'
 import { hasActivePlan, unlockPlan } from '@/onboarding/past-intro'
 import { useProfiles } from '@/profiles/profiles-context'
 import { PageContainer } from '@/layouts/PageContainer'
-import { paths } from '@/routes/paths'
 import { askQuestion } from '@/services/ask.service'
 import { toAppError } from '@/services/client'
+import { chartReturnFromSearch, isAskFromChart } from '@/utils/ask-from-chart'
 import { bhavaRef } from '@/utils/astro'
 import { cn } from '@/utils/cn'
-import { firstNameOf, greetingFor } from '@/utils/format'
+import { firstNameOf } from '@/utils/format'
 import { useIsDesktop, useMediaQuery } from '@/hooks/useMediaQuery'
 
 /**
@@ -46,8 +47,9 @@ export default function AskPage() {
   const { user } = useAuth()
   const { selected } = useProfiles()
   const seed = chartSeedFor(selected)
-  const [params, setParams] = useSearchParams()
   const navigate = useNavigate()
+  const [params, setParams] = useSearchParams()
+  const fromChart = isAskFromChart(params)
 
   const sessions = useChatSessions()
   const [activeId, setActiveId] = useState<string | null>(null)
@@ -153,21 +155,35 @@ export default function AskPage() {
   )
 
   const ask = useCallback(
-    async (question: string, opts?: { fresh?: boolean }) => {
+    async (
+      question: string,
+      opts?: { fresh?: boolean; attachments?: ChatAttachment[] },
+    ) => {
+      const attachments = opts?.attachments
       if (!user || !planActive) {
         const trimmed = question.trim()
-        if (trimmed) {
-          pendingChartAsk.current = trimmed
+        if (trimmed || (attachments && attachments.length > 0)) {
+          const pendingText =
+            trimmed ||
+            (attachments?.length === 1
+              ? `Please read this ${attachments[0].kind === 'pdf' ? 'kundli' : 'image'}.`
+              : 'Please read the files I shared.')
+          pendingChartAsk.current = pendingText
           setParams(
             (prev) => {
               const next = new URLSearchParams(prev)
-              next.set('q', trimmed)
+              next.set('q', pendingText)
               return next
             },
             { replace: true },
           )
           setDraftMessages([
-            { id: `u_pending_${Date.now()}`, role: 'user', text: trimmed },
+            {
+              id: `u_pending_${Date.now()}`,
+              role: 'user',
+              text: pendingText,
+              attachments,
+            },
             {
               id: `a_pending_${Date.now()}`,
               role: 'assistant',
@@ -176,22 +192,27 @@ export default function AskPage() {
             },
           ])
           setActiveId(null)
-          lastAsked.current = trimmed
+          lastAsked.current = pendingText
         }
         setPaywallOpen(true)
         return
       }
 
       const trimmed = question.trim()
-      if (!trimmed || busy) return
+      if ((!trimmed && !(attachments && attachments.length > 0)) || busy) return
+      const messageText =
+        trimmed ||
+        (attachments?.length === 1
+          ? `Please read this ${attachments[0].kind === 'pdf' ? 'kundli' : 'image'}.`
+          : 'Please read the files I shared.')
 
       const id = ++requestId.current
-      lastAsked.current = trimmed
+      lastAsked.current = messageText
       setViewOnly(false)
       setParams(
         (prev) => {
           const next = new URLSearchParams(prev)
-          next.set('q', trimmed)
+          next.set('q', messageText)
           // Keep chart provenance on the URL while the thread is open.
           if (opts?.fresh || prev.get('from') === 'chart') {
             next.set('from', 'chart')
@@ -204,12 +225,19 @@ export default function AskPage() {
       const userMsgId = `u_${id}`
       const assistantId = `a_${id}`
       const incoming: ThreadMessage[] = [
-        { id: userMsgId, role: 'user', text: trimmed },
+        {
+          id: userMsgId,
+          role: 'user',
+          text: messageText,
+          attachments,
+        },
         {
           id: assistantId,
           role: 'assistant',
           status: 'thinking',
-          label: 'Reading your chart…',
+          label: attachments?.length
+            ? 'Reading your file with the chart…'
+            : 'Reading your chart…',
         },
       ]
 
@@ -220,14 +248,14 @@ export default function AskPage() {
         sessionId = newChatSessionId()
         const session: ChatSession = {
           id: sessionId,
-          title: titleFromQuestion(trimmed),
+          title: titleFromQuestion(messageText),
           updatedAt: new Date().toISOString(),
           messages: [...priorDraft, ...incoming],
         }
         setChatSessions((prev) => [session, ...prev])
         setActiveId(sessionId)
         setDraftMessages([])
-        await runAsk(trimmed, assistantId, id, sessionId)
+        await runAsk(messageText, assistantId, id, sessionId)
         return
       }
 
@@ -238,7 +266,7 @@ export default function AskPage() {
                 ...s,
                 title:
                   s.messages.length === 0 || s.title === 'New chat'
-                    ? titleFromQuestion(trimmed)
+                    ? titleFromQuestion(messageText)
                     : s.title,
                 updatedAt: new Date().toISOString(),
                 messages: [...s.messages, ...incoming],
@@ -246,9 +274,16 @@ export default function AskPage() {
             : s,
         ),
       )
-      await runAsk(trimmed, assistantId, id, sessionId)
+      await runAsk(messageText, assistantId, id, sessionId)
     },
     [busy, setParams, activeId, draftMessages, runAsk, user, planActive],
+  )
+
+  const askFromComposer = useCallback(
+    (question: string, attachments?: ChatAttachment[]) => {
+      void ask(question, { attachments })
+    },
+    [ask],
   )
 
   const confirmPlan = useCallback(
@@ -265,10 +300,10 @@ export default function AskPage() {
         if (firstUser && firstUser.role === 'user') {
           setParams(
             { chat: activeId, mode: 'continue', q: firstUser.text },
-            { replace: true },
+            { replace: false },
           )
         } else {
-          setParams({ chat: activeId, mode: 'continue' }, { replace: true })
+          setParams({ chat: activeId, mode: 'continue' }, { replace: false })
         }
         return
       }
@@ -285,11 +320,14 @@ export default function AskPage() {
     [user, activeId, sessions, setParams, params],
   )
 
+  const returnToChart = useCallback(() => {
+    navigate(chartReturnFromSearch(params))
+  }, [navigate, params])
+
   // Deep link / reload with ?q= starts a fresh chat for that question.
   // Skipped after New chat so clearing the URL cannot re-open the old thread.
   // From My Chart (`from=chart`) always opens a new thread with that house context.
   const initial = params.get('q')
-  const fromChart = params.get('from') === 'chart'
   const chatParam = params.get('chat')
   const modeParam = params.get('mode')
   const newParam = params.get('new')
@@ -374,16 +412,17 @@ export default function AskPage() {
       return
     }
     // Optimistic — show the composer immediately.
+    // Push (don't replace) so browser Back returns to the view-only screen.
     setViewOnly(false)
     const session = sessions.find((s) => s.id === activeId)
     const firstUser = session?.messages.find((m) => m.role === 'user')
     if (firstUser && firstUser.role === 'user') {
       setParams(
         { chat: activeId, mode: 'continue', q: firstUser.text },
-        { replace: true },
+        { replace: false },
       )
     } else {
-      setParams({ chat: activeId, mode: 'continue' }, { replace: true })
+      setParams({ chat: activeId, mode: 'continue' }, { replace: false })
     }
   }, [activeId, sessions, setParams, planActive])
 
@@ -431,25 +470,49 @@ export default function AskPage() {
   if (!user) return null
 
   const shellHeight =
-    'h-[calc(100dvh-var(--spacing-bottomnav))] lg:h-full lg:max-h-full'
+    'h-[calc(100dvh-var(--spacing-bottomnav)-env(safe-area-inset-bottom,0px))] lg:h-full lg:max-h-full'
 
   return (
     <div className={cn('flex overflow-hidden', shellHeight)}>
       <div className="flex min-w-0 flex-1 flex-col">
         <MobileHeader
-          leading={<AskMenu onNewChat={startNewChat} />}
+          leading={
+            fromChart ? (
+              <button
+                type="button"
+                onClick={returnToChart}
+                aria-label="Back to My Chart"
+                className="inline-flex items-center gap-1.5 rounded-control px-1.5 py-1 text-sm font-semibold text-silver-300 transition-colors hover:bg-primary/10"
+              >
+                <ArrowLeft className="size-4" strokeWidth={2.25} aria-hidden />
+                Back
+              </button>
+            ) : (
+              <AskMenu onNewChat={startNewChat} />
+            )
+          }
           user={user}
           action={<AvatarMenu user={user} size="sm" />}
         />
 
+        {fromChart && (
+          <div className="hidden shrink-0 items-center border-b border-border/60 bg-surface/80 px-4 py-2 lg:flex">
+            <button
+              type="button"
+              onClick={returnToChart}
+              className="inline-flex items-center gap-1.5 rounded-control px-2 py-1.5 text-sm font-semibold text-silver-300 transition-colors hover:bg-primary/10"
+            >
+              <ArrowLeft className="size-4" strokeWidth={2.25} aria-hidden />
+              Back to My Chart
+            </button>
+          </div>
+        )}
+
         {!inThread ? (
           <AskEmpty
-            onAsk={ask}
+            onAsk={askFromComposer}
             fullName={user.fullName}
-            chartName={selected.name}
-            relation={selected.relation}
             chartSeed={seed}
-            planRequired={!planActive}
           />
         ) : (
           <div className="relative flex min-h-0 flex-1 flex-col">
@@ -460,30 +523,22 @@ export default function AskPage() {
             />
             <div className="relative z-10 flex min-h-0 flex-1 flex-col">
               <div className="flex-1 overflow-y-auto overscroll-contain no-scrollbar">
-                <PageContainer width="reading" className="pb-4">
-                  <div className="mx-auto flex max-w-reading flex-col gap-6 sm:gap-8">
+                <PageContainer width="reading" className="pb-6 pt-4 sm:pb-8">
+                  <div className="flex flex-col gap-6 sm:gap-8">
                     {viewOnly && (
-                      <div className="flex flex-wrap items-center gap-2.5">
-                        <button
-                          type="button"
-                          onClick={() => navigate(paths.askHistory)}
-                          className={cn(
-                            'inline-flex min-h-9 items-center gap-1.5 rounded-control border border-border',
-                            'bg-surface/80 px-3 py-1.5 text-sm font-medium text-ink',
-                            'transition-colors hover:border-border-strong hover:bg-navy-soft',
-                          )}
-                        >
-                          <ArrowLeft className="size-4 shrink-0" aria-hidden />
-                          Back to history
-                        </button>
-                        <p className="rounded-control border border-border bg-surface/80 px-3 py-2 font-mono text-label uppercase tracking-[0.12em] text-muted">
-                          Viewing · read only
-                        </p>
-                      </div>
+                      <p className="w-fit rounded-control border border-border bg-surface/80 px-3 py-2 font-mono text-label uppercase tracking-[0.12em] text-muted">
+                        Viewing · read only
+                      </p>
                     )}
                     {messages.map((message) => {
                       if (message.role === 'user') {
-                        return <UserMessage key={message.id} text={message.text} />
+                        return (
+                          <UserMessage
+                            key={message.id}
+                            text={message.text}
+                            attachments={message.attachments}
+                          />
+                        )
                       }
                       if (message.status === 'thinking') {
                         return <AssistantThinking key={message.id} label={message.label} />
@@ -506,38 +561,32 @@ export default function AskPage() {
                 </PageContainer>
               </div>
 
-              <div
-                className={cn(
-                  'sticky bottom-0 z-20 border-t border-border/80 bg-canvas/90 backdrop-blur-md',
-                  'pb-safe',
-                )}
-              >
-                <PageContainer width="reading" flush className="py-3 lg:py-4">
-                  <div className="mx-auto max-w-reading">
-                    {viewOnly ? (
-                      <Button
-                        variant="primary"
-                        size="md"
-                        fullWidth
-                        iconLeft={<MessageCirclePlus className="size-4" />}
-                        onClick={continueChat}
-                      >
-                        Continue your chat
-                      </Button>
-                    ) : (
-                      <QuestionComposer
-                        variant="bar"
-                        onAsk={ask}
-                        placeholder={busy ? 'Cyklos is answering…' : 'Ask a follow-up…'}
-                        autoFocus={planActive}
-                      />
-                    )}
-                    <p className="mt-2 font-mono text-label uppercase text-muted">
-                      From · {selected.name}&apos;s chart
-                      {!planActive ? ' · Plan required to chat' : ''}
-                    </p>
-                  </div>
-                </PageContainer>
+              <div className="relative z-20 shrink-0 px-4 pb-5 pt-1 sm:px-5 sm:pb-6 md:px-6 lg:px-8 lg:pb-8">
+                <div
+                  aria-hidden
+                  className="pointer-events-none absolute inset-x-0 -top-12 bottom-0 bg-gradient-to-t from-bg/90 via-bg/45 to-transparent"
+                />
+                <div className="relative mx-auto w-full max-w-reading">
+                  {viewOnly ? (
+                    <Button
+                      variant="primary"
+                      size="md"
+                      fullWidth
+                      iconLeft={<MessageCirclePlus className="size-4" />}
+                      onClick={continueChat}
+                    >
+                      Continue your chat
+                    </Button>
+                  ) : (
+                    <QuestionComposer
+                      variant="bar"
+                      allowUpload
+                      onAsk={askFromComposer}
+                      placeholder={busy ? 'Cyklos is answering…' : 'Ask a follow-up…'}
+                      autoFocus={planActive}
+                    />
+                  )}
+                </div>
               </div>
             </div>
           </div>
@@ -549,8 +598,16 @@ export default function AskPage() {
         onClose={() => {
           pendingContinue.current = false
           setPaywallOpen(false)
+          // From My Chart: dismiss returns to Chart tab (not Strength / prior panel).
+          if (fromChart) returnToChart()
         }}
         onUnlock={confirmPlan}
+        title={fromChart ? 'Unlock to ask about your chart' : undefined}
+        description={
+          fromChart
+            ? 'Choose a plan to get an answer about this chart insight. Going back returns you to where you left My Chart.'
+            : undefined
+        }
       />
     </div>
   )
@@ -559,17 +616,11 @@ export default function AskPage() {
 function AskEmpty({
   onAsk,
   fullName,
-  chartName,
-  relation,
   chartSeed,
-  planRequired,
 }: {
-  onAsk: (question: string) => void
+  onAsk: (question: string, attachments?: ChatAttachment[]) => void
   fullName: string
-  chartName: string
-  relation: string
   chartSeed: string
-  planRequired: boolean
 }) {
   const firstName = firstNameOf(fullName)
   const desktop = useIsDesktop()
@@ -607,10 +658,10 @@ function AskEmpty({
       >
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-0 z-0"
+          className="ask-idle-wash pointer-events-none absolute inset-0 z-0"
           style={{
             background:
-              'radial-gradient(90% 80% at 12% -10%, color-mix(in srgb, #7c4dff 22%, transparent) 0%, transparent 55%), radial-gradient(70% 60% at 88% 10%, color-mix(in srgb, #3a7bd5 16%, transparent) 0%, transparent 50%), radial-gradient(60% 50% at 50% 100%, color-mix(in srgb, #5ed7f2 10%, transparent) 0%, transparent 55%)',
+              'radial-gradient(90% 80% at 12% -10%, color-mix(in srgb, var(--color-primary) 22%, transparent) 0%, transparent 55%), radial-gradient(70% 60% at 88% 10%, color-mix(in srgb, var(--color-info) 16%, transparent) 0%, transparent 50%), radial-gradient(60% 50% at 50% 100%, color-mix(in srgb, var(--color-info) 10%, transparent) 0%, transparent 55%)',
           }}
         />
         <CelestialScene
@@ -623,37 +674,21 @@ function AskEmpty({
         <PageContainer width="content" className="relative z-10 flex flex-1 flex-col">
           <div className="mx-auto flex w-full max-w-reading flex-1 flex-col justify-end pb-5 pt-4 sm:justify-center sm:py-8 lg:py-10">
             <div className="relative rounded-2xl bg-canvas/40 px-3 py-4 backdrop-blur-[3px] sm:bg-transparent sm:px-0 sm:py-0 sm:backdrop-blur-none">
-              <p className="animate-rise font-mono text-label uppercase tracking-[0.14em] text-[#7c4dff]">
-                Ask your chart
-              </p>
-
-              <h1 className="mt-2 animate-rise font-serif text-[2rem] font-normal leading-[1.15] text-ink text-balance sm:text-display lg:text-display-lg [animation-delay:40ms]">
-                {greetingFor()}, {firstName}.
-                <span className="mt-1 block text-xl text-purple sm:text-title lg:text-title-lg">
-                  What would you like to know?
-                </span>
+              <h1 className="animate-rise font-serif text-[2rem] font-normal leading-[1.15] text-text text-balance sm:text-display lg:text-display-lg [animation-delay:40ms]">
+                <span className="text-chrome">Welcome,</span>{' '}
+                <span className="ask-welcome-name text-silver-300">{firstName}</span>.
               </h1>
-
-              <p className="mt-3 max-w-xl animate-rise text-sm text-purple text-pretty sm:mt-4 sm:text-body [animation-delay:80ms]">
-                Answers name the house, planets and period they came from — never a generic
-                horoscope.
-              </p>
             </div>
 
             <div className="relative z-10 mt-5 animate-rise sm:mt-8 [animation-delay:120ms]">
               <QuestionComposer
+                allowUpload
                 onAsk={onAsk}
                 placeholder="Message Cyklos…"
                 autoFocus={desktop}
                 onFocusChange={setAttentive}
               />
             </div>
-
-            <p className="relative z-10 mt-3 animate-rise font-mono text-[10px] uppercase tracking-[0.12em] text-muted sm:mt-4 sm:text-label [animation-delay:160ms]">
-              Reading · {chartName}
-              {relation !== 'self' ? ` · ${relation}` : ''}
-              {planRequired ? ' · Plan required' : ''}
-            </p>
           </div>
         </PageContainer>
       </section>

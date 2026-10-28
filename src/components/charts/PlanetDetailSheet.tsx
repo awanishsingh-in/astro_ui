@@ -1,7 +1,8 @@
 import { MessageCircle, X } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { PlanetGlyph } from '@/components/astrology/PlanetGlyph'
-import { paths } from '@/routes/paths'
+import { Button } from '@/components/common/Button'
+import { navigateAskFromChart } from '@/utils/ask-from-chart'
 import type { Chart, GrahaCode } from '@/types/astrology'
 import { dignityLabel, GRAHAS, motionLabel, RASHIS } from '@/utils/astro'
 import { cn } from '@/utils/cn'
@@ -41,13 +42,14 @@ export function PlanetDetailSheet({ chart, graha, onClose, className }: PlanetDe
     ]
       .filter(Boolean)
       .join(' ')
-    navigate(`${paths.ask}?q=${encodeURIComponent(q)}&from=chart`)
+    navigateAskFromChart(navigate, { q, returnSection: 'chart' })
   }
 
   return (
     <aside
       className={cn(
-        'flex h-full flex-col overflow-hidden rounded-[1.75rem] border border-border/70 bg-surface shadow-card',
+        'planet-detail-sheet flex h-full flex-col overflow-hidden rounded-[1.75rem]',
+        'border border-copper/35 bg-surface/95 shadow-[0_20px_48px_-28px_rgba(201,145,115,0.35)] backdrop-blur-md',
         className,
       )}
     >
@@ -55,7 +57,7 @@ export function PlanetDetailSheet({ chart, graha, onClose, className }: PlanetDe
         <PlanetGlyph code={graha} size="lg" />
         <div className="min-w-0 flex-1">
           <h3 className="font-serif text-2xl font-semibold text-ink">{meta.english}</h3>
-          <p className="mt-0.5 font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-copper">
+          <p className="mt-0.5 font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-silver-300">
             {meta.name} · in your {bhava}
             {ordinal(bhava)}
           </p>
@@ -70,7 +72,7 @@ export function PlanetDetailSheet({ chart, graha, onClose, className }: PlanetDe
         </button>
       </header>
 
-      <div className="grid grid-cols-3 gap-2 px-4 py-4 sm:px-5">
+      <div className="grid grid-cols-1 gap-2 px-4 py-4 sm:grid-cols-3 sm:px-5">
         <Fact label="Degree" value={`${sign} ${degreeLabel}`} />
         <Fact label="Nakshatra" value={nakshatra.name} />
         <Fact label="Pada" value={String(nakshatra.pada)} />
@@ -90,14 +92,17 @@ export function PlanetDetailSheet({ chart, graha, onClose, className }: PlanetDe
       </dl>
 
       <div className="border-t border-border/50 p-4 sm:p-5">
-        <button
+        <Button
           type="button"
+          variant="primary"
+          size="md"
+          fullWidth
+          className="rounded-2xl"
+          iconLeft={<MessageCircle className="size-4" aria-hidden />}
           onClick={ask}
-          className="flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#7c4dff] to-[#3a7bd5] px-4 py-3.5 text-sm font-semibold text-white shadow-[0_12px_28px_-16px_rgba(124,77,255,0.7)] transition hover:from-[#8b5cff] hover:to-[#4a8be5]"
         >
-          <MessageCircle className="size-4" aria-hidden />
           Ask about this planet
-        </button>
+        </Button>
       </div>
     </aside>
   )
@@ -115,8 +120,8 @@ function Fact({ label, value }: { label: string; value: string }) {
 function Row({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex items-baseline justify-between gap-3 border-b border-border/40 py-3 last:border-0">
-      <dt className="text-sm text-muted">{label}</dt>
-      <dd className="text-right text-sm font-semibold text-ink">{value}</dd>
+      <dt className="shrink-0 text-sm text-muted">{label}</dt>
+      <dd className="min-w-0 text-right text-sm font-semibold text-ink text-pretty">{value}</dd>
     </div>
   )
 }

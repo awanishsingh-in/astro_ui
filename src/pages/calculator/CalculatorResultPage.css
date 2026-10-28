@@ -1,0 +1,38 @@
+/* Calculator result — compact entrance (viewport-locked page) */
+
+.calc-result-stack > * {
+  animation: rise 360ms var(--ease-out-soft) both;
+}
+
+.calc-result-stack > *:nth-child(1) {
+  animation-delay: 20ms;
+}
+.calc-result-stack > *:nth-child(2) {
+  animation-delay: 80ms;
+}
+.calc-result-stack > *:nth-child(3) {
+  animation-delay: 140ms;
+}
+
+.calc-result-icon {
+  animation: calc-result-icon-in 480ms var(--ease-out-soft) both;
+  animation-delay: 120ms;
+}
+
+@keyframes calc-result-icon-in {
+  from {
+    opacity: 0;
+    transform: scale(0.88);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .calc-result-stack > *,
+  .calc-result-icon {
+    animation: none;
+  }
+}

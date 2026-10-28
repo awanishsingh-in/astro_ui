@@ -39,8 +39,8 @@ export function ZodiacBadge({
           'inline-grid shrink-0 place-items-center rounded-full border',
           s.box,
           tone === 'dark'
-            ? 'border-gold-soft-line/45 bg-indigo-royal/60 text-gold-soft-line'
-            : 'border-gold-border bg-gold-soft text-gold-deep',
+            ? 'border-gold-soft-line/45 bg-indigo-royal/60 text-silver-300'
+            : 'border-gold-border bg-gold-soft text-silver-400',
         )}
       >
         {meta?.glyph}

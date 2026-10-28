@@ -45,10 +45,10 @@ export function PlanetBadge({
           s.box,
           dark
             ? active
-              ? 'border-gold-soft-line bg-gold-soft-line/15 text-gold-soft-line'
+              ? 'border-gold-soft-line bg-gold-soft-line/15 text-silver-300'
               : 'border-celestial-line bg-indigo-royal/50 text-on-celestial-muted'
             : active
-              ? 'border-gold bg-gold-soft text-gold-deep'
+              ? 'border-gold bg-gold-soft text-silver-400'
               : 'border-border bg-surface-sunken text-purple',
         )}
       >

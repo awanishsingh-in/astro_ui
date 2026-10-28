@@ -266,7 +266,7 @@ export default function HoroscopeFlow() {
               className="rounded-full"
               onClick={backToPersonal}
             >
-              Back to your personalised horoscope
+              Your personalised horoscope
             </Button>
           )}
         </header>
@@ -335,7 +335,7 @@ export default function HoroscopeFlow() {
                       </span>
                     </span>
                     {active && (
-                      <span className="shrink-0 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-copper">
+                      <span className="shrink-0 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-silver-300">
                         Current
                       </span>
                     )}
@@ -356,7 +356,7 @@ export default function HoroscopeFlow() {
                   'hover:border-copper/70 hover:bg-copper/10',
                 )}
               >
-                <span className="inline-flex size-9 shrink-0 items-center justify-center rounded-xl border border-copper/35 bg-copper/15 text-copper">
+                <span className="rg-icon-tile inline-flex size-9 shrink-0 items-center justify-center rounded-xl">
                   <Plus className="size-4" aria-hidden />
                 </span>
                 <span className="min-w-0">
@@ -389,9 +389,9 @@ export default function HoroscopeFlow() {
             radius={22}
             inset={4}
             trackColor="var(--color-surface-sunken)"
-            thumbColor="var(--color-copper)"
+            thumbColor="rgba(243, 217, 196, 0.08)"
             textColor="var(--color-muted)"
-            activeTextColor="var(--color-midnight)"
+            activeTextColor="var(--silver-200)"
           />
         </section>
 
@@ -413,30 +413,30 @@ export default function HoroscopeFlow() {
         {summary && (
           <article
             className={cn(
-              'relative overflow-hidden rounded-[1.75rem] border border-[#7c4dff]/40',
-              'bg-[linear-gradient(155deg,#24105a_0%,#120e28_42%,#0d1a38_100%)]',
-              'px-5 py-6 shadow-[0_0_0_1px_rgba(124,77,255,0.15),0_28px_64px_-28px_rgba(124,77,255,0.75)]',
+              'horoscope-night-card night-card relative overflow-hidden rounded-[1.75rem] border border-primary/40',
+              'bg-[linear-gradient(155deg,#1a2b4a_0%,#060b19_42%,#0f1a2e_100%)]',
+              'px-5 py-6 shadow-[0_0_0_1px_rgba(201,145,115,0.45),0_28_64_28_rgba(15,11,25,0.55)]',
               'sm:px-8 sm:py-8',
             )}
           >
             <div
               aria-hidden
-              className="pointer-events-none absolute -right-16 -top-24 h-56 w-56 rounded-full bg-[#7c4dff]/35 blur-3xl"
+              className="pointer-events-none absolute -right-16 -top-24 h-56 w-56 rounded-full bg-primary/10 blur-3xl"
             />
             <div
               aria-hidden
-              className="pointer-events-none absolute -bottom-28 -left-10 h-52 w-52 rounded-full bg-[#3a7bd5]/25 blur-3xl"
+              className="pointer-events-none absolute -bottom-28 -left-10 h-52 w-52 rounded-full bg-secondary/25 blur-3xl"
             />
             <div
               aria-hidden
-              className="pointer-events-none absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-[#c4a0ff]/70 to-transparent"
+              className="pointer-events-none absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-accent/70 to-transparent"
             />
 
             <div className="relative flex flex-col gap-6 sm:gap-7">
               <header className="flex flex-wrap items-start justify-between gap-3">
                 <div className="space-y-3">
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="inline-flex items-center gap-1.5 rounded-full border border-[#c4a0ff]/35 bg-[#7c4dff]/20 px-3 py-1 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-[#e8d6ff]">
+                    <span className="inline-flex items-center gap-1.5 rounded-full border border-accent/35 bg-primary/20 px-3 py-1 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-[var(--color-accent)]">
                       <Sparkles className="size-3" aria-hidden />
                       {period}
                     </span>
@@ -453,9 +453,9 @@ export default function HoroscopeFlow() {
                 </div>
                 <p
                   className={cn(
-                    'inline-flex items-center gap-1.5 rounded-full border border-[#9dffc0]/30',
-                    'bg-[#1a3d2a]/70 px-3.5 py-1.5 text-xs font-semibold text-[#9dffc0]',
-                    'shadow-[0_0_20px_-8px_rgba(157,255,192,0.65)]',
+                    'inline-flex items-center gap-1.5 rounded-full border border-[#E6BC9F]/30',
+                    'bg-[#1B101D]/70 px-3.5 py-1.5 text-xs font-semibold text-[#E6BC9F]',
+                    'shadow-[0_0_20px_-8px_rgba(201,145,115,0.55)]',
                   )}
                 >
                   Mood · {summary.mood}
@@ -471,7 +471,7 @@ export default function HoroscopeFlow() {
                     <li key={bullet} className="flex gap-3">
                       <span
                         aria-hidden
-                        className="mt-2 size-1.5 shrink-0 rounded-full bg-[#c4a0ff]"
+                        className="mt-2 size-1.5 shrink-0 rounded-full bg-accent"
                       />
                       <span className="text-sm leading-relaxed text-white/70 text-pretty sm:text-[15px]">
                         {bullet}
@@ -487,11 +487,11 @@ export default function HoroscopeFlow() {
                   onClick={askAboutSummary}
                   className={cn(
                     'inline-flex items-center justify-center gap-2 rounded-full px-6 py-3',
-                    'bg-gradient-to-r from-[#7c4dff] to-[#3a7bd5]',
+                    'btn-primary',
                     'text-sm font-semibold text-white',
-                    'shadow-[0_12px_28px_-16px_rgba(124,77,255,0.7)]',
-                    'transition hover:from-[#8b5cff] hover:to-[#4a8be5]',
-                    'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#7c4dff]',
+                    'shadow-[0_12px_28px_-16px_rgba(201,145,115,0.55)]',
+                    'transition hover:from-[#FBEFE6] hover:via-accent hover:to-primary-hover',
+                    'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary',
                   )}
                 >
                   <MessageCircle className="size-4" aria-hidden />
@@ -537,7 +537,7 @@ export default function HoroscopeFlow() {
       {!yearlyUnlocked && (
         <div
           className={cn(
-            'fixed inset-x-0 bottom-0 z-30 border-t border-border/80',
+            'horoscope-personal-cta fixed inset-x-0 bottom-0 z-30 border-t border-border/80',
             'bg-canvas/95 backdrop-blur-md pb-safe',
           )}
         >
@@ -584,21 +584,21 @@ function SelectedRashiCard({
   return (
     <div
       className={cn(
-        'relative flex flex-wrap items-stretch gap-4 overflow-hidden rounded-[1.5rem] border border-[#7c4dff]/40 p-3.5',
-        'bg-[linear-gradient(155deg,#24105a_0%,#120e28_45%,#0d1a38_100%)]',
-        'shadow-[0_0_0_1px_rgba(124,77,255,0.14),0_24px_48px_-28px_rgba(124,77,255,0.7)]',
+        'horoscope-night-card night-card relative flex flex-wrap items-stretch gap-4 overflow-hidden rounded-[1.5rem] border border-primary/40 p-3.5',
+        'bg-[linear-gradient(155deg,#1a2b4a_0%,#060b19_45%,#0f1a2e_100%)]',
+        'shadow-[0_0_0_1px_rgba(201,145,115,0.45),0_24_48_28_rgba(15,11,25,0.55)]',
         'sm:flex-nowrap sm:gap-5 sm:p-4',
       )}
     >
       <div
         aria-hidden
-        className="pointer-events-none absolute -right-12 -top-16 h-40 w-40 rounded-full bg-[#7c4dff]/25 blur-3xl"
+        className="pointer-events-none absolute -right-12 -top-16 h-40 w-40 rounded-full bg-primary/8 blur-3xl"
       />
 
       <div
         className={cn(
           'relative h-[7.5rem] w-[5.25rem] shrink-0 overflow-hidden rounded-[1rem] border border-copper/70',
-          'shadow-[0_0_0_1px_rgba(124,77,255,0.35),0_0_20px_-10px_rgba(124,77,255,0.7)]',
+          'shadow-[0_0_0_1px_rgba(201,145,115,0.45),0_0_20px_-10px_rgba(201,145,115,0.45)]',
           'sm:h-[8.25rem] sm:w-[5.75rem]',
         )}
       >
@@ -610,27 +610,27 @@ function SelectedRashiCard({
         />
         <div
           aria-hidden
-          className="absolute inset-0 bg-gradient-to-t from-[#14082e]/90 via-[#14082e]/35 to-[#7c4dff]/10"
+          className="absolute inset-0 bg-gradient-to-t from-[#0F0B19]/90 via-[#0F0B19]/35 to-primary/10"
         />
         <div className="relative z-[1] flex h-full flex-col items-center justify-end gap-0.5 px-2 pb-2.5 text-center">
-          <span className="text-sm font-semibold text-copper drop-shadow-sm">{meta.name}</span>
-          <span aria-hidden className="text-base leading-none text-copper/70">
+          <span className="text-sm font-semibold text-silver-300 drop-shadow-sm">{meta.name}</span>
+          <span aria-hidden className="text-base leading-none text-silver-300/70">
             {meta.glyph}
           </span>
-          <span className="text-[11px] text-copper/80">{meta.english}</span>
+          <span className="text-[11px] text-silver-300/80">{meta.english}</span>
         </div>
       </div>
 
       <div className="relative flex min-w-0 flex-1 flex-col justify-center gap-2.5 py-0.5">
         <div className="flex flex-wrap items-center gap-2">
-          <span className="rounded-full border border-[#c4a0ff]/35 bg-[#7c4dff]/20 px-2.5 py-0.5 font-mono text-[9px] font-semibold uppercase tracking-[0.14em] text-[#e8d6ff]">
+          <span className="rounded-full border border-accent/35 bg-primary/20 px-2.5 py-0.5 font-mono text-[9px] font-semibold uppercase tracking-[0.14em] text-[var(--color-accent)]">
             {period}
           </span>
           {mood && (
             <span
               className={cn(
-                'rounded-full border border-[#9dffc0]/30 bg-[#1a3d2a]/70',
-                'px-2.5 py-0.5 text-[10px] font-semibold text-[#9dffc0]',
+                'rounded-full border border-[#E6BC9F]/30 bg-[#1B101D]/70',
+                'px-2.5 py-0.5 text-[10px] font-semibold text-[#E6BC9F]',
               )}
             >
               Mood · {mood}
@@ -644,7 +644,7 @@ function SelectedRashiCard({
             {meta.name}
           </p>
           {profileName && (
-            <p className="text-sm font-medium text-[#e8d6ff]/90">{profileName}</p>
+            <p className="text-sm font-medium text-[var(--color-accent)]/90">{profileName}</p>
           )}
           {headline && (
             <p className="text-sm font-medium text-white/80 text-pretty">{headline}</p>
@@ -663,8 +663,8 @@ function SelectedRashiCard({
           className={cn(
             'inline-flex items-center justify-center gap-2 rounded-full border border-white/20',
             'bg-white/5 px-4 py-2.5 text-sm font-semibold text-white',
-            'transition hover:border-[#c4a0ff]/50 hover:bg-[#7c4dff]/25',
-            'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#7c4dff]',
+            'transition hover:border-accent/50 hover:bg-primary/25',
+            'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary',
           )}
         >
           {profileAction === 'change' ? (
@@ -782,7 +782,7 @@ function RashiStrip({
             className={cn(
               'group/rashi relative flex h-[12.5rem] w-[7.25rem] shrink-0 flex-col items-end justify-end overflow-hidden rounded-[1.25rem] border px-3 pb-4 pt-3 transition sm:h-[13.5rem] sm:w-[8.25rem] sm:pb-5 sm:pt-4',
               active
-                ? 'border-copper text-copper shadow-[0_0_0_1px_rgba(124,77,255,0.45),0_0_28px_-8px_rgba(124,77,255,0.75)]'
+                ? 'border-copper text-silver-300 shadow-[0_0_0_1px_rgba(201,145,115,0.45),0_0_28px_-8px_rgba(201,145,115,0.45)]'
                 : 'border-border/80 text-ink hover:border-copper/40',
             )}
           >
@@ -801,8 +801,8 @@ function RashiStrip({
               aria-hidden
               className={cn(
                 'pointer-events-none absolute inset-0',
-                'bg-gradient-to-t from-[#0a0818]/90 via-[#0a0818]/45 to-[#0a0818]/15',
-                active && 'from-[#14082e]/88 via-[#14082e]/40 to-[#7c4dff]/10',
+                'bg-gradient-to-t from-[#0F0B19]/90 via-[#0F0B19]/45 to-[#0F0B19]/15',
+                active && 'from-[#0F0B19]/88 via-[#0F0B19]/40 to-primary/10',
               )}
             />
 
@@ -810,18 +810,18 @@ function RashiStrip({
               <span
                 className={cn(
                   'text-base font-semibold drop-shadow-sm sm:text-lg',
-                  active ? 'text-copper' : 'text-white',
+                  active ? 'text-silver-300' : 'text-white',
                 )}
               >
                 {r.name}
               </span>
-              <span aria-hidden className={cn('text-lg leading-none', active ? 'text-copper/70' : 'text-white/45')}>
+              <span aria-hidden className={cn('text-lg leading-none', active ? 'text-silver-300/70' : 'text-white/45')}>
                 {r.glyph}
               </span>
               <span
                 className={cn(
                   'text-xs sm:text-sm',
-                  active ? 'text-copper/80' : 'text-white/65',
+                  active ? 'text-silver-300/80' : 'text-white/65',
                 )}
               >
                 {r.english}
@@ -852,14 +852,14 @@ const VERTICAL_TONE: Record<
   HoroscopeVerticalId,
   { text: string; bar: string }
 > = {
-  love: { text: 'text-[#ff8fab]', bar: 'bg-[#ff5c7a]' },
-  finance: { text: 'text-[#7dffb3]', bar: 'bg-[#3dd68c]' },
-  career: { text: 'text-[#ffc46b]', bar: 'bg-[#f0a03a]' },
-  health: { text: 'text-[#7ec8ff]', bar: 'bg-[#4aa3f0]' },
-  lucky: { text: 'text-[#e8d6ff]', bar: 'bg-[#9b6dff]' },
-  focus: { text: 'text-[#ffd88a]', bar: 'bg-[#e8b84a]' },
-  family: { text: 'text-[#ffb38a]', bar: 'bg-[#f08a4a]' },
-  growth: { text: 'text-[#9dffc0]', bar: 'bg-[#3dd68c]' },
+  love: { text: 'text-[#6E4234]', bar: 'bg-[#6E4234]' },
+  finance: { text: 'text-[#E6BC9F]', bar: 'bg-[#E6BC9F]' },
+  career: { text: 'text-[#E6BC9F]', bar: 'bg-[#BF8466]' },
+  health: { text: 'text-[#2E1623]', bar: 'bg-[#2E1623]' },
+  lucky: { text: 'text-[var(--color-accent)]', bar: 'bg-[var(--color-primary-hover)]' },
+  focus: { text: 'text-[#F2D7C7]', bar: 'bg-[#BF8466]' },
+  family: { text: 'text-[#E6BC9F]', bar: 'bg-[#6E4234]' },
+  growth: { text: 'text-[#E6BC9F]', bar: 'bg-[#E6BC9F]' },
 }
 
 /** One life area: summary card left, reading right — next area starts below. */
@@ -899,22 +899,22 @@ function AreaBlock({
         <aside className="lg:sticky lg:top-20">
           <div
             className={cn(
-              'relative flex h-full min-h-[22rem] flex-col overflow-hidden rounded-[1.75rem] border border-[#7c4dff]/40',
-              'bg-[linear-gradient(160deg,#24105a_0%,#120e28_45%,#0d1a38_100%)]',
-              'shadow-[0_0_0_1px_rgba(124,77,255,0.14),0_28px_64px_-28px_rgba(124,77,255,0.7)]',
+              'horoscope-area-card relative flex h-full min-h-[22rem] flex-col overflow-hidden rounded-[1.75rem] border border-primary/40',
+              'bg-[linear-gradient(160deg,#1a2b4a_0%,#060b19_45%,#0f1a2e_100%)]',
+              'shadow-[0_0_0_1px_rgba(201,145,115,0.45),0_28_64_28_rgba(15,11,25,0.55)]',
             )}
           >
             <div
               aria-hidden
-              className="pointer-events-none absolute -right-16 -top-20 h-48 w-48 rounded-full bg-[#7c4dff]/30 blur-3xl"
+              className="pointer-events-none absolute -right-16 -top-20 h-48 w-48 rounded-full bg-primary/8 blur-3xl"
             />
             <div
               aria-hidden
-              className="pointer-events-none absolute -bottom-20 -left-12 h-40 w-40 rounded-full bg-[#3a7bd5]/20 blur-3xl"
+              className="pointer-events-none absolute -bottom-20 -left-12 h-40 w-40 rounded-full bg-secondary/20 blur-3xl"
             />
 
             <div className="relative flex items-center justify-between gap-2 px-5 pb-2 pt-5">
-              <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-[#c4a0ff]">
+              <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-silver-300">
                 {english} · {vertical.label}
               </p>
               <p className="font-mono text-[10px] tabular-nums text-white/45">
@@ -928,8 +928,8 @@ function AreaBlock({
                   <span
                     className={cn(
                       'inline-flex size-14 shrink-0 items-center justify-center rounded-2xl',
-                      'border border-[#c4a0ff]/35 bg-[#7c4dff]/25 text-[#e8d6ff]',
-                      'shadow-[0_0_24px_-8px_rgba(196,160,255,0.85)]',
+                      'border border-accent/35 bg-primary/25 text-[var(--color-accent)]',
+                      'shadow-[0_0_24px_-8px_rgba(201,145,115,0.55)]',
                     )}
                   >
                     <Icon className="size-6" aria-hidden strokeWidth={2} />
@@ -1144,7 +1144,7 @@ function DateStrip({
         className={cn(
           'pointer-events-none absolute left-1/2 top-1/2 z-[1] -translate-x-1/2 -translate-y-1/2',
           'rounded-full bg-copper',
-          'shadow-[0_0_40px_-4px_rgba(124,77,255,0.95)]',
+          'shadow-[0_0_40px_-4px_rgba(201,145,115,0.55)]',
         )}
         style={{ width: DATE_CENTER_PX, height: DATE_CENTER_PX }}
       />

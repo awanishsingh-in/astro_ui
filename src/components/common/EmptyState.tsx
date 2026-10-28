@@ -34,7 +34,7 @@ export function EmptyState({
           aria-hidden
           className={cn(
             'inline-flex items-center justify-center rounded-full',
-            'border border-border bg-surface text-muted',
+            'border border-border/30 bg-surface-accent text-silver-300',
             variant === 'page' ? 'size-14 [&_svg]:size-6' : 'size-11 [&_svg]:size-5',
           )}
         >
@@ -42,10 +42,17 @@ export function EmptyState({
         </span>
       )}
       <div className="max-w-sm space-y-1.5">
-        <p className={cn('font-semibold text-ink', variant === 'page' ? 'text-heading' : 'text-sub')}>
+        <p
+          className={cn(
+            'font-serif font-semibold text-text-primary',
+            variant === 'page' ? 'text-heading' : 'text-sub',
+          )}
+        >
           {title}
         </p>
-        {description && <p className="text-sm text-muted text-pretty">{description}</p>}
+        {description && (
+          <p className="text-sm text-text-secondary text-pretty">{description}</p>
+        )}
       </div>
       {action && <div className="pt-1">{action}</div>}
     </div>

@@ -92,13 +92,13 @@ export function BhavaLens({
                 'transition-[background-color,border-color,color,transform] duration-150 ease-out-soft',
                 'active:scale-[0.98]',
                 selected
-                  ? 'border-gold bg-gold-soft font-semibold text-gold-deep'
+                  ? 'border-gold bg-gold-soft font-semibold text-silver-400'
                   : 'border-border bg-surface text-purple hover:border-border-strong hover:bg-navy-soft',
               )}
             >
               <span className="font-mono">{bhavaRef(group.bhava)}</span>
               <span className="truncate">{group.signifies}</span>
-              <span className={cn('font-mono text-label', selected ? 'text-gold-deep' : 'text-muted')}>
+              <span className={cn('font-mono text-label', selected ? 'text-silver-400' : 'text-muted')}>
                 {group.readings.length}
               </span>
             </button>

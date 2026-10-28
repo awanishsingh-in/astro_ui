@@ -50,14 +50,14 @@ export function QuestionCard({ question, onSelect, className }: QuestionCardProp
 
       <span className="min-w-0 flex-1">
         <span className="block text-sub text-ink text-pretty">{question.text}</span>
-        <span className="mt-1.5 block font-mono text-label uppercase text-gold-deep">
+        <span className="mt-1.5 block font-mono text-label uppercase text-silver-400">
           {theme.id === 'dasha' ? 'Current dasha' : `${bhavaRef(theme.bhava)} · ${theme.reads}`}
         </span>
       </span>
 
       <ArrowUpRight
         aria-hidden
-        className="mt-1 size-4 shrink-0 text-faint transition-transform duration-200 group-hover:translate-x-0.5 group-hover:text-gold-deep"
+        className="mt-1 size-4 shrink-0 text-faint transition-transform duration-200 group-hover:translate-x-0.5 group-hover:text-silver-400"
       />
     </button>
   )

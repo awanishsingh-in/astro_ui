@@ -63,7 +63,7 @@ export function AshtakavargaGrid({
             />
 
             <div className="min-w-0">
-              <p className="font-mono text-label uppercase text-gold-soft-line">Distribution</p>
+              <p className="font-mono text-label uppercase text-silver-300">Distribution</p>
               <p className="mt-2 text-sub text-on-celestial text-pretty">
                 {strongest.rashi} carries the most support at {strongest.bindus} bindus;{' '}
                 {weakest.rashi} the least at {weakest.bindus}.
@@ -94,7 +94,7 @@ export function AshtakavargaGrid({
             className="pointer-events-none absolute inset-x-0 z-20 border-t border-dashed border-gold"
             style={{ bottom: `${scale(mean)}%` }}
           >
-            <span className="absolute -top-2.5 right-0 rounded-xs bg-canvas px-1.5 font-mono text-label uppercase text-gold-deep">
+            <span className="absolute -top-2.5 right-0 rounded-xs bg-canvas px-1.5 font-mono text-label uppercase text-silver-400">
               mean {mean}
             </span>
           </div>
@@ -141,7 +141,7 @@ export function AshtakavargaGrid({
               <p
                 className={cn(
                   'font-mono text-label',
-                  entry.bhava === activeBhava ? 'text-gold-deep' : 'text-muted',
+                  entry.bhava === activeBhava ? 'text-silver-400' : 'text-muted',
                 )}
               >
                 {entry.bhava}

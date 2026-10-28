@@ -50,7 +50,7 @@ export function HouseCard({
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <p className="font-mono text-label uppercase text-gold-deep">
+          <p className="font-mono text-label uppercase text-silver-400">
             Bhava {placement.bhava}
           </p>
           <p className="mt-1 truncate text-heading font-semibold text-ink">

@@ -34,18 +34,7 @@ export default function ChartDetailPage() {
   return (
     <PageContainer width="content" className="pb-16 pt-4 sm:pt-6">
       <article className="mx-auto flex max-w-2xl flex-col gap-6 animate-rise">
-        <button
-          type="button"
-          onClick={() => navigate(`${paths.chart}?section=charts`)}
-          className="self-start text-xs text-muted underline-offset-2 hover:text-ink hover:underline"
-        >
-          ← Charts
-        </button>
-
         <header className="space-y-2">
-          <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-gold-deep">
-            Chart details
-          </p>
           <h1 className="font-serif text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
             Everything from this chart
           </h1>
@@ -98,7 +87,7 @@ export default function ChartDetailPage() {
         />
 
         <div className="rounded-3xl border border-copper/35 bg-copper/10 px-5 py-5 sm:px-6">
-          <p className="text-sm font-semibold text-gold-deep">
+          <p className="text-sm font-semibold text-silver-400">
             {unlocked ? 'Your detailed report is unlocked' : 'Get the full book report'}
           </p>
           <p className="mt-1.5 text-sm leading-relaxed text-ink text-pretty">
@@ -141,7 +130,12 @@ function Chip({
           : 'border-border/80 bg-surface/70',
       )}
     >
-      <span className="font-mono text-[9px] font-semibold uppercase tracking-[0.14em] text-muted">
+      <span
+        className={cn(
+          'font-mono text-[9px] font-semibold uppercase tracking-[0.14em]',
+          label === 'Chandra' ? 'text-silver-300' : 'text-silver-400',
+        )}
+      >
         {label}
       </span>
       <span className="text-sm font-semibold text-ink">{value}</span>

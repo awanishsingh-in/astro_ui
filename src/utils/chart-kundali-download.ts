@@ -1,5 +1,6 @@
 import type { Chart } from '@/types/astrology'
 import type { BirthDetails } from '@/types/user'
+import { recordDownload } from '@/data/download-history'
 import { GRAHAS, GRAHA_ORDER } from '@/utils/astro'
 
 export interface BasicKundaliDownloadInput {
@@ -51,5 +52,11 @@ export function triggerBasicKundaliDownload(input: BasicKundaliDownloadInput): s
   a.download = filename
   a.click()
   URL.revokeObjectURL(url)
+  recordDownload({
+    kind: 'kundali',
+    title: 'Basic Kundali',
+    subtitle: `${input.profileName} · D-1 Rashi`,
+    filename,
+  })
   return filename
 }

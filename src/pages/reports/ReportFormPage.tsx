@@ -1,4 +1,4 @@
-import { Calculator } from 'lucide-react'
+import { ArrowRight } from 'lucide-react'
 import { useCallback, useEffect, useState } from 'react'
 import { Navigate, useNavigate, useParams } from 'react-router-dom'
 import { Button } from '@/components/common/Button'
@@ -23,9 +23,10 @@ import {
   readMatchDraft,
   saveMatchDraft,
 } from '@/utils/match-draft'
+import { cn } from '@/utils/cn'
 
 /**
- * Birth form for a paid report — Check goes to the payment gateway.
+ * Birth form for a paid report — continues to the payment gateway.
  */
 export default function ReportFormPage() {
   const { reportId = '' } = useParams<{ reportId: string }>()
@@ -90,27 +91,25 @@ export default function ReportFormPage() {
     return <Navigate to={paths.reportView(topic.id)} replace />
   }
 
-  return (
-    <PageContainer width="content" className="pb-16 pt-4 sm:pt-6">
-      <article className="mx-auto max-w-lg animate-rise space-y-6">
-        <button
-          type="button"
-          onClick={() => navigate(paths.reportIntro(topic.id), { replace: true })}
-          className="text-xs text-muted underline-offset-2 hover:text-ink hover:underline"
-        >
-          ← Back
-        </button>
+  const Icon = topic.icon
 
-        <header className="space-y-2">
-          <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-gold-deep">
-            {topic.title}
-          </p>
-          <h1 className="text-2xl font-semibold tracking-tight text-ink sm:text-3xl">
-            Enter the birth chart
-          </h1>
-          <p className="text-sm leading-relaxed text-muted text-pretty">
-            Same details Matching uses. Check continues to payment.
-          </p>
+  return (
+    <PageContainer width="content" flush className="px-5 py-4 md:px-6 lg:px-8 lg:py-5">
+      <article className="mx-auto flex w-full max-w-xl animate-rise flex-col gap-3">
+        <header className="flex items-start gap-3">
+          <span
+            className={cn(
+              'rg-icon-tile inline-flex size-11 shrink-0 items-center justify-center rounded-2xl',
+            )}
+          >
+            <Icon className="size-5" aria-hidden />
+          </span>
+          <div className="min-w-0 flex-1 space-y-0.5">
+            <p className="text-sm font-medium text-silver-300">{topic.title}</p>
+            <h1 className="font-serif text-2xl font-semibold tracking-tight text-ink sm:text-3xl">
+              Enter the birth details
+            </h1>
+          </div>
         </header>
 
         <PersonForm
@@ -123,16 +122,20 @@ export default function ReportFormPage() {
           }}
           hasSavedProfiles={profiles.length > 0}
           onUseSavedProfile={openSavedProfiles}
+          hideEyebrow
+          showDetailsHeading={false}
+          savedHint="Fill in one tap"
+          className="h-auto"
         />
 
         <Button
           variant="primary"
           size="lg"
           className="w-full rounded-full"
-          iconLeft={<Calculator className="size-4" />}
+          iconRight={<ArrowRight className="size-4" />}
           onClick={runCheck}
         >
-          Check
+          Continue to payment
         </Button>
       </article>
     </PageContainer>

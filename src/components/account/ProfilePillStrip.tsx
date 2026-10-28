@@ -1,4 +1,4 @@
-import { Pencil, Plus } from 'lucide-react'
+import { Pencil, Plus, Sparkles } from 'lucide-react'
 import { Avatar } from '@/components/common/Avatar'
 import type { ChartProfile } from '@/data/profiles'
 import { cn } from '@/utils/cn'
@@ -22,7 +22,7 @@ export interface ProfilePillStripProps {
 
 /**
  * Horizontal profile switcher — pill for each saved person, dashed + to add.
- * Matches the compact “whose chart” pattern without leaving Cyklos chrome.
+ * The primary “You” profile is visually distinct from additional charts.
  */
 export function ProfilePillStrip({
   profiles,
@@ -48,58 +48,92 @@ export function ProfilePillStrip({
     >
       {!hideProfiles &&
         profiles.map((profile) => {
-        const active = profile.id === selectedId
-        const isSelf = profile.id === 'self'
-        return (
-          <div
-            key={profile.id}
-            role="listitem"
-            className={cn(
-              'inline-flex shrink-0 items-center gap-2 rounded-full border',
-              'transition-[border-color,background-color,box-shadow] duration-150',
-              compact ? 'py-1 pl-1 pr-2' : 'py-1.5 pl-1.5 pr-2.5',
-              active
-                ? 'border-copper/55 bg-copper/15 shadow-[0_0_20px_-10px_rgba(196, 160, 255,0.55)]'
-                : 'border-border bg-surface/80 hover:border-copper/35 hover:bg-navy-soft/60',
-            )}
-          >
-            <button
-              type="button"
-              onClick={() => onSelect(profile)}
-              className="inline-flex min-w-0 items-center gap-2 text-left"
-              aria-current={active ? 'true' : undefined}
-            >
-              <Avatar
-                name={profile.name}
-                src={isSelf ? selfPhotoUrl : undefined}
-                size="sm"
-                className={cn(active && 'border-copper/40', compact && 'size-7 text-[10px]')}
-              />
-              <span
-                className={cn(
-                  'truncate font-medium',
-                  compact ? 'max-w-[6.5rem] text-xs sm:max-w-[8rem] sm:text-sm' : 'max-w-[7.5rem] text-sm',
-                  active ? 'text-ink' : 'text-purple',
-                )}
-              >
-                {profile.name}
-              </span>
-            </button>
-            <button
-              type="button"
-              onClick={() => onEdit(profile)}
-              aria-label={`Edit ${profile.name}`}
+          const active = profile.id === selectedId
+          const isSelf = profile.id === 'self'
+          return (
+            <div
+              key={profile.id}
+              role="listitem"
               className={cn(
-                'inline-flex shrink-0 items-center justify-center rounded-full',
-                'text-muted transition-colors hover:bg-navy-soft hover:text-ink',
-                compact ? 'size-6' : 'size-7',
+                'inline-flex shrink-0 items-center gap-1.5 rounded-full border',
+                'transition-[border-color,background-color,box-shadow] duration-150',
+                compact ? 'py-1 pl-1 pr-2' : 'py-1.5 pl-1.5 pr-2.5',
+                isSelf
+                  ? cn(
+                      'border-copper/70 bg-gradient-to-r from-copper/25 via-copper/12 to-transparent',
+                      'shadow-[0_0_22px_-8px_rgba(201,145,115,0.55)]',
+                      active && 'border-copper bg-copper/20 ring-1 ring-copper/40',
+                    )
+                  : active
+                    ? 'border-border-strong bg-surface-sunken/90'
+                    : 'border-border bg-surface/70 hover:border-border-strong hover:bg-navy-soft/50',
               )}
             >
-              <Pencil className={compact ? 'size-3' : 'size-3.5'} aria-hidden />
-            </button>
-          </div>
-        )
-      })}
+              <button
+                type="button"
+                onClick={() => onSelect(profile)}
+                className="inline-flex min-w-0 items-center gap-2 text-left"
+                aria-current={active ? 'true' : undefined}
+                aria-label={isSelf ? `You — ${profile.name}` : profile.name}
+              >
+                <span className="relative shrink-0">
+                  <Avatar
+                    name={profile.name}
+                    src={isSelf ? selfPhotoUrl : undefined}
+                    size="sm"
+                    className={cn(
+                      compact && 'size-7 text-[10px]',
+                      isSelf
+                        ? 'border-copper/55 shadow-[0_0_12px_-4px_rgba(201,145,115,0.55)]'
+                        : active
+                          ? 'border-border-strong'
+                          : 'border-border',
+                    )}
+                  />
+                  {isSelf && (
+                    <span
+                      aria-hidden
+                      className="absolute -bottom-0.5 -right-0.5 inline-flex size-3.5 items-center justify-center rounded-full bg-copper text-[var(--btn-primary-fg)] shadow-sm"
+                    >
+                      <Sparkles className="size-2" strokeWidth={2.5} />
+                    </span>
+                  )}
+                </span>
+                <span className="min-w-0">
+                  {isSelf && (
+                    <span className="block font-mono text-[9px] font-semibold uppercase tracking-[0.14em] text-silver-300">
+                      You
+                    </span>
+                  )}
+                  <span
+                    className={cn(
+                      'block truncate font-medium leading-tight',
+                      compact
+                        ? 'max-w-[6.5rem] text-xs sm:max-w-[8rem] sm:text-sm'
+                        : 'max-w-[7.5rem] text-sm',
+                      isSelf || active ? 'text-ink' : 'text-purple',
+                    )}
+                  >
+                    {profile.name}
+                  </span>
+                </span>
+              </button>
+              <button
+                type="button"
+                onClick={() => onEdit(profile)}
+                aria-label={`Edit ${isSelf ? 'your' : profile.name} profile`}
+                className={cn(
+                  'inline-flex shrink-0 items-center justify-center rounded-full',
+                  'text-muted transition-colors hover:bg-navy-soft hover:text-ink',
+                  compact ? 'size-6' : 'size-7',
+                  isSelf && 'text-silver-300/80 hover:text-silver-300',
+                )}
+              >
+                <Pencil className={compact ? 'size-3' : 'size-3.5'} aria-hidden />
+              </button>
+            </div>
+          )
+        })}
 
       <button
         type="button"
@@ -109,10 +143,10 @@ export function ProfilePillStrip({
           'inline-flex shrink-0 items-center justify-center rounded-full',
           'border border-dashed border-border-strong text-muted',
           'transition-[border-color,color,background-color,box-shadow] duration-150',
-          'hover:border-copper/50 hover:bg-copper/10 hover:text-copper',
+          'hover:border-copper/50 hover:bg-copper/10 hover:text-silver-300',
           compact ? 'size-9' : 'size-11',
           highlightAdd &&
-            'border-copper/60 text-copper shadow-[0_0_22px_-8px_rgba(196, 160, 255,0.65)]',
+            'border-copper/60 text-silver-300 shadow-[0_0_22px_-8px_rgba(201,145,115,0.55)]',
         )}
       >
         <Plus className={compact ? 'size-4' : 'size-5'} strokeWidth={1.75} aria-hidden />

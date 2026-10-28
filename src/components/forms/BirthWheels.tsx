@@ -1,4 +1,5 @@
 import { useMemo, type ReactNode } from 'react'
+import { ChevronDown, ChevronUp } from 'lucide-react'
 import { WheelColumn, WHEEL_ITEM_H, WHEEL_VISIBLE } from '@/components/forms/WheelColumn'
 import { cn } from '@/utils/cn'
 
@@ -61,26 +62,26 @@ function WheelShell({
   return (
     <div
       className={cn(
-        'overflow-hidden rounded-xl border border-white/10 bg-[#0e0820]',
+        'overflow-hidden rounded-xl border border-white/10 bg-surface',
         disabled && 'opacity-55',
         className,
       )}
     >
       <div className="flex items-baseline justify-between gap-2 px-3 pb-0 pt-2">
-        <p className="text-[10px] font-medium uppercase tracking-[0.08em] text-white/45">
+        <p className="text-[10px] font-medium uppercase tracking-[0.08em] text-text-muted">
           {title}
         </p>
-        <p className="text-xs font-semibold tabular-nums text-[#c4a0ff]">{summary}</p>
+        <p className="text-xs font-semibold tabular-nums text-silver-300">{summary}</p>
       </div>
 
       <div className="relative px-1.5 pb-2 pt-0.5">
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-x-2 z-[1] rounded-lg bg-[#7c4dff]/15 ring-1 ring-[#c4a0ff]/30"
+          className="pointer-events-none absolute inset-x-2 z-[1] rounded-lg border-y border-[rgba(243,217,196,0.45)] bg-[rgba(243,217,196,0.08)]"
           style={{ top: bandTop + 2, height: WHEEL_ITEM_H }}
         />
         <div
-          className="relative z-[2] flex items-stretch justify-center gap-0 [&_button]:text-white/40 [&_button[aria-selected=true]]:text-white"
+          className="relative z-[2] flex items-stretch justify-center gap-0 [&_button]:text-silver-500 [&_button[aria-selected=true]]:text-silver-300 [&_button[aria-selected=true]]:font-semibold"
         >
           {children}
         </div>
@@ -231,7 +232,7 @@ export function BirthTimeWheel({ value, onChange, disabled, className }: BirthTi
       />
       <div
         aria-hidden
-        className="flex shrink-0 items-center justify-center self-center text-sm font-semibold text-white/50"
+        className="flex shrink-0 items-center justify-center self-center text-sm font-semibold text-text-secondary"
         style={{ height: WHEEL_VISIBLE * WHEEL_ITEM_H, width: '0.75rem' }}
       >
         :
@@ -252,5 +253,146 @@ export function BirthTimeWheel({ value, onChange, disabled, className }: BirthTi
         onChange={(v) => emit(hour12, minute, v as 'AM' | 'PM')}
       />
     </WheelShell>
+  )
+}
+
+export interface BirthTimeCompactProps {
+  /** Stored as 24h `HH:mm`. */
+  value: string
+  onChange: (hhmm: string) => void
+  disabled?: boolean
+  className?: string
+}
+
+/**
+ * Compact hour / minute / AM·PM steppers — sits cleanly beside form inputs
+ * without the tall drum wheels.
+ */
+export function BirthTimeCompact({
+  value,
+  onChange,
+  disabled,
+  className,
+}: BirthTimeCompactProps) {
+  const matched = /^(\d{2}):(\d{2})$/.exec(value)
+  const hour24 = matched ? Number(matched[1]) : 12
+  const minuteNum = matched ? Number(matched[2]) : 0
+  const { hour12, period } = to12(hour24)
+  const minute = pad(minuteNum)
+
+  function emit(nextHour12: number, nextMinute: number, nextPeriod: 'AM' | 'PM') {
+    const m = ((nextMinute % 60) + 60) % 60
+    const h = ((nextHour12 - 1) % 12) + 1
+    onChange(`${pad(to24(h, nextPeriod))}:${pad(m)}`)
+  }
+
+  return (
+    <div
+      className={cn(
+        'rounded-card border border-border bg-surface-sunken/80 px-3 py-3 sm:px-3.5',
+        disabled && 'opacity-55',
+        className,
+      )}
+    >
+      <div className="flex items-baseline justify-between gap-2">
+        <p className="font-mono text-label uppercase text-muted">Time of birth</p>
+        <p className="text-sm font-semibold tabular-nums text-ink">
+          {disabled ? 'Unknown' : formatDisplay12(value || '12:00')}
+        </p>
+      </div>
+
+      <div className="mt-3 flex items-stretch gap-2.5 sm:gap-3">
+        <TimeStep
+          label="Hour"
+          value={String(hour12)}
+          disabled={disabled}
+          onUp={() => emit(hour12 + 1, minuteNum, period)}
+          onDown={() => emit(hour12 - 1, minuteNum, period)}
+        />
+        <span
+          aria-hidden
+          className="flex items-center self-center text-lg font-semibold text-faint"
+        >
+          :
+        </span>
+        <TimeStep
+          label="Min"
+          value={minute}
+          disabled={disabled}
+          onUp={() => emit(hour12, minuteNum + 1, period)}
+          onDown={() => emit(hour12, minuteNum - 1, period)}
+        />
+        <div
+          role="group"
+          aria-label="AM or PM"
+          className="ml-auto flex w-[4.5rem] shrink-0 flex-col gap-1 self-stretch"
+        >
+          {(['AM', 'PM'] as const).map((p) => {
+            const active = !disabled && period === p
+            return (
+              <button
+                key={p}
+                type="button"
+                disabled={disabled}
+                aria-pressed={active}
+                onClick={() => emit(hour12, minuteNum, p)}
+                className={cn(
+                  'flex flex-1 items-center justify-center rounded-control border text-xs font-semibold tracking-wide transition-colors',
+                  active
+                    ? 'btn-glass border-[rgba(243,217,196,0.55)] text-silver-300'
+                    : 'btn-glass text-silver-400 hover:text-text',
+                  disabled && 'cursor-not-allowed',
+                )}
+              >
+                {p}
+              </button>
+            )
+          })}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function TimeStep({
+  label,
+  value,
+  disabled,
+  onUp,
+  onDown,
+}: {
+  label: string
+  value: string
+  disabled?: boolean
+  onUp: () => void
+  onDown: () => void
+}) {
+  return (
+    <div className="flex min-w-[4.25rem] flex-1 flex-col overflow-hidden rounded-control border border-border bg-surface">
+      <button
+        type="button"
+        aria-label={`Increase ${label}`}
+        disabled={disabled}
+        onClick={onUp}
+        className="flex h-7 items-center justify-center text-muted transition-colors hover:bg-navy-soft hover:text-ink disabled:cursor-not-allowed"
+      >
+        <ChevronUp className="size-3.5" strokeWidth={2} />
+      </button>
+      <div className="flex flex-col items-center border-y border-border py-1.5">
+        <span className="text-lg font-semibold tabular-nums leading-none text-ink">{value}</span>
+        <span className="mt-0.5 font-mono text-[9px] uppercase tracking-[0.14em] text-faint">
+          {label}
+        </span>
+      </div>
+      <button
+        type="button"
+        aria-label={`Decrease ${label}`}
+        disabled={disabled}
+        onClick={onDown}
+        className="flex h-7 items-center justify-center text-muted transition-colors hover:bg-navy-soft hover:text-ink disabled:cursor-not-allowed"
+      >
+        <ChevronDown className="size-3.5" strokeWidth={2} />
+      </button>
+    </div>
   )
 }

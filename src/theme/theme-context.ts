@@ -2,9 +2,13 @@ import { createContext } from 'react'
 import type { ResolvedTheme, ThemePreference } from './theme'
 
 export interface ThemeContextValue {
+  /** Active theme (`dark` | `light`) — same as `resolved`. */
+  theme: ResolvedTheme
   preference: ThemePreference
   resolved: ResolvedTheme
+  setTheme: (preference: ThemePreference) => void
   setPreference: (preference: ThemePreference) => void
+  toggleTheme: () => void
 }
 
 /**

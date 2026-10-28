@@ -36,7 +36,7 @@ export function ChartSource({ answer, withChartLink = true, className }: ChartSo
       padding="lg"
       className={className}
     >
-      <p className="font-mono text-label uppercase text-gold-soft-line">Read from your chart</p>
+      <p className="font-mono text-label uppercase text-silver-300">Read from your chart</p>
 
       <dl className="mt-4 space-y-3">
         {source.bhava !== undefined && (

@@ -19,14 +19,14 @@ export type IconButtonProps = BaseProps &
   Omit<ButtonHTMLAttributes<HTMLButtonElement>, keyof BaseProps>
 
 const VARIANTS: Record<IconButtonVariant, string> = {
-  plain: 'text-ink hover:bg-navy-soft active:bg-navy-soft',
-  outline: 'text-ink border border-border bg-surface hover:border-border-strong hover:bg-navy-soft',
-  filled: 'bg-navy text-on-celestial hover:bg-navy-hover active:bg-navy-active',
+  plain: 'text-text-highlight hover:bg-surface-accent hover:text-text active:bg-surface-accent',
+  outline:
+    'text-text-highlight border border-border/35 bg-bg-secondary/50 hover:border-blue-glow hover:bg-blue/15',
+  filled: 'bg-gold-gradient text-on-primary hover:brightness-110',
 }
 
 /**
- * Visual size. `hit-44` below carries the touch target up to 44px for the
- * smaller two, so the glyph can stay tight without the control being fiddly.
+ * Visual size. `hit-44` expands the touch target to 44px for smaller sizes.
  */
 const SIZES: Record<IconButtonSize, string> = {
   sm: 'size-10 [&_svg]:size-4',
@@ -46,8 +46,9 @@ export function IconButton({
 }: IconButtonProps) {
   const classes = cn(
     'hit-44 inline-flex shrink-0 items-center justify-center rounded-control',
-    'transition-[background-color,color,transform] duration-150 ease-out-soft',
-    'active:scale-95 disabled:text-faint disabled:pointer-events-none',
+    'transition-[background-color,color,transform,border-color] duration-150 ease-out-soft',
+    'active:scale-[0.97] disabled:text-text-disabled disabled:pointer-events-none',
+    'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus-ring',
     VARIANTS[variant],
     SIZES[size],
     className,

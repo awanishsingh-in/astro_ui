@@ -9,8 +9,12 @@ import {
 import { Button } from '@/components/common/Button'
 import { EmptyState } from '@/components/common/EmptyState'
 import { Input } from '@/components/forms/Input'
+import { Modal } from '@/components/modals/Modal'
 import { MobileHeader } from '@/components/navigation/MobileHeader'
+import { BottomSheet } from '@/components/sheets/BottomSheet'
 import { useAuth } from '@/auth/auth-context'
+import { useDisclosure } from '@/hooks/useDisclosure'
+import { useIsDesktop } from '@/hooks/useMediaQuery'
 import { PageContainer } from '@/layouts/PageContainer'
 import { paths } from '@/routes/paths'
 import { cn } from '@/utils/cn'
@@ -27,14 +31,20 @@ function toSummary(session: ChatSession) {
   }
 }
 
+type HistoryItem = ReturnType<typeof toSummary>
+
 /**
  * Chat history — searchable cards with View / Continue.
  */
 export default function ChatHistoryPage() {
   const { user } = useAuth()
   const navigate = useNavigate()
+  const isDesktop = useIsDesktop()
   const sessions = useChatSessions()
   const [query, setQuery] = useState('')
+  const [pendingDelete, setPendingDelete] = useState<HistoryItem | null>(null)
+  const deleteConfirm = useDisclosure()
+  const DeleteOverlay = isDesktop ? Modal : BottomSheet
 
   const items = useMemo(() => sessions.map(toSummary), [sessions])
   const filtered = useMemo(() => {
@@ -52,23 +62,30 @@ export default function ChatHistoryPage() {
     navigate(`${paths.ask}?chat=${encodeURIComponent(id)}&mode=${mode}`)
   }
 
+  const requestDelete = (item: HistoryItem) => {
+    setPendingDelete(item)
+    deleteConfirm.open()
+  }
+
+  const closeDelete = () => {
+    deleteConfirm.close()
+    setPendingDelete(null)
+  }
+
+  const confirmDelete = () => {
+    if (!pendingDelete) return
+    deleteChatSession(pendingDelete.id)
+    closeDelete()
+  }
+
   return (
     <div className="flex h-[calc(100dvh-var(--spacing-bottomnav))] flex-col overflow-hidden lg:h-full">
-      <MobileHeader
-        title="History"
-        titleAs="p"
-        user={user}
-        showBack
-        onBack={() => navigate(paths.ask)}
-      />
+      <MobileHeader title="History" titleAs="p" user={user} />
 
       <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain no-scrollbar">
         <PageContainer width="reading" className="space-y-5 py-5 sm:py-6 lg:py-8">
           <header className="space-y-2">
-            <p className="font-mono text-label uppercase tracking-[0.14em] text-gold-deep">
-              Your conversations
-            </p>
-            <h1 className="mt-1 font-serif text-[1.65rem] leading-tight text-ink text-balance sm:text-title lg:text-title-lg">
+            <h1 className="font-serif text-[1.65rem] leading-tight text-ink text-balance sm:text-title lg:text-title-lg">
               Chat history
             </h1>
             <p className="mt-2 max-w-md text-sm text-purple text-pretty sm:text-body">
@@ -126,7 +143,7 @@ export default function ChatHistoryPage() {
                 <li
                   key={item.id}
                   className={cn(
-                    'overflow-hidden rounded-card border border-border bg-surface',
+                    'history-card overflow-hidden rounded-card border border-border bg-surface',
                     'shadow-card animate-rise',
                   )}
                   style={{ animationDelay: `${Math.min(index, 8) * 40}ms` }}
@@ -135,7 +152,7 @@ export default function ChatHistoryPage() {
                     <span
                       className={cn(
                         'mt-0.5 inline-flex size-10 shrink-0 items-center justify-center rounded-full',
-                        'bg-navy-soft text-gold-deep',
+                        'bg-navy-soft text-silver-400',
                       )}
                       aria-hidden
                     >
@@ -145,10 +162,10 @@ export default function ChatHistoryPage() {
                       <p className="font-serif text-[1.05rem] leading-snug text-ink text-pretty sm:text-lg">
                         {item.title}
                       </p>
-                      <p className="mt-1 line-clamp-2 text-sm leading-snug text-muted text-pretty">
+                      <p className="history-preview mt-1 line-clamp-2 text-sm leading-snug text-muted text-pretty">
                         {item.preview}
                       </p>
-                      <p className="mt-2 font-mono text-[10px] uppercase tracking-[0.12em] text-faint">
+                      <p className="history-meta mt-2 font-mono text-[10px] uppercase tracking-[0.12em] text-faint">
                         {formatDateShort(item.updatedAt)}
                         {item.meta ? ` · ${item.meta}` : ''}
                       </p>
@@ -156,24 +173,24 @@ export default function ChatHistoryPage() {
                     <button
                       type="button"
                       aria-label={`Delete ${item.title}`}
-                      onClick={() => deleteChatSession(item.id)}
-                      className="inline-flex size-9 shrink-0 items-center justify-center rounded-full text-faint hover:bg-critical-soft hover:text-critical"
+                      onClick={() => requestDelete(item)}
+                      className="history-trash inline-flex size-9 shrink-0 items-center justify-center rounded-full text-faint hover:bg-critical-soft hover:text-critical"
                     >
                       <Trash2 className="size-4" />
                     </button>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-px border-t border-border bg-border">
+                  <div className="history-actions grid grid-cols-2 gap-px border-t border-border bg-border">
                     <button
                       type="button"
                       onClick={() => openChat(item.id, 'view')}
                       className={cn(
                         'flex min-h-12 items-center justify-center gap-2 bg-surface px-3',
-                        'text-sm font-semibold text-purple transition-colors',
-                        'active:bg-navy-soft hover:bg-navy-soft/60 hover:text-ink',
+                        'text-sm font-semibold text-silver-300 transition-colors',
+                        'active:bg-navy-soft hover:bg-navy-soft/60 hover:text-text',
                       )}
                     >
-                      <Eye className="size-4 text-gold-deep" aria-hidden />
+                      <Eye className="size-4 text-silver-400" aria-hidden />
                       View
                     </button>
                     <button
@@ -181,11 +198,11 @@ export default function ChatHistoryPage() {
                       onClick={() => openChat(item.id, 'continue')}
                       className={cn(
                         'flex min-h-12 items-center justify-center gap-2 bg-surface px-3',
-                        'text-sm font-semibold text-navy transition-colors',
-                        'active:bg-navy-soft hover:bg-navy-soft/60',
+                        'text-sm font-semibold text-silver-300 transition-colors',
+                        'active:bg-navy-soft hover:bg-navy-soft/60 hover:text-text',
                       )}
                     >
-                      <MessageCircle className="size-4 text-gold-deep" aria-hidden />
+                      <MessageCircle className="size-4 text-silver-400" aria-hidden />
                       Chat
                     </button>
                   </div>
@@ -195,6 +212,31 @@ export default function ChatHistoryPage() {
           )}
         </PageContainer>
       </div>
+
+      <DeleteOverlay
+        isOpen={deleteConfirm.isOpen}
+        onClose={closeDelete}
+        title="Delete this chat?"
+        description={
+          pendingDelete
+            ? `“${pendingDelete.title}” will be removed from your history. This can’t be undone.`
+            : undefined
+        }
+        footer={
+          <div className="flex flex-col gap-2 sm:flex-row sm:justify-end">
+            <Button variant="ghost" size="md" onClick={closeDelete}>
+              Keep chat
+            </Button>
+            <Button variant="danger" size="md" onClick={confirmDelete}>
+              Delete chat
+            </Button>
+          </div>
+        }
+      >
+        <p className="text-sm text-purple text-pretty">
+          The thread and its answers leave this device. You can always ask again later.
+        </p>
+      </DeleteOverlay>
     </div>
   )
 }

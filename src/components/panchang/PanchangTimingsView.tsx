@@ -198,7 +198,7 @@ export function PanchangTimingsView({
           </ul>
 
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <p className="text-sm text-gold-deep">
+            <p className="text-sm text-silver-400">
               Clear right now · <span className="font-semibold">10:44 — 13:48 is open</span>
             </p>
             <Button variant="secondary" size="sm" className="rounded-full" disabled>

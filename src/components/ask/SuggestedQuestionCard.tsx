@@ -31,7 +31,7 @@ export function SuggestedQuestionCard({ theme, onAsk, className }: SuggestedQues
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <p className="text-sub font-semibold text-ink">{theme.label}</p>
-          <p className="mt-0.5 font-mono text-label uppercase text-gold-deep">
+          <p className="mt-0.5 font-mono text-label uppercase text-silver-400">
             {bhavaRef(theme.bhava)} · {theme.reads}
           </p>
         </div>

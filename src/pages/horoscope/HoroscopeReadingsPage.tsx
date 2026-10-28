@@ -24,43 +24,31 @@ export default function HoroscopeReadingsPage() {
   return (
     <PageContainer width="wide" className="pb-16 pt-4 sm:pt-6">
       <article className="mx-auto max-w-3xl animate-rise space-y-8">
-        <header className="space-y-3">
-          <button
-            type="button"
-            onClick={() => navigate(paths.horoscopeRoot)}
-            className="text-xs text-muted underline-offset-2 hover:text-ink hover:underline"
-          >
-            ← Back to horoscope
-          </button>
-          <div className="space-y-2">
-            <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-gold-deep">
-              Readings
-            </p>
-            <h1 className="text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
-              Choose a reading
-            </h1>
-            <p className="max-w-xl text-sm leading-relaxed text-muted text-pretty sm:text-base">
-              Nine lenses on the same sky — love, career, health, and more. Each opens a full
-              reading from your chart.
-            </p>
-          </div>
+        <header className="space-y-2">
+          <h1 className="text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
+            Choose a reading
+          </h1>
+          <p className="max-w-xl text-sm leading-relaxed text-muted text-pretty sm:text-base">
+            Nine lenses on the same sky — love, career, health, and more. Each opens a full
+            reading from your chart.
+          </p>
         </header>
 
-        <section className="grid grid-cols-3 gap-2.5 sm:gap-3">
+        <section className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 sm:gap-3 lg:grid-cols-3">
           {HOROSCOPE_THEMES.map((t) => (
             <button
               key={t.id}
               type="button"
               onClick={() => openTheme(t.id)}
               className={cn(
-                'flex flex-col items-start gap-1 rounded-2xl border border-border/80 bg-surface/80',
+                'flex min-w-0 flex-col items-start gap-1 rounded-2xl border border-border/80 bg-surface/80',
                 'px-3.5 py-4 text-left transition sm:px-4 sm:py-4',
                 'hover:border-copper/50 hover:bg-copper/10 hover:text-ink',
                 'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-copper',
               )}
             >
               <span className="text-sm font-semibold text-ink">{t.label}</span>
-              <span className="text-[11px] leading-snug text-muted sm:text-xs">{t.hint}</span>
+              <span className="text-[11px] leading-snug text-muted text-pretty sm:text-xs">{t.hint}</span>
             </button>
           ))}
         </section>

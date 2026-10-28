@@ -25,7 +25,7 @@ export function DashaLens({ groups, runningPath, runningEndsOn, className }: Das
     <div className={cn('space-y-6', className)}>
       {runningPath && (
         <div className="rounded-card border border-gold-border bg-gold-soft p-4">
-          <p className="font-mono text-label uppercase text-gold-deep">Running now</p>
+          <p className="font-mono text-label uppercase text-silver-400">Running now</p>
           <p className="mt-1.5 font-mono text-data-lg text-ink">{runningPath}</p>
           {runningEndsOn && (
             <p className="mt-1 text-sm text-purple text-pretty">

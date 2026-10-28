@@ -62,6 +62,12 @@ export interface PersonFormProps {
   onUseSavedProfile?: () => void
   /** Whether any saved profiles exist (hides the button when none). */
   hasSavedProfiles?: boolean
+  /** Hide the small uppercase eyebrow label. */
+  hideEyebrow?: boolean
+  /** Override the in-form “Enter the birth details” heading (false hides it). */
+  showDetailsHeading?: boolean
+  /** Subcopy under “Use a saved kundli”. */
+  savedHint?: string
   className?: string
 }
 
@@ -81,6 +87,9 @@ export function PersonForm({
   onChange,
   onUseSavedProfile,
   hasSavedProfiles = false,
+  hideEyebrow = false,
+  showDetailsHeading,
+  savedHint = 'Fill this side in one tap',
   className,
 }: PersonFormProps) {
   const set = (patch: Partial<PersonDraft>) => onChange({ ...person, ...patch })
@@ -93,49 +102,55 @@ export function PersonForm({
     person.name.trim() && person.gender && person.date && person.time && person.place,
   )
   const fromSaved = Boolean(person.profileId)
+  const detailsHeading =
+    showDetailsHeading ?? (hasSavedProfiles || fromSaved)
 
   return (
     <section
       aria-label={label}
       className={cn(
-        'relative flex h-full min-h-0 flex-col overflow-hidden rounded-[1.25rem] border border-border/80 bg-surface p-3.5 shadow-card sm:p-4',
+        'person-form relative flex min-h-0 flex-col overflow-hidden rounded-[1.25rem] border border-border/80 bg-surface p-3.5 shadow-card sm:p-4',
         className,
       )}
     >
       <div
         aria-hidden
-        className="pointer-events-none absolute -right-8 -top-10 h-24 w-24 rounded-full bg-copper/15 blur-2xl"
+        className="person-form-orb pointer-events-none absolute -right-8 -top-10 h-24 w-24 rounded-full bg-copper/15 blur-2xl"
       />
 
-      <header className="relative mb-2.5 flex flex-wrap items-center justify-between gap-2">
-        <h2 className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-copper">
-          {label}
-        </h2>
-        {ready && (
-          <span className="inline-flex items-center gap-1 rounded-full border border-copper/40 bg-copper/10 px-2 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-copper">
-            <Check className="size-3" aria-hidden />
-            Ready
-          </span>
-        )}
-      </header>
+      {(!hideEyebrow || ready) && (
+        <header className="relative mb-2.5 flex flex-wrap items-center justify-between gap-2">
+          {!hideEyebrow && (
+            <h2 className="eyebrow font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-silver-300">
+              {label}
+            </h2>
+          )}
+          {ready && (
+            <span className="ml-auto inline-flex items-center gap-1 rounded-full border border-copper/40 bg-copper/10 px-2 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-silver-300">
+              <Check className="size-3" aria-hidden />
+              Ready
+            </span>
+          )}
+        </header>
+      )}
 
       {hasSavedProfiles && onUseSavedProfile && !fromSaved && (
         <button
           type="button"
           onClick={onUseSavedProfile}
           className={cn(
-            'relative mb-2.5 flex w-full items-center gap-2.5 rounded-xl border border-copper/55 bg-copper/5 px-3 py-2 text-left',
+            'match-saved-row relative mb-2.5 flex w-full items-center gap-2.5 rounded-xl border border-copper/55 bg-copper/5 px-3 py-2 text-left',
             'transition hover:bg-copper/10',
           )}
         >
-          <span className="inline-flex size-8 shrink-0 items-center justify-center rounded-lg border border-copper/35 bg-surface-sunken text-copper">
+          <span className="inline-flex size-8 shrink-0 items-center justify-center rounded-lg border border-copper/35 bg-surface-sunken text-silver-300">
             <Users className="size-3.5" aria-hidden />
           </span>
           <span className="min-w-0 flex-1">
             <span className="block text-sm font-semibold text-ink">Use a saved kundli</span>
-            <span className="block text-[11px] text-muted">Fill this side in one tap</span>
+            <span className="block text-[11px] text-muted">{savedHint}</span>
           </span>
-          <span className="inline-flex size-7 shrink-0 items-center justify-center rounded-full bg-copper text-[var(--btn-primary-fg)]">
+          <span className="match-saved-arrow inline-flex size-7 shrink-0 items-center justify-center rounded-full bg-copper text-[var(--btn-primary-fg)]">
             <ChevronRight className="size-3.5" aria-hidden />
           </span>
         </button>
@@ -144,7 +159,7 @@ export function PersonForm({
       {fromSaved && (
         <div className="relative mb-2.5 space-y-2">
           <div className="flex items-center gap-2.5 rounded-xl border border-border/70 bg-surface-sunken/60 px-3 py-2.5">
-            <span className="inline-flex size-9 shrink-0 items-center justify-center rounded-lg border border-copper/35 bg-copper/10 text-copper">
+            <span className="rg-icon-tile inline-flex size-9 shrink-0 items-center justify-center rounded-lg">
               <Users className="size-4" aria-hidden />
             </span>
             <div className="min-w-0 flex-1">
@@ -172,7 +187,7 @@ export function PersonForm({
                 onClick={onUseSavedProfile}
                 className={cn(
                   'inline-flex items-center gap-1.5 rounded-full border border-copper/50',
-                  'bg-copper/10 px-3 py-1.5 text-xs font-semibold text-copper',
+                  'bg-copper/10 px-3 py-1.5 text-xs font-semibold text-silver-300',
                   'transition hover:border-copper hover:bg-copper/20',
                 )}
               >
@@ -184,18 +199,14 @@ export function PersonForm({
         </div>
       )}
 
-      <div className="relative flex min-h-0 flex-1 flex-col gap-2.5">
-        {(hasSavedProfiles || fromSaved) && (
-          <div className="flex items-center gap-3">
-            <span className="h-px flex-1 bg-border" />
-            <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-faint">
-              {fromSaved ? 'birth details' : 'or enter birth details'}
-            </span>
-            <span className="h-px flex-1 bg-border" />
-          </div>
+      <div className="relative flex min-h-0 flex-col gap-2.5">
+        {detailsHeading && (
+          <h3 className="person-details-heading text-sm font-semibold text-ink">
+            Enter the birth details
+          </h3>
         )}
 
-        <Field label="What's their name?" error={errors.name}>
+        <Field label="What's their name?" error={errors.name} className="match-field">
           <Input
             tone="celestial"
             inputSize="sm"
@@ -206,8 +217,12 @@ export function PersonForm({
           />
         </Field>
 
-        <Field label="Gender" error={errors.gender}>
-          <div className="grid grid-cols-3 gap-1.5" role="radiogroup" aria-label="Gender">
+        <Field label="Gender" error={errors.gender} className="match-field">
+          <div
+            className="match-gender-tabs grid grid-cols-3 gap-1.5"
+            role="radiogroup"
+            aria-label="Gender"
+          >
             {GENDER_CHOICES.map((option) => {
               const active = person.gender === option.id
               return (
@@ -233,7 +248,7 @@ export function PersonForm({
         </Field>
 
         <div className="grid gap-2.5 sm:grid-cols-2">
-          <Field label="Date of birth" error={errors.date}>
+          <Field label="Date of birth" error={errors.date} className="match-field">
             <Input
               tone="celestial"
               inputSize="sm"
@@ -245,7 +260,7 @@ export function PersonForm({
             />
           </Field>
 
-          <Field label="Time of birth" error={errors.time}>
+          <Field label="Time of birth" error={errors.time} className="match-field">
             <Input
               tone="celestial"
               inputSize="sm"
@@ -257,7 +272,7 @@ export function PersonForm({
           </Field>
         </div>
 
-        <Field label="Where were they born?" error={errors.place}>
+        <Field label="Where were they born?" error={errors.place} className="match-field">
           <PlaceField
             value={person.place}
             onChange={(place) => set({ place, profileId: undefined })}
@@ -267,7 +282,7 @@ export function PersonForm({
 
         {!person.place && (
           <p className="flex items-start gap-1.5 text-[11px] text-muted">
-            <MapPin className="mt-0.5 size-3 shrink-0 text-copper" aria-hidden />
+            <MapPin className="mt-0.5 size-3 shrink-0 text-silver-300" aria-hidden />
             Pick the nearest listed town so the chart uses the right sky.
           </p>
         )}

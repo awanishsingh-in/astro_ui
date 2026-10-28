@@ -110,7 +110,7 @@ function FilterSelect({
         className={cn(
           'relative inline-flex items-center rounded-full border border-border/80',
           'bg-surface px-3.5 py-1.5',
-          'shadow-[0_0_0_1px_rgba(124,77,255,0.06)]',
+          'shadow-[0_0_0_1px_rgba(201,145,115,0.45)]',
           'transition group-hover:border-copper/45 group-hover:bg-copper/10',
         )}
       >
@@ -135,7 +135,7 @@ function FilterSelect({
         </select>
         <span
           aria-hidden
-          className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[0.65em] text-copper"
+          className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[0.65em] text-silver-300"
         >
           ▾
         </span>
@@ -283,7 +283,7 @@ export function HinduCalendarView({
                   onClick={() => onPaksha(p.id)}
                   className={cn(
                     'rounded-full px-3 py-1.5 text-sm font-medium transition',
-                    paksha === p.id ? 'bg-copper text-midnight' : 'text-muted hover:text-ink',
+                    paksha === p.id ? 'rg-tab' : 'text-muted hover:text-ink',
                   )}
                 >
                   {p.label}
@@ -297,19 +297,20 @@ export function HinduCalendarView({
               <div
                 key={label.en}
                 className={cn(
-                  'px-1 py-2.5 text-center sm:px-1.5',
+                  'min-w-0 px-0.5 py-2 text-center sm:px-1.5 sm:py-2.5',
                   i === 0 && 'bg-copper/10',
                 )}
               >
                 <p
                   className={cn(
-                    'font-mono text-[10px] font-semibold uppercase tracking-[0.1em]',
-                    i === 0 ? 'text-copper' : 'text-muted',
+                    'truncate font-mono text-[9px] font-semibold uppercase tracking-[0.08em] sm:text-[10px] sm:tracking-[0.1em]',
+                    i === 0 ? 'text-silver-300' : 'text-muted',
                   )}
                 >
-                  {label.hi}
+                  <span className="sm:hidden">{label.en.slice(0, 1)}</span>
+                  <span className="hidden sm:inline">{label.hi}</span>
                 </p>
-                <p className="text-[9px] text-faint">{label.en}</p>
+                <p className="hidden text-[9px] text-faint sm:block">{label.en}</p>
               </div>
             ))}
           </div>
@@ -342,17 +343,17 @@ export function HinduCalendarView({
                   type="button"
                   onClick={() => onSelect(day.date.slice(0, 10))}
                   className={cn(
-                    'relative flex min-h-[7.25rem] flex-col gap-0.5 p-1.5 text-left transition-colors sm:min-h-[8.5rem] sm:p-2',
+                    'relative flex min-h-[4.75rem] min-w-0 flex-col gap-0.5 p-1 text-left transition-colors sm:min-h-[8.5rem] sm:p-2',
                     !inMonth && 'bg-surface-sunken/35 opacity-40',
                     inMonth && 'bg-surface/95',
                     inMonth && !pakshaMatch && 'opacity-40',
-                    isSelected && 'bg-copper/14 ring-1 ring-inset ring-copper/55',
+                    isSelected && 'rg-selected',
                     !isSelected && inMonth && pakshaMatch && 'hover:bg-navy-soft/55',
                     isSunday && inMonth && 'bg-copper/[0.06]',
                   )}
                 >
                   <div className="flex w-full items-start justify-between gap-0.5">
-                    <span className="font-mono text-[9px] leading-tight text-muted">
+                    <span className="truncate font-mono text-[8px] leading-tight text-muted sm:text-[9px]">
                       {shortTithi(day.tithi)}
                     </span>
                     {(isPurnima || isAmavasya) && (
@@ -370,9 +371,9 @@ export function HinduCalendarView({
 
                   <span
                     className={cn(
-                      'text-lg font-semibold leading-none sm:text-xl',
-                      isToday && 'text-copper',
-                      !isToday && isSunday && 'text-copper',
+                      'inline-flex text-lg font-semibold leading-none sm:text-xl',
+                      isToday && 'rg-today rounded-full px-1',
+                      !isToday && isSunday && 'text-silver-300',
                       !isToday && !isSunday && 'text-ink',
                     )}
                   >
@@ -380,29 +381,31 @@ export function HinduCalendarView({
                   </span>
 
                   {monthEdge && (
-                    <span className="font-mono text-[8px] font-semibold uppercase tracking-wide text-copper">
+                    <span className="font-mono text-[8px] font-semibold uppercase tracking-wide text-silver-300">
                       {displayMonth}
                     </span>
                   )}
 
                   {inMonth && (
-                    <div className="mt-auto space-y-0.5 pt-1">
+                    <div className="mt-auto min-w-0 space-y-0.5 pt-0.5 sm:pt-1">
                       {day.chandraRashi && (
-                        <p className="truncate text-[9px] leading-tight text-muted">
+                        <p className="hidden truncate text-[9px] leading-tight text-muted sm:block">
                           <span className="text-faint">○</span> {day.chandraRashi}
                           {day.chandraRashiAt ? (
                             <span className="text-faint"> {day.chandraRashiAt}</span>
                           ) : null}
                         </p>
                       )}
-                      <p className="truncate text-[9px] leading-tight text-muted">
+                      <p className="hidden truncate text-[9px] leading-tight text-muted sm:block">
                         <span className="text-faint">☆</span> {day.nakshatra}
                       </p>
                       {headline && (
                         <p
                           className={cn(
-                            'line-clamp-2 text-[10px] font-semibold leading-snug',
-                            headline.kind === 'festival' ? 'text-copper' : 'text-gold-deep',
+                            'line-clamp-1 rounded-md border px-1 py-0.5 text-[9px] font-medium leading-snug sm:line-clamp-2 sm:text-[10px]',
+                            headline.kind === 'festival'
+                              ? 'cal-festival-chip'
+                              : 'cal-event-chip text-ink',
                           )}
                         >
                           {headline.name}
@@ -435,7 +438,7 @@ export function HinduCalendarView({
               className={cn(
                 'rounded-full border px-3 py-1.5 text-sm',
                 reckoning === 'amanta'
-                  ? 'border-copper/45 bg-copper/15 text-ink'
+                  ? 'rg-tab'
                   : 'border-border text-muted',
               )}
             >
@@ -447,7 +450,7 @@ export function HinduCalendarView({
               className={cn(
                 'rounded-full border px-3 py-1.5 text-sm',
                 reckoning === 'purnimanta'
-                  ? 'border-copper/45 bg-copper/15 text-ink'
+                  ? 'rg-tab'
                   : 'border-border text-muted',
               )}
             >
@@ -463,7 +466,7 @@ export function HinduCalendarView({
 
       <aside className="space-y-4 xl:sticky xl:top-6">
         <Card padding="lg" className="gap-3 border-border/80">
-          <p className="font-mono text-label uppercase text-gold-deep">
+          <p className="font-mono text-label uppercase text-silver-400">
             {selected ? formatDayAndDate(selected.date) : 'Select a day'}
           </p>
           {selected && (
@@ -512,7 +515,7 @@ export function HinduCalendarView({
         </Card>
 
         <Card padding="lg" className="gap-1.5 border-border/80">
-          <p className="font-mono text-label uppercase text-gold-deep">This month holds</p>
+          <p className="font-mono text-label uppercase text-silver-400">This month holds</p>
           <p className="text-sm text-purple">
             {festivalCount} festival{festivalCount === 1 ? '' : 's'} · {vratCount} vrat day
             {vratCount === 1 ? '' : 's'}
@@ -524,7 +527,7 @@ export function HinduCalendarView({
         </Card>
 
         <Card padding="lg" className="gap-2 border-border/80">
-          <p className="font-mono text-label uppercase text-gold-deep">Hindu months</p>
+          <p className="font-mono text-label uppercase text-silver-400">Hindu months</p>
           <ul className="grid grid-cols-2 gap-x-3 gap-y-1">
             {HINDU_MONTHS.map((m) => {
               const active = hinduSpan.includes(m.name)

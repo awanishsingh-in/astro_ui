@@ -16,12 +16,12 @@ export function PastAeroSky({
   contentClassName?: string
 }) {
   return (
-    <div className={cn('relative isolate overflow-hidden bg-[#07041a]', className)}>
+    <div className={cn('relative isolate overflow-hidden bg-bg', className)}>
       <div className="pointer-events-none absolute inset-0 z-0" aria-hidden>
         <AeroShards
-          backgroundColor="#07041a"
-          shardColor="#7c4dff"
-          accentColor="#5ed7f2"
+          backgroundColor="var(--color-bg)"
+          shardColor="var(--color-primary)"
+          accentColor="var(--color-info)"
           placement="full"
           flow="stream"
           material="pearl"
@@ -53,7 +53,7 @@ export function PastAeroSky({
       {/* Soft veil so cards and type stay readable over the sculpture */}
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 z-[1] bg-[radial-gradient(ellipse_70%_55%_at_50%_20%,rgba(7,4,26,0.22)_0%,rgba(11,7,28,0.62)_70%,rgba(11,7,28,0.88)_100%)]"
+        className="pointer-events-none absolute inset-0 z-[1] bg-[radial-gradient(ellipse_70%_55%_at_50%_20%,_0%,_70%,_100%)]"
       />
       <div className={cn('relative z-10', contentClassName)}>{children}</div>
     </div>

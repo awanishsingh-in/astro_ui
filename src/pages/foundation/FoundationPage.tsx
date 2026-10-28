@@ -138,7 +138,7 @@ export default function FoundationPage() {
         {/* ── Colour ─────────────────────────────────────────────── */}
         <Section
           title="Colour"
-          note="Astrovate system: deep space through muted plum for surfaces; copper for accents and selection; warm white and pale rose for text. Copper marks emphasis — it is never the only colour on a screen."
+          note="Cosmos — cool navy + copper (light + dark). See /theme-preview for the full token checklist."
         >
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
             {SWATCHES.map((swatch) => (
@@ -327,7 +327,7 @@ export default function FoundationPage() {
               />
             </Card>
             <CelestialCard motifs={['stars']} tone="midnight" seed="fdn-wheel" padding="lg">
-              <p className="font-mono text-label uppercase text-gold-soft-line">
+              <p className="font-mono text-label uppercase text-silver-300">
                 PremiumChartWheel · dark
               </p>
               <PremiumChartWheel
@@ -367,7 +367,7 @@ export default function FoundationPage() {
         >
           <div className="grid gap-5 lg:grid-cols-2">
             <CelestialCard motifs={['stars', 'orbits']} tone="midnight" seed="fdn-a" padding="lg">
-              <p className="font-mono text-label uppercase text-gold-soft-line">
+              <p className="font-mono text-label uppercase text-silver-300">
                 CelestialCard · stars + orbits
               </p>
               <p className="mt-2 text-sub text-on-celestial text-pretty">
@@ -385,7 +385,7 @@ export default function FoundationPage() {
             </CelestialCard>
 
             <CelestialCard motifs={['stars']} tone="indigo" seed="fdn-b" padding="lg">
-              <p className="font-mono text-label uppercase text-gold-soft-line">
+              <p className="font-mono text-label uppercase text-silver-300">
                 PlanetBadge · dark
               </p>
               <div className="mt-3 flex flex-wrap gap-x-6 gap-y-3">
@@ -409,7 +409,7 @@ export default function FoundationPage() {
             </Card>
 
             <CelestialCard motifs={[]} tone="indigo" seed="fdn-c" padding="lg">
-              <p className="font-mono text-label uppercase text-gold-soft-line">ZodiacOrbit</p>
+              <p className="font-mono text-label uppercase text-silver-300">ZodiacOrbit</p>
               <ZodiacOrbit tone="dark" className="mx-auto mt-3 max-w-[260px]" />
             </CelestialCard>
           </div>
@@ -539,7 +539,7 @@ export default function FoundationPage() {
                       className={cn(
                         'relative flex h-bottomnav flex-col items-center justify-center gap-1 px-0.5',
                         '[&_svg]:size-5',
-                        index === 0 ? 'text-navy' : 'text-muted',
+                        index === 0 ? 'text-silver-300' : 'text-muted',
                       )}
                     >
                       {index === 0 && (
@@ -726,7 +726,7 @@ export default function FoundationPage() {
 
             <div className="grid gap-3 sm:grid-cols-2">
               <Card tone="gold" padding="lg" className="gap-2">
-                <p className="font-mono text-label uppercase text-gold-deep">gold</p>
+                <p className="font-mono text-label uppercase text-silver-400">gold</p>
                 <p className="text-sm text-purple">Citations and the selected state.</p>
               </Card>
               <Card tone="default" padding="lg" className="gap-2">
@@ -857,35 +857,18 @@ const GRAHA_COLUMNS = [
 ]
 
 const SWATCHES = [
-  // Astrovate primary — deep space → muted plum
-  { token: 'deep-space', label: 'Deep Space', className: 'bg-deep-space', hex: '#0F0B19' },
-  { token: 'dark-purple', label: 'Dark Purple', className: 'bg-dark-purple', hex: '#1B101D' },
-  { token: 'deep-burgundy', label: 'Deep Burgundy', className: 'bg-deep-burgundy', hex: '#2E1623' },
-  { token: 'nebula-plum', label: 'Nebula Plum', className: 'bg-nebula-plum', hex: '#36232E' },
-  { token: 'dark-mauve', label: 'Dark Mauve', className: 'bg-dark-mauve', hex: '#44333C' },
-  { token: 'muted-plum', label: 'Muted Plum', className: 'bg-muted-plum', hex: '#5C4750' },
-  // Copper & metallic — primary accent
-  { token: 'copper-shadow', label: 'Copper Shadow', className: 'bg-copper-shadow', hex: '#7D4835' },
-  { token: 'copper', label: 'Copper', className: 'bg-copper', hex: '#DC844F' },
-  { token: 'light-copper', label: 'Light Copper', className: 'bg-light-copper', hex: '#E3B08A' },
-  { token: 'pale-copper', label: 'Pale Copper', className: 'bg-pale-copper', hex: '#F2D7C7' },
-  // Text & light accents
-  { token: 'warm-white', label: 'Warm White', className: 'bg-warm-white', hex: '#FDF8F4' },
-  { token: 'pale-rose', label: 'Pale Rose', className: 'bg-pale-rose', hex: '#D2C1C4' },
-  { token: 'lavender-gray', label: 'Lavender Gray', className: 'bg-lavender-gray', hex: '#A097A7' },
-  { token: 'gray-purple', label: 'Gray Purple', className: 'bg-gray-purple', hex: '#7A6E74' },
-  // Semantic aliases used across the app
-  { token: 'navy', label: 'Navy → Copper', className: 'bg-navy', hex: '#DC844F' },
-  { token: 'gold', label: 'Gold → Copper', className: 'bg-gold', hex: '#DC844F' },
-  { token: 'ink', label: 'Ink', className: 'bg-ink', hex: '#FDF8F4' },
-  { token: 'canvas', label: 'Canvas', className: 'bg-canvas border border-border', hex: '#0F0B19' },
-  {
-    token: 'surface',
-    label: 'Surface',
-    className: 'bg-surface border border-border',
-    hex: '#1B101D',
-  },
+  { token: 'bg', label: 'Bg', className: 'bg-bg', hex: '#0F0B19' },
+  { token: 'surface', label: 'Surface', className: 'bg-surface border border-border', hex: '#1B101D' },
+  { token: 'primary', label: 'Primary', className: 'bg-primary', hex: '#BF8466' },
+  { token: 'secondary', label: 'Secondary', className: 'bg-secondary', hex: '#6E4234' },
+  { token: 'accent', label: 'Accent', className: 'bg-accent', hex: '#F2D7C7' },
+  { token: 'text', label: 'Text', className: 'bg-text', hex: '#FBEFE6' },
+  { token: 'surface-raised', label: 'Surface raised', className: 'bg-surface-raised', hex: '#2E1623' },
   { token: 'border', label: 'Border', className: 'bg-border', hex: '#44333C' },
+  { token: 'text-secondary', label: 'Text secondary', className: 'bg-text-secondary', hex: '#D2C1C4' },
+  { token: 'text-muted', label: 'Text muted', className: 'bg-text-muted', hex: '#A097A7' },
+  { token: 'success', label: 'Success', className: 'bg-success', hex: '#E6BC9F' },
+  { token: 'error', label: 'Error', className: 'bg-error', hex: '#6E4234' },
 ]
 
 function Swatch({ label, className, hex }: { label: string; className: string; hex: string }) {

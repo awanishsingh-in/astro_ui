@@ -79,8 +79,8 @@ export default function LandingPage() {
       className="min-h-dvh"
       style={{ minHeight: '100dvh' }}
       enabled={glowEnabled}
-      color="#7C4DFF"
-      secondaryColor="#E3B08A"
+      color="#B8327A"
+      secondaryColor="#C9C0CF"
       trailLength={40}
       trailWidth={8}
       trailTaper={0.8}
@@ -105,10 +105,10 @@ export default function LandingPage() {
       >
         <ShootingStars />
 
-        <header className="relative z-10 flex h-mobilebar items-center justify-between px-5 animate-rise-slow lg:h-topnav lg:px-10">
+        <header className="relative z-10 flex h-mobilebar items-center justify-between px-5 pt-safe animate-rise-slow lg:h-topnav lg:px-10">
           <Logo size="sm" tone="dark" className="lg:hidden" />
           <Logo size="md" tone="dark" className="hidden lg:flex" />
-          <Button variant="celestialGhost" size="sm" to={paths.signIn}>
+          <Button variant="outline" size="sm" to={paths.signIn}>
             Sign in
           </Button>
         </header>
@@ -122,18 +122,26 @@ export default function LandingPage() {
                   className="animate-rise-slow lg:hidden"
                 />
 
+                <p
+                  className="eyebrow mt-10 animate-rise-slow lg:mt-0"
+                  style={{ animationDelay: '40ms' }}
+                >
+                  Cosmos AI
+                </p>
+
                 <h1
                   className={cn(
-                    'mt-10 max-w-2xl font-serif text-display font-normal text-on-celestial text-balance',
-                    'animate-rise-slow lg:mt-0 lg:text-display-lg',
+                    'mt-3 max-w-2xl font-serif text-display font-normal text-chrome text-balance',
+                    'animate-rise-slow lg:text-display-lg',
                   )}
                   style={{ animationDelay: '80ms' }}
                 >
-                  Ask a question. Get an answer calculated from your birth chart.
+                  Ask a question. Get an answer calculated from your{' '}
+                  <span className="text-silver-300">birth chart</span>.
                 </h1>
 
                 <p
-                  className="mt-5 max-w-xl animate-rise-slow text-body text-on-celestial-muted text-pretty"
+                  className="mt-5 max-w-xl animate-rise-slow text-body text-text-secondary text-pretty"
                   style={{ animationDelay: '180ms' }}
                 >
                   Enter your birth date, time and place once. Every answer names the house and the
@@ -145,7 +153,8 @@ export default function LandingPage() {
                   style={{ animationDelay: '280ms' }}
                 >
                   <Button
-                    variant="celestial"
+                    variant="primary"
+                    pulse
                     to={paths.signUp}
                     fullWidth
                     className="sm:w-auto sm:min-w-[11.5rem] sm:px-10"
@@ -164,7 +173,7 @@ export default function LandingPage() {
                   Already have an account?{' '}
                   <Link
                     to={paths.signIn}
-                    className="font-semibold text-gold-soft-line underline-offset-4 hover:underline"
+                    className="font-semibold text-silver-300 underline-offset-4 hover:underline"
                   >
                     Sign in
                   </Link>
@@ -190,13 +199,12 @@ export default function LandingPage() {
                 className="relative mx-auto w-full max-w-[340px] animate-rise-slow lg:max-w-none"
                 style={{ animationDelay: '220ms' }}
               >
-                {/* Soft gold breath behind the wheel. */}
                 <div
                   aria-hidden
                   className="pointer-events-none absolute inset-[8%] rounded-full motion-safe:animate-pulse-soft"
                   style={{
                     background:
-                      'radial-gradient(circle, color-mix(in srgb, var(--color-gold) 28%, transparent) 0%, transparent 70%)',
+                      'radial-gradient(circle, rgba(184, 50, 122, 0.12) 0%, transparent 70%)',
                   }}
                 />
                 <div className="relative motion-safe:animate-float">
@@ -208,8 +216,8 @@ export default function LandingPage() {
                     label="Animated sidereal zodiac with planetary orbits"
                   />
                 </div>
-                <p className="mt-4 text-center font-mono text-label uppercase tracking-wide text-on-celestial-faint">
-                  <span className="text-gold-soft-line">{GRAHAS[activeGraha].name}</span>
+                <p className="mt-4 text-center font-mono text-label uppercase tracking-wide text-silver-400">
+                  <span className="text-silver-300">{GRAHAS[activeGraha].name}</span>
                   {' · moving through the signs'}
                 </p>
               </div>

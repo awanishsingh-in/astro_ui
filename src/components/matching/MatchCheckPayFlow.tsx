@@ -55,7 +55,7 @@ export function MatchCheckPayFlow({
       >
         <div className="space-y-4">
           <div className="flex items-start gap-3 rounded-card border border-copper/40 bg-copper/10 px-4 py-3.5">
-            <HeartHandshake className="mt-0.5 size-5 shrink-0 text-copper" aria-hidden />
+            <HeartHandshake className="mt-0.5 size-5 shrink-0 text-silver-300" aria-hidden />
             <p className="text-sm text-ink text-pretty">
               One payment · match family, friends, or anyone for a full month. Demo only · no real
               charge.
@@ -119,7 +119,7 @@ export function MatchCheckPayFlow({
         </div>
 
         <div className="flex items-start gap-3 rounded-card border border-border px-4 py-3">
-          <ShieldCheck className="mt-0.5 size-5 shrink-0 text-gold-deep" aria-hidden />
+          <ShieldCheck className="mt-0.5 size-5 shrink-0 text-silver-400" aria-hidden />
           <p className="text-sm text-muted text-pretty">
             Demo payment gateway · no real charge. Confirm to unlock matching for a month.
           </p>

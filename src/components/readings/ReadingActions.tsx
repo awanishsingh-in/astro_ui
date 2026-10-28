@@ -112,7 +112,7 @@ export function ReadingActions({ reading, className }: ReadingActionsProps) {
         size="sm"
         onClick={save}
         aria-pressed={saved}
-        className={saved ? 'text-gold-deep' : undefined}
+        className={saved ? 'text-silver-400' : undefined}
       />
     </div>
   )

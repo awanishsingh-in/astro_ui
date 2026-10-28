@@ -21,10 +21,7 @@ import {
 import { cn } from '@/utils/cn'
 import { formatCoordinates } from '@/utils/format'
 
-const ADVENTURE_BTN =
-  'rounded-2xl border-0 bg-gradient-to-r from-[#7c4dff] to-[#3a7bd5] text-white shadow-[0_12px_32px_-12px_rgba(124,77,255,0.75)] hover:from-[#8b5cff] hover:to-[#4a8be5] active:from-[#6b3de8] active:to-[#2f6bc0] focus-visible:outline-[#c4a0ff]'
-
-const FIELD_ADV = '[&_label]:text-white/70 [&_p]:text-white/40'
+const FIELD_ADV = '[&_label]:text-text-secondary [&_p]:text-text-muted'
 
 interface Errors {
   fullName?: string
@@ -105,13 +102,13 @@ export default function BirthDetailsPage() {
         className="mx-auto flex w-full max-w-2xl flex-col gap-4"
       >
         <header className="space-y-1">
-          <h1 className="text-2xl font-bold uppercase tracking-tight text-white sm:text-[1.75rem]">
+          <h1 className="text-chrome text-2xl font-bold uppercase tracking-tight sm:text-[1.75rem]">
             Fill your birth details
           </h1>
-          <p className="text-sm text-white/50">Entered once, editable later from your account.</p>
+          <p className="text-sm text-text-secondary">Entered once, editable later from your account.</p>
         </header>
 
-        <div className="relative rounded-2xl border border-white/10 bg-[#0e0820]/80 p-3.5 sm:p-4">
+        <div className="card relative p-3.5 sm:p-4">
           <div className="relative flex flex-col gap-3">
             <Field
               appearance="plain"
@@ -148,11 +145,10 @@ export default function BirthDetailsPage() {
                         clearError('gender')
                       }}
                       className={cn(
-                        'rounded-xl border px-2 py-2 text-center text-sm font-medium transition-colors',
-                        active
-                          ? 'border-[#c4a0ff]/50 bg-[#7c4dff]/25 text-white'
-                          : 'border-white/10 bg-[#0b071c] text-white/55 hover:border-white/20 hover:text-white',
+                        'btn-glass rounded-xl px-2 py-2 text-center text-sm font-medium transition-colors',
+                        active ? 'rg-tab' : 'text-silver-400 hover:text-text-primary',
                       )}
+                      aria-selected={active}
                     >
                       {GENDER_LABEL[option]}
                     </button>
@@ -209,7 +205,7 @@ export default function BirthDetailsPage() {
                     className={cn(
                       'inline-flex w-fit items-center gap-2 rounded-lg border px-2.5 py-1 text-xs transition-colors',
                       timeUnknown
-                        ? 'border-[#c4a0ff]/40 bg-[#7c4dff]/20 text-[#c4a0ff]'
+                        ? 'border-blue-light/40 bg-blue-glow/20 text-blue-light'
                         : 'border-white/10 text-white/50 hover:border-white/20 hover:text-white',
                     )}
                   >
@@ -218,7 +214,7 @@ export default function BirthDetailsPage() {
                       className={cn(
                         'flex size-3.5 items-center justify-center rounded-xs border',
                         timeUnknown
-                          ? 'border-[#c4a0ff] bg-[#7c4dff] text-white'
+                          ? 'border-blue-light bg-blue-glow text-white'
                           : 'border-white/25',
                       )}
                     >
@@ -265,17 +261,10 @@ export default function BirthDetailsPage() {
         </div>
 
         <div className="space-y-2">
-          <Button
-            type="submit"
-            variant="ghost"
-            fullWidth
-            size="lg"
-            loading={isSubmitting}
-            className={ADVENTURE_BTN}
-          >
+          <Button type="submit" variant="primary" fullWidth size="lg" loading={isSubmitting}>
             {isSubmitting ? 'Calculating' : 'Calculate my chart'}
           </Button>
-          <p className="flex items-center justify-center gap-2 text-xs text-white/35">
+          <p className="flex items-center justify-center gap-2 text-xs text-text-muted">
             <Lock aria-hidden className="size-3.5" />
             Used only to calculate your chart
           </p>

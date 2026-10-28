@@ -114,7 +114,7 @@ export default function CalendarPage() {
 
   return (
     <>
-      <MobileHeader title="Calendar" titleAs="p" showBack user={user} />
+      <MobileHeader title="Calendar" titleAs="p" user={user} />
 
       <PageContainer width="wide">
         {status === 'error' && view === 'month' ? (

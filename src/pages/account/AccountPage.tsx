@@ -209,7 +209,7 @@ export default function AccountPage() {
                         'flex min-h-11 w-full items-center gap-3 rounded-control px-3 py-2.5 text-left text-sub',
                         'transition-[background-color,color] duration-150 ease-out-soft [&_svg]:size-4',
                         isActive
-                          ? 'bg-gold-soft font-semibold text-gold-deep'
+                          ? 'bg-gold-soft font-semibold text-silver-400'
                           : 'text-purple hover:bg-navy-soft hover:text-ink',
                       )}
                     >
@@ -230,7 +230,7 @@ export default function AccountPage() {
                                 className={cn(
                                   'w-full rounded-control px-2.5 py-2 text-left text-sm transition-colors',
                                   childActive
-                                    ? 'font-semibold text-gold-deep'
+                                    ? 'font-semibold text-silver-400'
                                     : 'text-purple hover:bg-navy-soft hover:text-ink',
                                 )}
                               >
@@ -352,7 +352,7 @@ export default function AccountPage() {
               </DetailList>
 
               <Card tone="gold" padding="md" className="gap-1.5">
-                <p className="font-mono text-label uppercase text-gold-deep">If you change these</p>
+                <p className="font-mono text-label uppercase text-silver-400">If you change these</p>
                 <p className="text-sm text-purple text-pretty">
                   Changing these recalculates your chart. Past questions and answers stay — every
                   reading keeps the chart and the period it was read from, so its citations remain
@@ -406,7 +406,7 @@ export default function AccountPage() {
                             <Badge tone={isSelf ? 'gold' : 'neutral'} mono>
                               {isSelf ? 'You' : RELATION_LABEL[profile.relation]}
                             </Badge>
-                            {isSelected && <Check aria-hidden className="size-4 text-gold-deep" />}
+                            {isSelected && <Check aria-hidden className="size-4 text-silver-400" />}
                           </span>
                           <span className="block truncate font-mono text-label uppercase text-muted">
                             {formatDateLong(profile.birthDetails.date)}
@@ -482,7 +482,7 @@ export default function AccountPage() {
                     'Every reading kept, indexed by bhava and period',
                   ].map((item) => (
                     <li key={item} className="flex gap-3 text-sm text-purple">
-                      <Check aria-hidden className="mt-0.5 size-4 shrink-0 text-gold-deep" />
+                      <Check aria-hidden className="mt-0.5 size-4 shrink-0 text-silver-400" />
                       <span className="text-pretty">{item}</span>
                     </li>
                   ))}
@@ -490,7 +490,7 @@ export default function AccountPage() {
                 <Button
                   variant="secondary"
                   size="sm"
-                  to={paths.explore('subscription')}
+                  to={paths.ask}
                   iconRight={<ChevronRight className="size-4" />}
                   className="w-fit"
                 >
@@ -538,7 +538,7 @@ export default function AccountPage() {
                       >
                         <span
                           aria-hidden
-                          className="inline-flex size-9 shrink-0 items-center justify-center rounded-control border border-border bg-surface-sunken text-gold-deep"
+                          className="inline-flex size-9 shrink-0 items-center justify-center rounded-control border border-border bg-surface-sunken text-silver-400"
                         >
                           <Icon className="size-4" />
                         </span>
@@ -563,7 +563,7 @@ export default function AccountPage() {
               className={only('usage')}
               action={
                 <Button variant="ghost" size="sm" onClick={() => setActive('settings')}>
-                  Back to Settings
+                  Settings
                 </Button>
               }
             >
@@ -586,7 +586,7 @@ export default function AccountPage() {
               className={only('billing')}
               action={
                 <Button variant="ghost" size="sm" onClick={() => setActive('settings')}>
-                  Back to Settings
+                  Settings
                 </Button>
               }
             >
@@ -620,7 +620,7 @@ export default function AccountPage() {
               className={only('terms')}
               action={
                 <Button variant="ghost" size="sm" onClick={() => setActive('settings')}>
-                  Back to Settings
+                  Settings
                 </Button>
               }
             >
@@ -644,7 +644,7 @@ export default function AccountPage() {
               className={only('policies')}
               action={
                 <Button variant="ghost" size="sm" onClick={() => setActive('settings')}>
-                  Back to Settings
+                  Settings
                 </Button>
               }
             >
@@ -668,7 +668,7 @@ export default function AccountPage() {
               className={only('privacy')}
               action={
                 <Button variant="ghost" size="sm" onClick={() => setActive('settings')}>
-                  Back to Settings
+                  Settings
                 </Button>
               }
             >
@@ -735,9 +735,6 @@ export default function AccountPage() {
                   <Button variant="secondary" size="sm" to={paths.chart}>
                     Open my chart
                   </Button>
-                  <Button variant="ghost" size="sm" to={paths.everything}>
-                    See everything Cyklos does
-                  </Button>
                 </div>
               </Card>
             </AccountSection>
@@ -780,8 +777,9 @@ export default function AccountPage() {
               toast.success(`${profile.name} updated`)
             } else {
               const created = profiles.add(profile)
+              profiles.select(created.id)
               toast.success(`${created.name} added`, {
-                description: 'Switch to their chart from Saved charts or My Chart.',
+                description: 'They appear in your profile list — open Profile to manage them.',
               })
             }
             profileSheet.close()

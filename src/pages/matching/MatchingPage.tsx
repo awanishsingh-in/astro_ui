@@ -1,5 +1,4 @@
 import {
-  ArrowLeft,
   ChevronRight,
   Download,
   FileText,
@@ -74,7 +73,6 @@ import {
   createMatchReportPdfBlob,
   downloadMatchReportPdf,
 } from '@/utils/match-report-download'
-import { setMatchingBackHandler } from '@/utils/matching-back'
 import { consumeMatchResume, saveMatchResume } from '@/utils/match-resume'
 
 type Step = 'details' | 'type' | 'result' | 'pdf'
@@ -110,7 +108,7 @@ export default function MatchingPage() {
   // Re-read access flags after pay / first free match.
   void accessTick
 
-  // Restore result after Manglik calculator, then draft / pick; else Person 1 = account.
+  // Restore result after Manglik calculator, then draft / pick. Forms stay blank otherwise.
   useEffect(() => {
     const resume = consumeMatchResume()
     if (resume) {
@@ -147,18 +145,7 @@ export default function MatchingPage() {
         toast.success(`Filled ${pick.slot === 'a' ? 'Person 1' : 'Person 2'}`, {
           description: profile.name,
         })
-        return
       }
-    }
-
-    // First visit (no draft / pick): prefill Person 1 with the main account.
-    if (!draft) {
-      const self = profiles.find((p) => p.id === 'self')
-      if (!self) return
-      setA((current) => {
-        if (current.profileId || current.name.trim()) return current
-        return personFromProfile(self)
-      })
     }
   }, [profiles, toast])
 
@@ -247,31 +234,6 @@ export default function MatchingPage() {
     }
   }, [pdfUrl])
 
-  // Chrome Back: result → type → details; only leave Matching from the details step.
-  useEffect(() => {
-    setMatchingBackHandler(() => {
-      if (step === 'pdf') {
-        setStep('result')
-        return true
-      }
-      if (step === 'result') {
-        setResult(null)
-        setError(null)
-        setDetailPdfPhase(null)
-        setStep('type')
-        return true
-      }
-      if (step === 'type') {
-        setMatchType(null)
-        setError(null)
-        setStep('details')
-        return true
-      }
-      return false
-    })
-    return () => setMatchingBackHandler(null)
-  }, [step])
-
   if (!user) return null
 
   if (step === 'pdf' && result && pdfUrl) {
@@ -303,13 +265,10 @@ export default function MatchingPage() {
         {step === 'details' && (
           <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-hidden">
             <header className="relative shrink-0">
-              <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-copper">
-                Guna Milan · 36 points
-              </p>
-              <h1 className="mt-0.5 font-serif text-2xl font-semibold tracking-tight text-ink sm:text-3xl">
-                Kundli <span className="text-copper">Matching</span>
+              <h1 className="font-serif text-2xl font-semibold tracking-tight text-ink sm:text-3xl">
+                Kundli Matching
               </h1>
-              <p className="mt-1 text-xs text-muted text-pretty sm:text-sm">
+              <p className="match-subtitle mt-1 text-xs text-muted text-pretty sm:text-sm">
                 Pick saved kundlis or enter birth details for two people.
               </p>
             </header>
@@ -330,14 +289,14 @@ export default function MatchingPage() {
 
               <div
                 aria-hidden
-                className="relative flex shrink-0 items-center justify-center py-0.5 lg:sticky lg:top-1/3 lg:px-0.5"
+                className="match-plus-wrap relative flex shrink-0 items-center justify-center py-0.5 lg:sticky lg:top-1/3 lg:px-0.5"
               >
-                <span className="pointer-events-none absolute size-12 rounded-full bg-[#7c4dff]/35 blur-xl animate-[pulse-soft_2.8s_ease-in-out_infinite]" />
+                <span className="match-plus-blur pointer-events-none absolute size-12 rounded-full bg-primary/35 blur-xl animate-[pulse-soft_2.8s_ease-in-out_infinite]" />
                 <span
                   className={cn(
-                    'relative z-[1] inline-flex size-11 items-center justify-center rounded-full',
-                    'border border-white/25 bg-gradient-to-br from-[#7c4dff] via-[#5b6cff] to-[#3a7bd5]',
-                    'text-white shadow-[0_12px_32px_-10px_rgba(124,77,255,0.95)]',
+                    'match-plus relative z-[1] inline-flex size-11 items-center justify-center rounded-full',
+                    'border border-white/25 bg-gradient-to-br from-primary via-secondary to-primary-pressed',
+                    'text-white shadow-[0_12px_32px_-10px_rgba(201,145,115,0.55)]',
                   )}
                 >
                   <Plus className="size-5 drop-shadow-sm" strokeWidth={2.75} />
@@ -369,7 +328,7 @@ export default function MatchingPage() {
                   ? `Unlock unlimited · ${formatMatchCheckInr()}`
                   : 'Check match'}
               </Button>
-              <p className="text-center text-[11px] text-muted text-pretty">
+              <p className="match-footer-note text-center text-[11px] text-muted text-pretty">
                 {unlimitedExpiry
                   ? `Unlimited matching until ${unlimitedExpiry}`
                   : needsMatchPay
@@ -382,38 +341,24 @@ export default function MatchingPage() {
 
         {step === 'type' && (
           <div className="mt-2 space-y-6 animate-rise sm:mt-4">
-            <div className="flex flex-wrap items-start justify-between gap-3">
-              <div>
-                <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-copper">
-                  Step 2 of 2
-                </p>
-                <h1 className="mt-2 font-serif text-4xl font-semibold tracking-tight text-ink sm:text-5xl">
-                  Match <span className="text-copper">type</span>
-                </h1>
-                <p className="mt-2 max-w-xl text-sm text-muted text-pretty">
-                  How is {b.name.trim() || 'Person 2'} related to {a.name.trim() || 'Person 1'}? This
-                  changes how we read the result.
-                </p>
-              </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setStep('details')}
-                iconLeft={<ArrowLeft className="size-4" />}
-                className="rounded-full"
-              >
-                Back
-              </Button>
+            <div>
+              <h1 className="font-serif text-4xl font-semibold tracking-tight text-ink sm:text-5xl">
+                Match <span className="text-silver-300">type</span>
+              </h1>
+              <p className="mt-2 max-w-xl text-sm text-muted text-pretty">
+                How is {b.name.trim() || 'Person 2'} related to {a.name.trim() || 'Person 1'}? This
+                changes how we read the result.
+              </p>
             </div>
 
             <div className="flex flex-wrap items-center gap-3 rounded-[1.25rem] border border-border/80 bg-surface px-4 py-3.5">
               <span className="text-sm font-semibold text-ink">{a.name.trim() || 'Person 1'}</span>
-              <HeartHandshake className="size-4 text-copper" aria-hidden />
+              <HeartHandshake className="size-4 text-silver-300" aria-hidden />
               <span className="text-sm font-semibold text-ink">{b.name.trim() || 'Person 2'}</span>
               <button
                 type="button"
                 onClick={() => setStep('details')}
-                className="ml-auto text-xs font-semibold text-muted hover:text-copper"
+                className="ml-auto text-xs font-semibold text-muted hover:text-silver-300"
               >
                 Edit people
               </button>
@@ -439,12 +384,12 @@ export default function MatchingPage() {
                       'transition-[border-color,background-color,box-shadow,transform] duration-150 ease-out-soft',
                       'active:scale-[0.99]',
                       active
-                        ? 'border-copper/55 bg-copper/12 shadow-[0_0_28px_-12px_rgba(124,77,255,0.45)]'
+                        ? 'border-copper/55 bg-copper/12 shadow-[0_0_28px_-12px_rgba(201,145,115,0.55)]'
                         : 'border-border bg-surface hover:border-border-strong hover:bg-surface-raised',
                     )}
                   >
                     {option.id === 'partner' && (
-                      <span className="font-mono text-[9px] font-semibold uppercase tracking-[0.14em] text-copper">
+                      <span className="font-mono text-[9px] font-semibold uppercase tracking-[0.14em] text-silver-300">
                         Most chosen
                       </span>
                     )}
@@ -453,7 +398,7 @@ export default function MatchingPage() {
                       className={cn(
                         'inline-flex size-9 items-center justify-center rounded-xl border',
                         active
-                          ? 'border-copper/45 bg-copper/20 text-copper shadow-[0_0_18px_-6px_rgba(124,77,255,0.55)]'
+                          ? 'border-copper/45 bg-copper/20 text-silver-300 shadow-[0_0_18px_-6px_rgba(201,145,115,0.55)]'
                           : 'border-border bg-surface-sunken text-muted',
                       )}
                     >
@@ -620,25 +565,25 @@ function MatchReport({
             onClick={onDownloadBasic}
             className={cn(
               'group relative inline-flex items-center gap-2.5 overflow-hidden rounded-full',
-              'border border-[#7c4dff]/45 bg-[#7c4dff]/15 px-3.5 py-2',
-              'shadow-[0_0_0_1px_rgba(124,77,255,0.12),0_10px_28px_-14px_rgba(124,77,255,0.75)]',
+              'border border-primary/45 bg-primary/15 px-3.5 py-2',
+              'shadow-[0_0_0_1px_rgba(201,145,115,0.45),0_10_28_14_rgba(15,11,25,0.55)]',
               'transition duration-200',
-              'hover:-translate-y-0.5 hover:border-[#9b6dff] hover:bg-[#7c4dff]/25',
-              'hover:shadow-[0_0_0_1px_rgba(155,109,255,0.25),0_14px_32px_-12px_rgba(124,77,255,0.9)]',
-              'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#7c4dff]',
+              'hover:-translate-y-0.5 hover:border-[var(--color-primary-hover)] hover:bg-primary/25',
+              'hover:shadow-[0_0_0_1px_rgba(201,145,115,0.45),0_14_32_12_rgba(15,11,25,0.55)]',
+              'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary',
               'active:translate-y-0 active:scale-[0.985]',
             )}
           >
             <span
               aria-hidden
-              className="pointer-events-none absolute inset-0 bg-gradient-to-r from-[#7c4dff]/25 via-transparent to-[#3a7bd5]/20 opacity-80 transition group-hover:opacity-100"
+              className="pointer-events-none absolute inset-0 bg-gradient-to-r from-primary/25 via-transparent to-secondary/20 opacity-80 transition group-hover:opacity-100"
             />
             <span
               aria-hidden
               className={cn(
                 'relative inline-flex size-7 shrink-0 items-center justify-center rounded-full',
-                'bg-gradient-to-br from-[#7c4dff] to-[#3a7bd5] text-white',
-                'shadow-[0_6px_16px_-6px_rgba(124,77,255,0.95)]',
+                'btn-primary',
+                'shadow-[0_6px_16px_-6px_rgba(201,145,115,0.55)]',
               )}
             >
               <Download className="size-3.5" strokeWidth={2.25} />
@@ -646,9 +591,9 @@ function MatchReport({
             <span className="relative text-sm font-semibold text-white">Download basic PDF</span>
             <span
               className={cn(
-                'relative rounded-full border border-[#9dffc0]/35 bg-[#1a3d2a]/80',
-                'px-2 py-0.5 font-mono text-[9px] font-semibold uppercase tracking-[0.14em] text-[#9dffc0]',
-                'shadow-[0_0_16px_-6px_rgba(157,255,192,0.7)]',
+                'relative rounded-full border border-[#E6BC9F]/35 bg-[#1B101D]/80',
+                'px-2 py-0.5 font-mono text-[9px] font-semibold uppercase tracking-[0.14em] text-[#E6BC9F]',
+                'shadow-[0_0_16px_-6px_rgba(201,145,115,0.55)]',
               )}
             >
               Free
@@ -662,7 +607,7 @@ function MatchReport({
           className="gap-6 border-border/80 bg-surface/90 shadow-card sm:gap-7 sm:p-7"
         >
           <div className="flex flex-wrap items-center justify-between gap-2">
-            <p className="font-mono text-label uppercase tracking-[0.16em] text-gold-deep">
+            <p className="font-mono text-label uppercase tracking-[0.16em] text-silver-400">
               {matchType ? `${matchTypeLabel(matchType)} match` : 'Guna Milan'}
             </p>
             <button
@@ -671,8 +616,8 @@ function MatchReport({
               className={cn(
                 'inline-flex items-center gap-1 rounded-full border border-border-strong/70',
                 'bg-surface-raised/70 px-3 py-1.5 text-xs font-semibold text-ink',
-                'transition hover:border-[#7c4dff]/50 hover:bg-[#7c4dff]/10 hover:text-white',
-                'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#7c4dff]',
+                'transition hover:border-primary/50 hover:bg-primary/10 hover:text-silver-300',
+                'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary',
               )}
             >
               Change match type
@@ -732,39 +677,39 @@ function MatchReport({
           onClick={onOpenManglik}
           aria-label="Open Manglik dosha calculator"
           className={cn(
-            'group relative w-full overflow-hidden rounded-[1.65rem] border border-[#7c4dff]/50 px-5 py-6 text-center sm:px-8 sm:py-7',
-            'bg-[linear-gradient(155deg,#24105a_0%,#0f0c24_48%,#0d1a38_100%)]',
-            'shadow-[0_0_0_1px_rgba(124,77,255,0.2),0_24px_56px_-20px_rgba(124,77,255,0.75)]',
+            'group relative w-full overflow-hidden rounded-[1.65rem] border border-primary/50 px-5 py-6 text-center sm:px-8 sm:py-7',
+            'bg-[linear-gradient(155deg,#1a2b4a_0%,var(--color-surface)_48%,#0f1a2e_100%)]',
+            'shadow-[0_0_0_1px_rgba(201,145,115,0.45),0_24_56_20_rgba(15,11,25,0.55)]',
             'transition duration-200',
-            'hover:-translate-y-0.5 hover:border-[#9b6dff] hover:shadow-[0_0_0_1px_rgba(155,109,255,0.35),0_28px_64px_-18px_rgba(124,77,255,0.95)]',
-            'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#7c4dff]',
+            'hover:-translate-y-0.5 hover:border-[var(--color-primary-hover)] hover:shadow-[0_0_0_1px_rgba(201,145,115,0.45),0_28_64_18_rgba(15,11,25,0.55)]',
+            'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary',
             'active:translate-y-0',
           )}
         >
           <div
             aria-hidden
-            className="pointer-events-none absolute -right-16 -top-20 h-48 w-48 rounded-full bg-[#7c4dff]/40 blur-3xl transition group-hover:bg-[#7c4dff]/55"
+            className="pointer-events-none absolute -right-16 -top-20 h-48 w-48 rounded-full bg-primary/10 blur-3xl transition group-hover:bg-primary/18"
           />
           <div
             aria-hidden
-            className="pointer-events-none absolute -bottom-20 -left-12 h-44 w-44 rounded-full bg-[#3a7bd5]/30 blur-3xl"
+            className="pointer-events-none absolute -bottom-20 -left-12 h-44 w-44 rounded-full bg-secondary/30 blur-3xl"
           />
           <div
             aria-hidden
             className="pointer-events-none absolute inset-0 opacity-[0.14]"
             style={{
               backgroundImage:
-                'radial-gradient(circle at 1px 1px, rgba(196,160,255,0.7) 1px, transparent 0)',
+                'radial-gradient(circle at 1px 1px,  1px, transparent 0)',
               backgroundSize: '16px 16px',
             }}
           />
           <div
             aria-hidden
-            className="pointer-events-none absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-[#c4a0ff]/70 to-transparent"
+            className="pointer-events-none absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-accent/70 to-transparent"
           />
 
           <div className="relative mx-auto flex max-w-xl flex-col items-center gap-4">
-            <p className="inline-flex items-center gap-1.5 rounded-full border border-[#c4a0ff]/35 bg-[#7c4dff]/20 px-3 py-1 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-[#e8d6ff] shadow-[0_0_20px_-6px_rgba(196,160,255,0.8)]">
+            <p className="inline-flex items-center gap-1.5 rounded-full border border-accent/35 bg-primary/20 px-3 py-1 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-[var(--color-accent)] shadow-[0_0_20px_-6px_rgba(201,145,115,0.55)]">
               <Sparkles className="size-3.5" aria-hidden />
               Free · Manglik check
             </p>
@@ -787,7 +732,7 @@ function MatchReport({
                 className={cn(
                   'rounded-full border px-3 py-1 text-xs font-semibold',
                   result.manglik.a
-                    ? 'border-[#ff8a9a]/45 bg-[#ff8a9a]/15 text-[#ffc0c8]'
+                    ? 'border-[#6E4234]/45 bg-[#6E4234]/15 text-[#F2D7C7]'
                     : 'border-white/20 bg-white/5 text-white/75',
                 )}
               >
@@ -797,7 +742,7 @@ function MatchReport({
                 className={cn(
                   'rounded-full border px-3 py-1 text-xs font-semibold',
                   result.manglik.b
-                    ? 'border-[#ff8a9a]/45 bg-[#ff8a9a]/15 text-[#ffc0c8]'
+                    ? 'border-[#6E4234]/45 bg-[#6E4234]/15 text-[#F2D7C7]'
                     : 'border-white/20 bg-white/5 text-white/75',
                 )}
               >
@@ -808,10 +753,10 @@ function MatchReport({
             <span
               className={cn(
                 'mt-1 inline-flex w-full max-w-sm items-center justify-center gap-2 rounded-full',
-                'bg-gradient-to-r from-[#7c4dff] to-[#3a7bd5] px-6 py-3',
+                'btn-primary px-6 py-3',
                 'text-sm font-semibold text-white',
-                'shadow-[0_14px_36px_-12px_rgba(124,77,255,0.95)]',
-                'transition group-hover:from-[#8b5cff] group-hover:to-[#4a8be5]',
+                'shadow-[0_14px_36px_-12px_rgba(201,145,115,0.55)]',
+                'transition',
               )}
             >
               Check Manglik now
@@ -835,31 +780,31 @@ function MatchReport({
             onClick={onGetDetailPdf}
             aria-label="Get detailed match PDF for ₹99"
             className={cn(
-              'group relative w-full overflow-hidden rounded-[1.5rem] border border-[#7c4dff]/45 px-5 py-5 text-left sm:px-6 sm:py-5',
-              'bg-[linear-gradient(155deg,#24105a_0%,#0f0c24_50%,#0d1a38_100%)]',
-              'shadow-[0_0_0_1px_rgba(124,77,255,0.2),0_20px_48px_-18px_rgba(124,77,255,0.7)]',
+              'group relative w-full overflow-hidden rounded-[1.5rem] border border-primary/45 px-5 py-5 text-left sm:px-6 sm:py-5',
+              'bg-[linear-gradient(155deg,#1a2b4a_0%,var(--color-surface)_50%,#0f1a2e_100%)]',
+              'shadow-[0_0_0_1px_rgba(201,145,115,0.45),0_20_48_18_rgba(15,11,25,0.55)]',
               'transition duration-200',
-              'hover:-translate-y-0.5 hover:border-[#9b6dff] hover:shadow-[0_0_0_1px_rgba(155,109,255,0.35),0_26px_56px_-16px_rgba(124,77,255,0.9)]',
-              'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#7c4dff]',
+              'hover:-translate-y-0.5 hover:border-[var(--color-primary-hover)] hover:shadow-[0_0_0_1px_rgba(201,145,115,0.45),0_26_56_16_rgba(15,11,25,0.55)]',
+              'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary',
               'active:translate-y-0',
             )}
           >
             <div
               aria-hidden
-              className="pointer-events-none absolute -right-10 -top-14 h-36 w-36 rounded-full bg-[#7c4dff]/40 blur-3xl transition group-hover:bg-[#7c4dff]/55"
+              className="pointer-events-none absolute -right-10 -top-14 h-36 w-36 rounded-full bg-primary/10 blur-3xl transition group-hover:bg-primary/18"
             />
             <div
               aria-hidden
-              className="pointer-events-none absolute -bottom-16 -left-10 h-40 w-40 rounded-full bg-[#3a7bd5]/30 blur-3xl"
+              className="pointer-events-none absolute -bottom-16 -left-10 h-40 w-40 rounded-full bg-secondary/30 blur-3xl"
             />
             <div
               aria-hidden
-              className="pointer-events-none absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-[#c4a0ff]/65 to-transparent"
+              className="pointer-events-none absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-accent/65 to-transparent"
             />
 
             <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
               <div className="min-w-0 flex-1 space-y-2.5">
-                <p className="inline-flex items-center gap-1.5 rounded-full border border-[#c4a0ff]/35 bg-[#7c4dff]/20 px-2.5 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-[#e8d6ff]">
+                <p className="inline-flex items-center gap-1.5 rounded-full border border-accent/35 bg-primary/20 px-2.5 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-[var(--color-accent)]">
                   <Sparkles className="size-3" aria-hidden />
                   One-time · ₹99
                 </p>
@@ -868,8 +813,8 @@ function MatchReport({
                     aria-hidden
                     className={cn(
                       'mt-0.5 inline-flex size-10 shrink-0 items-center justify-center rounded-2xl',
-                      'border border-[#c4a0ff]/35 bg-[#7c4dff]/20 text-[#e8d6ff]',
-                      'shadow-[0_0_24px_-8px_rgba(196,160,255,0.75)]',
+                      'border border-accent/35 bg-primary/20 text-[var(--color-accent)]',
+                      'shadow-[0_0_24px_-8px_rgba(201,145,115,0.55)]',
                     )}
                   >
                     <FileText className="size-5" strokeWidth={1.75} />
@@ -890,10 +835,10 @@ function MatchReport({
                 <span
                   className={cn(
                     'inline-flex items-center justify-center gap-2 rounded-full',
-                    'bg-gradient-to-r from-[#7c4dff] to-[#3a7bd5] px-5 py-2.5',
+                    'btn-primary px-5 py-2.5',
                     'text-sm font-semibold text-white',
-                    'shadow-[0_12px_28px_-10px_rgba(124,77,255,0.95)]',
-                    'transition group-hover:from-[#8b5cff] group-hover:to-[#4a8be5]',
+                    'shadow-[0_12px_28px_-10px_rgba(201,145,115,0.55)]',
+                    'transition',
                   )}
                 >
                   <Download className="size-4" strokeWidth={2.25} aria-hidden />
@@ -933,7 +878,7 @@ function Person({
     <div
       className={cn(
         'rounded-card border border-copper/40 bg-copper/10 p-3.5 sm:p-4',
-        'shadow-[0_0_28px_-14px_rgba(124, 77, 255,0.45)]',
+        'shadow-[0_0_28px_-14px_rgba(201,145,115,0.55)]',
       )}
     >
       <div className="flex items-start gap-3">
@@ -941,18 +886,18 @@ function Person({
           aria-hidden
           className={cn(
             'inline-flex size-11 shrink-0 items-center justify-center rounded-full',
-            'border border-copper/45 bg-copper/20 font-mono text-sm font-semibold text-gold-deep',
+            'border border-copper/45 bg-copper/20 font-mono text-sm font-semibold text-silver-400',
           )}
         >
           {initials || '·'}
         </span>
         <div className="min-w-0 flex-1">
-          <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-gold-deep">{slot}</p>
+          <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-silver-400">{slot}</p>
           <p className="mt-0.5 truncate text-sub font-semibold text-ink">{profile.name}</p>
           <p className="mt-1.5 font-mono text-label uppercase tracking-[0.06em] text-muted">
             {formatDateShort(profile.details.date)} · {formatTime12(profile.details.time)}
           </p>
-          <p className="mt-1 font-mono text-label uppercase tracking-[0.08em] text-copper">
+          <p className="mt-1 font-mono text-label uppercase tracking-[0.08em] text-silver-300">
             {profile.moonRashi} · {profile.moonNakshatra}
           </p>
         </div>

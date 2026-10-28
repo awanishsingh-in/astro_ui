@@ -101,7 +101,7 @@ export function DashaTrack({ periods, onSelect, openName, className }: DashaTrac
                   <span
                     className={cn(
                       'w-24 shrink-0 text-right font-mono text-label uppercase',
-                      period.current ? 'text-gold-deep' : 'text-muted',
+                      period.current ? 'text-silver-400' : 'text-muted',
                     )}
                   >
                     {year(period.start)} — {year(period.end)}

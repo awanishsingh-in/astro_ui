@@ -1,0 +1,276 @@
+/* Catchy celestial report book */
+
+.paid-report-book {
+  --book-violet: var(--color-primary);
+  --book-blue: var(--color-secondary);
+  --book-cyan: var(--color-primary);
+  --book-lilac: var(--color-accent);
+  --book-ink: #0F0B19;
+  --book-muted: #5C4750;
+  --book-page: #F2D7C7;
+  --book-page-deep: #F2D7C7;
+}
+
+.paid-report-stage {
+  position: relative;
+}
+
+.paid-report-stage::before,
+.paid-report-stage::after {
+  content: '';
+  position: absolute;
+  border-radius: 999px;
+  filter: blur(40px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.paid-report-stage::before {
+  width: 14rem;
+  height: 14rem;
+  left: -2rem;
+  top: 10%;
+  background: color-mix(in srgb, var(--book-violet) 45%, transparent);
+  animation: paid-orb 6s ease-in-out infinite;
+}
+
+.paid-report-stage::after {
+  width: 12rem;
+  height: 12rem;
+  right: -1rem;
+  bottom: 8%;
+  background: color-mix(in srgb, var(--book-cyan) 40%, transparent);
+  animation: paid-orb 7s ease-in-out infinite reverse;
+}
+
+.paid-report-frame {
+  position: relative;
+  z-index: 1;
+  border: 2px solid transparent;
+  background:
+    linear-gradient(#0F0B19, #0F0B19) padding-box,
+    linear-gradient(135deg, var(--color-secondary), var(--color-primary) 40%, var(--color-accent) 70%, var(--color-secondary)) border-box;
+  box-shadow:
+    0 32px 70px -24px ,
+    0 0 80px -20px ;
+}
+
+.paid-report-spine-glow {
+  background: linear-gradient(180deg, var(--color-secondary), var(--color-primary), var(--color-accent), var(--color-secondary));
+  box-shadow:
+    0 0 20px var(--color-primary),
+    0 0 40px ;
+  animation: paid-book-spine 2.8s ease-in-out infinite;
+}
+
+.paid-report-leaf {
+  position: relative;
+  background:
+    radial-gradient(circle at 12% 18%, color-mix(in srgb, var(--leaf-accent, var(--color-primary)) 22%, transparent), transparent 42%),
+    radial-gradient(circle at 88% 82%, color-mix(in srgb, var(--book-cyan) 16%, transparent), transparent 40%),
+    linear-gradient(160deg, var(--book-page) 0%, var(--book-page-deep) 100%);
+}
+
+.paid-report-leaf--cover {
+  background:
+    radial-gradient(circle at 18% 20%, , transparent 42%),
+    radial-gradient(circle at 82% 75%, , transparent 45%),
+    radial-gradient(circle at 50% 110%, , transparent 50%),
+    linear-gradient(155deg, #0F0B19 0%, #2E1623 38%, #44333C 72%, #1B101D 100%);
+  color: #FBEFE6;
+}
+
+.paid-report-leaf--closing {
+  background:
+    radial-gradient(circle at 50% 0%, color-mix(in srgb, var(--book-lilac) 35%, transparent), transparent 50%),
+    radial-gradient(circle at 20% 100%, color-mix(in srgb, var(--book-cyan) 25%, transparent), transparent 45%),
+    linear-gradient(165deg, #1B101D 0%, #2E1623 55%, #44333C 100%);
+  color: #FBEFE6;
+}
+
+.paid-report-watermark {
+  position: absolute;
+  right: -0.2rem;
+  bottom: -0.6rem;
+  font-family: var(--font-serif);
+  font-size: clamp(7rem, 18vw, 10rem);
+  font-weight: 700;
+  line-height: 0.85;
+  letter-spacing: -0.04em;
+  color: color-mix(in srgb, var(--leaf-accent, var(--color-primary)) 18%, transparent);
+  pointer-events: none;
+  user-select: none;
+}
+
+.paid-report-ornament {
+  width: 100%;
+  max-width: 11rem;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--color-secondary), var(--color-accent), var(--color-primary), transparent);
+  position: relative;
+}
+
+.paid-report-ornament::before,
+.paid-report-ornament::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  transform: translateY(-50%) rotate(45deg);
+  background: linear-gradient(135deg, var(--color-secondary), var(--color-primary));
+  box-shadow: 0 0 12px ;
+}
+
+.paid-report-ornament::before {
+  left: 18%;
+}
+
+.paid-report-ornament::after {
+  right: 18%;
+}
+
+.paid-report-stars span {
+  position: absolute;
+  border-radius: 999px;
+  background: #FBEFE6;
+  box-shadow: 0 0 8px ;
+  animation: paid-twinkle 2.4s ease-in-out infinite;
+}
+
+.paid-report-title-cover {
+  background: linear-gradient(115deg, #FBEFE6 0%, var(--color-accent) 45%, var(--color-secondary) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 0 24px );
+}
+
+.paid-report-chapter-band {
+  background: linear-gradient(
+    105deg,
+    color-mix(in srgb, var(--leaf-accent) 92%, #FBEFE6),
+    color-mix(in srgb, var(--book-blue) 85%, var(--leaf-accent))
+  );
+  box-shadow: 0 10px 28px -12px color-mix(in srgb, var(--leaf-accent) 80%, transparent);
+}
+
+.paid-report-body-card {
+  border: 1px solid color-mix(in srgb, var(--leaf-accent) 28%, transparent);
+  background: color-mix(in srgb, white 72%, var(--leaf-accent));
+  box-shadow: 0 12px 28px -20px color-mix(in srgb, var(--leaf-accent) 55%, transparent);
+}
+
+.paid-report-sheen {
+  background: linear-gradient(
+    105deg,
+    transparent 38%,
+     50%,
+    transparent 62%
+  );
+  background-size: 220% 100%;
+  animation: paid-book-sheen 4.2s ease-in-out 0.4s infinite;
+}
+
+.paid-report-nav {
+  transition:
+    transform 200ms var(--ease-out-soft),
+    box-shadow 200ms var(--ease-out-soft);
+}
+
+.paid-report-nav:not(:disabled):hover {
+  transform: translateY(-2px);
+}
+
+.paid-report-nav--prev:not(:disabled) {
+  border-color: color-mix(in srgb, var(--book-cyan) 45%, transparent);
+  background: color-mix(in srgb, var(--book-cyan) 12%, var(--color-surface));
+  color: var(--color-ink);
+}
+
+.paid-report-nav--next:not(:disabled) {
+  background: linear-gradient(115deg, var(--color-primary), var(--color-secondary) 55%, var(--color-secondary));
+  border-color: transparent;
+  color: #FBEFE6;
+  box-shadow:
+    0 14px 32px -12px ,
+    0 0 24px -8px ;
+}
+
+.paid-report-page-chip {
+  border: 1px solid color-mix(in srgb, var(--book-lilac) 45%, transparent);
+  background: linear-gradient(
+    115deg,
+    color-mix(in srgb, var(--book-violet) 22%, transparent),
+    color-mix(in srgb, var(--book-cyan) 18%, transparent)
+  );
+  box-shadow: 0 0 24px -10px ;
+}
+
+@keyframes paid-book-spine {
+  0%,
+  100% {
+    opacity: 0.7;
+    transform: translateX(-50%) scaleY(0.96);
+  }
+  50% {
+    opacity: 1;
+    transform: translateX(-50%) scaleY(1);
+  }
+}
+
+@keyframes paid-book-sheen {
+  0%,
+  68% {
+    opacity: 0;
+    background-position: 130% 0;
+  }
+  76% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    background-position: -30% 0;
+  }
+}
+
+@keyframes paid-orb {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+    opacity: 0.55;
+  }
+  50% {
+    transform: translateY(-12px) scale(1.08);
+    opacity: 0.85;
+  }
+}
+
+@keyframes paid-twinkle {
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: scale(0.85);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.15);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .paid-report-spine-glow,
+  .paid-report-sheen,
+  .paid-report-stars span,
+  .paid-report-stage::before,
+  .paid-report-stage::after,
+  .paid-report-nav {
+    animation: none;
+    transition: none;
+  }
+
+  .paid-report-nav:not(:disabled):hover {
+    transform: none;
+  }
+}

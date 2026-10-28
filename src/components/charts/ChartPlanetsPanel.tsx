@@ -95,7 +95,7 @@ export function ChartPlanetsPanel({
           </header>
 
           <div className="overflow-x-auto px-3 pb-3 sm:px-4 sm:pb-4">
-            <table className="w-full min-w-[40rem] border-separate border-spacing-y-1.5 text-left">
+            <table className="w-full min-w-[28rem] border-separate border-spacing-y-1.5 text-left md:min-w-[40rem]">
               <thead>
                 <tr className="font-mono text-[10px] uppercase tracking-[0.12em] text-muted">
                   <th className="px-3 py-1 font-semibold">Planet</th>
@@ -118,7 +118,7 @@ export function ChartPlanetsPanel({
                       }}
                       className={cn(
                         'cursor-pointer rounded-xl transition',
-                        active ? 'bg-[#7c4dff]/14' : 'bg-surface-sunken/35 hover:bg-[#7c4dff]/08',
+                        active ? 'bg-primary/14' : 'bg-surface-sunken/35 hover:bg-primary/08',
                         !row.graha && 'cursor-default',
                       )}
                     >
@@ -127,7 +127,7 @@ export function ChartPlanetsPanel({
                           {row.graha ? (
                             <PlanetGlyph code={row.graha} size="sm" />
                           ) : (
-                            <span className="inline-flex size-7 items-center justify-center rounded-full bg-[#7c4dff]/25 text-[10px] font-bold text-[#c4a0ff]">
+                            <span className="inline-flex size-7 items-center justify-center rounded-full bg-primary/25 text-[10px] font-bold text-silver-300">
                               As
                             </span>
                           )}
@@ -269,9 +269,9 @@ function StatePill({ label, kind }: { label: string; kind: 'exalted' | 'combust'
     <span
       className={cn(
         'inline-flex rounded-full px-2.5 py-1 text-[11px] font-semibold',
-        kind === 'exalted' && 'bg-[#7c4dff]/20 text-[#c4a0ff]',
-        kind === 'combust' && 'bg-[#3a7bd5]/20 text-[#5ed7f2]',
-        kind === 'retro' && 'bg-[#7c4dff]/15 text-[#c4a0ff]',
+        kind === 'exalted' && 'bg-primary/20 text-silver-300',
+        kind === 'combust' && 'bg-info/20 text-info',
+        kind === 'retro' && 'bg-primary/15 text-silver-300',
         kind === 'other' && 'bg-surface-sunken text-muted',
       )}
     >

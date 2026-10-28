@@ -74,7 +74,7 @@ export function BhavaTable({
         <span
           className={cn(
             'font-mono text-data',
-            row.lordSitsIn === row.bhava ? 'text-gold-deep' : 'text-purple',
+            row.lordSitsIn === row.bhava ? 'text-silver-400' : 'text-purple',
           )}
         >
           {bhavaRef(row.lordSitsIn)}
@@ -127,7 +127,7 @@ export function BhavaTable({
             />
 
             <div className="min-w-0">
-              <p className="font-mono text-label uppercase text-gold-soft-line">
+              <p className="font-mono text-label uppercase text-silver-300">
                 Lagna {lagna.rashi} {cusp}
               </p>
               {/* The selected house answers in the centre of the wheel; this
@@ -158,7 +158,7 @@ export function BhavaTable({
 
       {inLagna.length >= 2 && (
         <p className="mt-4 rounded-card border border-gold-border bg-gold-soft p-3 text-sm text-purple text-pretty">
-          <span className="font-mono text-label uppercase text-gold-deep">Note · </span>
+          <span className="font-mono text-label uppercase text-silver-400">Note · </span>
           Lords of {inLagna.slice(0, -1).map(bhavaRef).join(', ')} and{' '}
           {bhavaRef(inLagna[inLagna.length - 1])} all stand in the lagna.
         </p>

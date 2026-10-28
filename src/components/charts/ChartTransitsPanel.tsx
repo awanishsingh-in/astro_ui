@@ -6,7 +6,7 @@ import {
   PremiumKundaliAdCard,
   type ChartKundaliDownloadContext,
 } from '@/components/charts/ChartKundaliDownloads'
-import { paths } from '@/routes/paths'
+import { navigateAskFromChart } from '@/utils/ask-from-chart'
 import type { Chart, GrahaCode } from '@/types/astrology'
 import { GRAHA_ORDER, RASHIS } from '@/utils/astro'
 import { cn } from '@/utils/cn'
@@ -40,12 +40,15 @@ export function ChartTransitsPanel({ chart, downloads, className }: ChartTransit
 
   const dateLabel = sliderLabel(slider)
 
-  function askTransit(event: TransitEvent) {
-    navigate(
-      `${paths.ask}?q=${encodeURIComponent(
-        `${event.title}. ${event.detail} (${event.start} – ${event.end}). What should I know?`,
-      )}&from=chart`,
-    )
+  function askTransits() {
+    const summary = events
+      .slice(0, 3)
+      .map((e) => e.title)
+      .join('; ')
+    navigateAskFromChart(navigate, {
+      q: `What's moving on my chart right now? Key transits: ${summary}. What should I know?`,
+      returnSection: 'transits',
+    })
   }
 
   return (
@@ -55,20 +58,20 @@ export function ChartTransitsPanel({ chart, downloads, className }: ChartTransit
         className,
       )}
     >
-      <section className="overflow-hidden rounded-[1.75rem] border border-border/70 bg-[#0f0c24] p-5 shadow-card sm:p-6">
+      <section className="overflow-hidden rounded-[1.75rem] border border-border/70 bg-surface p-5 shadow-card sm:p-6">
         <TransitWheel chart={chart} gochar={gochar} lagnaLabel={lagna} />
 
         <div className="mt-4 flex items-center justify-center gap-4 text-xs text-white/70">
           <span className="inline-flex items-center gap-1.5">
-            <span className="size-2 rounded-full bg-[#c4a0ff]" /> Natal · inner ring
+            <span className="size-2 rounded-full bg-accent" /> Natal · inner ring
           </span>
           <span className="inline-flex items-center gap-1.5">
-            <span className="size-2 rounded-full bg-[#5ed7f2]" /> Gochar · outer ring
+            <span className="size-2 rounded-full bg-info" /> Gochar · outer ring
           </span>
         </div>
 
         <div className="mt-6 rounded-2xl border border-white/10 bg-white/5 px-4 py-4">
-          <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-[#5ed7f2]">
+          <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-info">
             Gochar on
           </p>
           <p className="mt-1 text-lg font-semibold text-white">{dateLabel}</p>
@@ -78,7 +81,7 @@ export function ChartTransitsPanel({ chart, downloads, className }: ChartTransit
             max={100}
             value={slider}
             onChange={(e) => setSlider(Number(e.target.value))}
-            className="mt-3 w-full accent-[#3a7bd5]"
+            className="mt-3 w-full accent-info"
             aria-label="Transit date"
           />
           <div className="mt-1 flex justify-between font-mono text-[10px] uppercase text-white/40">
@@ -99,19 +102,9 @@ export function ChartTransitsPanel({ chart, downloads, className }: ChartTransit
           <ul className="mt-5 space-y-4">
             {events.map((event) => (
               <li key={event.id} className="rounded-2xl border border-border/60 bg-surface-sunken/25 p-4">
-                <div className="flex flex-wrap items-start justify-between gap-2">
-                  <div>
-                    <h3 className="text-sm font-semibold text-ink">{event.title}</h3>
-                    <p className="mt-1 text-sm text-muted text-pretty">{event.detail}</p>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => askTransit(event)}
-                    className="inline-flex items-center gap-1 text-xs font-semibold text-copper hover:underline"
-                  >
-                    <MessageCircle className="size-3.5" />
-                    Ask
-                  </button>
+                <div>
+                  <h3 className="text-sm font-semibold text-ink">{event.title}</h3>
+                  <p className="mt-1 text-sm text-muted text-pretty">{event.detail}</p>
                 </div>
                 <p className="mt-2 font-mono text-[11px] text-faint">
                   {event.start} – {event.end}
@@ -130,6 +123,20 @@ export function ChartTransitsPanel({ chart, downloads, className }: ChartTransit
               </li>
             ))}
           </ul>
+
+          <button
+            type="button"
+            onClick={askTransits}
+            className={cn(
+              'mt-5 inline-flex w-full items-center justify-center gap-2 rounded-full px-3 py-2.5',
+              'btn-primary text-sm font-semibold',
+              'shadow-[0_0_22px_-6px_rgba(201,145,115,0.55)]',
+              'transition',
+            )}
+          >
+            <MessageCircle className="size-3.5" />
+            Ask about this
+          </button>
         </section>
 
         {downloads && (
@@ -158,14 +165,14 @@ function TransitWheel({
 
   return (
     <svg viewBox={`0 0 ${size} ${size}`} className="mx-auto w-full max-w-[320px]">
-      <circle cx={cx} cy={cy} r={140} fill="none" stroke="rgba(196,160,255,0.35)" strokeWidth="1" />
-      <circle cx={cx} cy={cy} r={105} fill="none" stroke="rgba(94,215,242,0.35)" strokeWidth="1" />
-      <circle cx={cx} cy={cy} r={70} fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth="1" />
+      <circle cx={cx} cy={cy} r={140} fill="none" stroke="" strokeWidth="1" />
+      <circle cx={cx} cy={cy} r={105} fill="none" stroke="" strokeWidth="1" />
+      <circle cx={cx} cy={cy} r={70} fill="none" stroke="" strokeWidth="1" />
       <text
         x={cx}
         y={cy + 5}
         textAnchor="middle"
-        fill="#f5f2ff"
+        fill="var(--color-text)"
         fontFamily="var(--font-serif)"
         fontSize="18"
         fontWeight="600"
@@ -185,7 +192,7 @@ function TransitWheel({
             y={y}
             textAnchor="middle"
             dominantBaseline="middle"
-            fill="rgba(255,255,255,0.45)"
+            fill=""
             fontSize="10"
             fontFamily="var(--font-mono)"
           >
@@ -205,7 +212,7 @@ function TransitWheel({
             y={y}
             textAnchor="middle"
             dominantBaseline="middle"
-            fill="#c4a0ff"
+            fill="var(--color-accent)"
             fontSize="11"
             fontWeight="700"
             fontFamily="var(--font-sans)"
@@ -226,7 +233,7 @@ function TransitWheel({
             y={y}
             textAnchor="middle"
             dominantBaseline="middle"
-            fill="#5ed7f2"
+            fill="var(--color-info)"
             fontSize="11"
             fontWeight="700"
             fontFamily="var(--font-sans)"
@@ -304,15 +311,15 @@ function buildTransitEvents(chart: Chart): TransitEvent[] {
 function toneBar(tone: TransitEvent['tone']) {
   switch (tone) {
     case 'cyan':
-      return 'bg-[#5ed7f2]'
+      return 'bg-info'
     case 'blue':
-      return 'bg-[#3a7bd5]'
+      return 'bg-info'
     case 'rose':
-      return 'bg-[#d4848a]'
+      return 'bg-[#6E4234]'
     case 'indigo':
-      return 'bg-[#c4a0ff]'
+      return 'bg-accent'
     default:
-      return 'bg-[#7c4dff]'
+      return 'bg-primary'
   }
 }
 

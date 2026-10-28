@@ -44,20 +44,20 @@ export function AskPrompt({
         className,
       )}
     >
-      <span className="mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-control bg-navy-soft text-navy">
+      <span className="mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-control bg-navy-soft text-silver-300">
         {theme.grahas[0] ? (
           <PlanetGlyph code={theme.grahas[0]} size="sm" />
         ) : (
-          <span className="text-gold">✦</span>
+          <span className="text-silver-300">✦</span>
         )}
       </span>
 
       <span className="min-w-0 flex-1">
-        <span className="block text-sub font-medium text-ink text-pretty transition-colors group-hover:text-navy">
+        <span className="block text-sub font-medium text-ink text-pretty transition-colors group-hover:text-silver-300">
           {question}
         </span>
         <span className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-0.5 font-mono text-label uppercase text-muted">
-          <span className="text-gold-deep">
+          <span className="text-silver-400">
             {bhavaRef(theme.bhava)} · {theme.reads}
           </span>
           <span aria-hidden className="text-faint">
@@ -69,7 +69,7 @@ export function AskPrompt({
 
       <ArrowUpRight
         aria-hidden
-        className="mt-1 size-4 shrink-0 text-faint transition-transform duration-200 ease-out-soft group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-gold-deep"
+        className="mt-1 size-4 shrink-0 text-faint transition-transform duration-200 ease-out-soft group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-silver-400"
       />
     </button>
   )

@@ -188,8 +188,8 @@ interface GlowConfig {
  * prefers reduced motion.
  */
 export function GlowCursor({
-  color = '#E8A84E',
-  secondaryColor = '#F5A36E',
+  color = '#B8327A',
+  secondaryColor = '#C9C0CF',
   trailLength = 40,
   trailWidth = 8,
   trailTaper = 0.8,

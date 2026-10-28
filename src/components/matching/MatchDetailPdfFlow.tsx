@@ -51,7 +51,7 @@ export function MatchDetailPdfFlow({
       >
         <div className="space-y-4">
           <div className="flex items-start gap-3 rounded-card border border-gold-border/60 bg-gold-soft/40 px-4 py-3.5">
-            <FileText className="mt-0.5 size-5 shrink-0 text-gold-deep" aria-hidden />
+            <FileText className="mt-0.5 size-5 shrink-0 text-silver-400" aria-hidden />
             <p className="text-sm text-ink text-pretty">
               Pay ₹99 — a decent way to get the detailed PDF for this match. Cyklos Plus does not
               include this report; it is a separate one-time unlock.
@@ -111,7 +111,7 @@ export function MatchDetailPdfFlow({
         </div>
 
         <div className="flex items-start gap-3 rounded-card border border-border px-4 py-3">
-          <ShieldCheck className="mt-0.5 size-5 shrink-0 text-gold-deep" aria-hidden />
+          <ShieldCheck className="mt-0.5 size-5 shrink-0 text-silver-400" aria-hidden />
           <p className="text-sm text-muted text-pretty">
             Demo payment gateway · no real charge. Confirm to continue to your PDF.
           </p>

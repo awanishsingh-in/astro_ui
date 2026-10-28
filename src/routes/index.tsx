@@ -41,8 +41,6 @@ const ChartDetailPayPage = lazy(() => import('@/pages/chart/ChartDetailPayPage')
 const ChartDetailViewPage = lazy(() => import('@/pages/chart/ChartDetailViewPage'))
 const ReadingsPage = lazy(() => import('@/pages/readings/ReadingsPage'))
 const ReadingDetailPage = lazy(() => import('@/pages/readings/ReadingDetailPage'))
-const EverythingPage = lazy(() => import('@/pages/everything/EverythingPage'))
-const FeaturePage = lazy(() => import('@/pages/everything/FeaturePage'))
 const MatchingPage = lazy(() => import('@/pages/matching/MatchingPage'))
 const MatchProfilePickPage = lazy(() => import('@/pages/matching/MatchProfilePickPage'))
 const ManglikDoshaPage = lazy(() => import('@/pages/matching/ManglikDoshaPage'))
@@ -63,7 +61,11 @@ const FestivalDetailPage = lazy(() => import('@/pages/calendar/FestivalDetailPag
 const PanchangPage = lazy(() => import('@/pages/panchang/PanchangPage'))
 const AccountPage = lazy(() => import('@/pages/account/AccountPage'))
 const ProfilePage = lazy(() => import('@/pages/account/ProfilePage'))
+const DownloadsPage = lazy(() => import('@/pages/account/DownloadsPage'))
+const DownloadDetailPage = lazy(() => import('@/pages/account/DownloadDetailPage'))
 const FoundationPage = lazy(() => import('@/pages/foundation/FoundationPage'))
+const ThemePreviewPage = lazy(() => import('@/pages/theme/ThemePreviewPage'))
+const DesignSystemPage = lazy(() => import('@/pages/design-system/DesignSystemPage'))
 const NotFoundPage = lazy(() => import('@/pages/NotFoundPage'))
 
 /** Route-level fallback. Named work, not a bare spinner. */
@@ -152,7 +154,9 @@ const routes: RouteObject[] = [
       </RequireAuth>
     ),
     children: [
-      { path: paths.home, element: <Navigate to={paths.everything} replace /> },
+      { path: paths.home, element: <Navigate to={paths.ask} replace /> },
+      { path: '/everything', element: <Navigate to={paths.ask} replace /> },
+      { path: '/explore/:slug', element: <Navigate to={paths.ask} replace /> },
       { path: paths.ask, element: page(<AskPage />) },
       { path: paths.askHistory, element: page(<ChatHistoryPage />) },
       { path: paths.yourPast, element: page(<YourPastPage />) },
@@ -163,10 +167,9 @@ const routes: RouteObject[] = [
       { path: paths.chart, element: page(<ChartPage />) },
       { path: paths.readings, element: page(<ReadingsPage />) },
       { path: paths.reading(), element: page(<ReadingDetailPage />) },
-      { path: paths.everything, element: page(<EverythingPage />) },
-      { path: paths.explore(), element: page(<FeaturePage />) },
       { path: paths.matching, element: page(<MatchingPage />) },
       { path: paths.matchingProfiles, element: page(<MatchProfilePickPage />) },
+      { path: paths.savedProfiles, element: page(<MatchProfilePickPage />) },
       { path: paths.matchingManglik, element: page(<ManglikDoshaPage />) },
       { path: paths.compatibility, element: page(<CompatibilityPage />) },
       { path: paths.horoscopeRoot, element: page(<HoroscopeFlow />) },
@@ -185,11 +188,15 @@ const routes: RouteObject[] = [
       { path: paths.panchang, element: page(<PanchangPage />) },
       { path: paths.account, element: page(<AccountPage />) },
       { path: paths.profile, element: page(<ProfilePage />) },
+      { path: paths.downloads, element: page(<DownloadsPage />) },
+      { path: paths.downloadDetail(), element: page(<DownloadDetailPage />) },
     ],
   },
 
   // ── Development ─────────────────────────────────────────────
   { path: paths.foundation, element: page(<FoundationPage />) },
+  { path: paths.themePreview, element: page(<ThemePreviewPage />) },
+  { path: paths.designSystem, element: page(<DesignSystemPage />) },
 
   { path: '*', element: page(<NotFoundPage />) },
 ]

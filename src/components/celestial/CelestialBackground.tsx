@@ -52,7 +52,7 @@ export function CelestialBackground({
         className="pointer-events-none absolute inset-0 opacity-70"
         style={{
           background:
-            'radial-gradient(120% 90% at 18% 0%, rgba(26, 15, 61, 0.95) 0%, transparent 62%), radial-gradient(70% 55% at 90% 10%, rgba(124, 77, 255, 0.16) 0%, transparent 50%)',
+            'radial-gradient(120% 90% at 18% 0%,  rgba(140,47,99,0.32) 0%, transparent 62%), radial-gradient(70% 55% at 90% 10%,  rgba(184,50,122,0.22) 0%, transparent 50%)',
         }}
       />
 
@@ -60,7 +60,7 @@ export function CelestialBackground({
 
       {has('orbits') && (
         <OrbitalLines
-          className="text-gold-soft-line opacity-[0.13] motion-safe:animate-zodiac-turn-slow"
+          className="text-silver-300 opacity-[0.13] motion-safe:animate-zodiac-turn-slow"
           cx={78}
           cy={22}
           spread={58}
@@ -68,7 +68,7 @@ export function CelestialBackground({
       )}
 
       {has('constellation') && (
-        <ConstellationPattern animate className="text-on-celestial opacity-[0.14]" />
+        <ConstellationPattern animate className="text-white/[0.08] [&_g]:opacity-100" />
       )}
 
       {has('zodiac') && (

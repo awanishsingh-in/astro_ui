@@ -166,7 +166,7 @@ export default function ManglikDoshaPage() {
           >
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div>
-                <p className="font-mono text-label uppercase tracking-[0.14em] text-gold-deep">
+                <p className="font-mono text-label uppercase tracking-[0.14em] text-silver-400">
                   Result
                 </p>
                 <h2 className="mt-1 text-title text-ink">{result.summary}</h2>
@@ -210,9 +210,6 @@ export default function ManglikDoshaPage() {
               iconLeft={<RotateCw className="size-4" />}
             >
               Check another chart
-            </Button>
-            <Button variant="ghost" size="sm" onClick={() => navigate(paths.matching)}>
-              Back to Matching
             </Button>
           </div>
         </div>

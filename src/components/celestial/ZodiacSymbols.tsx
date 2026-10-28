@@ -44,8 +44,8 @@ export function ZodiacSymbols({
                 'block text-center text-sm transition-opacity duration-200',
                 active
                   ? dark
-                    ? 'text-gold-soft-line opacity-100'
-                    : 'text-gold opacity-100'
+                    ? 'text-silver-300 opacity-100'
+                    : 'text-silver-300 opacity-100'
                   : dark
                     ? 'text-on-celestial-muted opacity-45'
                     : 'text-muted opacity-50',
@@ -58,7 +58,7 @@ export function ZodiacSymbols({
               <span
                 className={cn(
                   'mt-0.5 block text-center font-mono text-[9px] uppercase',
-                  dark ? 'text-gold-soft-line' : 'text-gold-deep',
+                  dark ? 'text-silver-300' : 'text-silver-400',
                 )}
               >
                 {rashi.name}

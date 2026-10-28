@@ -1,17 +1,22 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { SectionHeader } from '@/components/common/SectionHeader'
 import { useToast } from '@/components/feedback/toast-context'
 import { MobileHeader } from '@/components/navigation/MobileHeader'
 import {
   PanchangAlertsView,
 } from '@/components/panchang/PanchangExtraViews'
+import { HindiPanchangDayView } from '@/components/panchang/HindiPanchangDayView'
+import { PanchangHub } from '@/components/panchang/PanchangHub'
 import { PanchangTabs, type PanchangTabId, type TimingsSubId } from '@/components/panchang/PanchangTabs'
-import { LocationPill } from '@/components/panchang/PanchangTodayView'
-import { PanchangTodayView } from '@/components/panchang/PanchangTodayView'
 import { PanchangTithiView } from '@/components/panchang/PanchangTithiView'
 import { PanchangTimingsView } from '@/components/panchang/PanchangTimingsView'
 import { useAuth } from '@/auth/auth-context'
+import {
+  panchangKindTitle,
+  parsePanchangKind,
+  type PanchangKindId,
+} from '@/data/panchang-hub'
 import {
   DEFAULT_PANCHANG_ALERTS,
   buildAvoidWindows,
@@ -22,8 +27,8 @@ import {
 } from '@/data/panchang-mock'
 import { PageContainer } from '@/layouts/PageContainer'
 import { hasActivePlan } from '@/onboarding/past-intro'
-import { PanchangDownloadsFlow } from '@/pages/panchang/DownloadsFlow'
 import { MuhuratFlow } from '@/pages/panchang/MuhuratFlow'
+import { paths } from '@/routes/paths'
 
 function parseTab(raw: string | null): PanchangTabId {
   if (
@@ -31,7 +36,6 @@ function parseTab(raw: string | null): PanchangTabId {
     raw === 'tithi' ||
     raw === 'timings' ||
     raw === 'muhurat' ||
-    raw === 'downloads' ||
     raw === 'alerts'
   ) {
     return raw
@@ -42,12 +46,6 @@ function parseTab(raw: string | null): PanchangTabId {
 function parseTimingsSub(raw: string | null): TimingsSubId {
   if (raw === 'choghadiya' || raw === 'hora' || raw === 'rahu') return raw
   return 'choghadiya'
-}
-
-function shiftIso(iso: string, days: number) {
-  const d = new Date(`${iso}T12:00:00`)
-  d.setDate(d.getDate() + days)
-  return d.toISOString().slice(0, 10)
 }
 
 function todayIso(): string {
@@ -62,14 +60,17 @@ function parseDateParam(raw: string | null): string {
 
 /**
  * Panchang & muhurat — is this time good?
- * Today, tithi & nakshatra, Timings (choghadiya, hora, Rahu kaal), muhurat, downloads, alerts.
+ * Panchang tab opens the Hindu Panchang card hub first; Hindi opens the day view.
+ * Downloads live under the account menu.
  */
 export default function PanchangPage() {
   const { user } = useAuth()
   const toast = useToast()
+  const navigate = useNavigate()
   const [params, setParams] = useSearchParams()
   const tab = parseTab(params.get('tab'))
   const timingsSub = parseTimingsSub(params.get('timing'))
+  const kind = parsePanchangKind(params.get('kind'))
 
   const [dateIso, setDateIso] = useState(() => parseDateParam(params.get('date')))
   const [choghadiyaPeriod, setChoghadiyaPeriod] = useState<'day' | 'night'>('day')
@@ -90,12 +91,41 @@ export default function PanchangPage() {
     setDateIso((prev) => (prev === next ? prev : next))
   }, [params])
 
+  // Old `?tab=downloads` links open the Downloads list page.
+  useEffect(() => {
+    if (params.get('tab') !== 'downloads') return
+    navigate(paths.downloads, { replace: true })
+  }, [params, navigate])
+
   const setTab = useCallback(
     (next: PanchangTabId) => {
       const copy = new URLSearchParams(params)
       if (next === 'today') copy.delete('tab')
       else copy.set('tab', next)
       if (next !== 'timings') copy.delete('timing')
+      // Leaving Panchang tab clears the hub selection.
+      if (next !== 'today') copy.delete('kind')
+      setParams(copy, { replace: true })
+    },
+    [params, setParams],
+  )
+
+  const setKind = useCallback(
+    (next: PanchangKindId | null) => {
+      const copy = new URLSearchParams(params)
+      copy.delete('tab')
+      if (next) copy.set('kind', next)
+      else copy.delete('kind')
+      setParams(copy, { replace: true })
+    },
+    [params, setParams],
+  )
+
+  const setDayDate = useCallback(
+    (iso: string) => {
+      setDateIso(iso)
+      const copy = new URLSearchParams(params)
+      copy.set('date', iso)
       setParams(copy, { replace: true })
     },
     [params, setParams],
@@ -116,30 +146,28 @@ export default function PanchangPage() {
 
   return (
     <>
-      <MobileHeader title="Panchang & muhurat" titleAs="p" showBack user={user} />
+      <MobileHeader title="Panchang & muhurat" titleAs="p" user={user} />
 
       <PageContainer width="wide">
         <article className="animate-rise space-y-7">
           <header className="space-y-5">
-            <div className="flex flex-wrap items-start justify-between gap-4">
-              <SectionHeader
-                as="h1"
-                size="lg"
-                title="Panchang & muhurat"
-                description="Is this time good? Limbs, timings, and muhurat — computed from the panchang for your city."
-              />
-              <LocationPill label={day.place} />
-            </div>
+            <SectionHeader
+              as="h1"
+              size="lg"
+              title="Panchang & muhurat"
+              description="Is this time good? Limbs, timings, and muhurat — computed from the panchang for your city."
+            />
             <PanchangTabs active={tab} onChange={setTab} />
           </header>
 
-          {tab === 'today' && (
-            <PanchangTodayView
+          {tab === 'today' && !kind && <PanchangHub onSelect={setKind} />}
+
+          {tab === 'today' && kind && (
+            <HindiPanchangDayView
               day={day}
-              onPrev={() => setDateIso((d) => shiftIso(d, -1))}
-              onNext={() => setDateIso((d) => shiftIso(d, 1))}
+              kindTitle={panchangKindTitle(kind)}
+              onSelectDay={setDayDate}
               onFindMuhurat={() => setTab('muhurat')}
-              onDownload={() => setTab('downloads')}
             />
           )}
 
@@ -165,14 +193,7 @@ export default function PanchangPage() {
               locationLabel={day.place}
               isPremium={isPremium}
               dateIso={dateIso}
-            />
-          )}
-
-          {tab === 'downloads' && (
-            <PanchangDownloadsFlow
-              locationLabel={day.place}
-              dateIso={dateIso}
-              isStandard={isPremium}
+              onSelectDay={setDayDate}
             />
           )}
 

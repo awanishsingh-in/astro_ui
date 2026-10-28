@@ -71,7 +71,7 @@ export default function CompatibilityPage() {
 
   return (
     <>
-      <MobileHeader title="Compatibility" showBack user={user} />
+      <MobileHeader title="Compatibility" user={user} />
 
       <PageContainer width="content">
         <SectionHeader

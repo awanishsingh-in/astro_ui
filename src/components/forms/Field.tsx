@@ -62,8 +62,8 @@ export function Field({
           className={cn(
             'mb-2',
             appearance === 'plain'
-              ? 'text-sm font-medium tracking-wide text-purple'
-              : 'font-mono text-label uppercase text-muted',
+              ? 'text-sm font-medium tracking-wide text-text-secondary'
+              : 'font-mono text-label uppercase text-text-secondary',
             labelHidden && 'sr-only',
           )}
         >

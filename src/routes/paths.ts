@@ -39,9 +39,6 @@ export const paths = {
   chartDetailView: '/chart/detail/view',
   readings: '/readings',
   reading: (id = ':id') => `/readings/${id}`,
-  everything: '/everything',
-  /** A capability's own page, built from the feature catalogue. */
-  explore: (slug = ':slug') => `/explore/${slug}`,
 
   // Astrology features
   matching: '/matching',
@@ -79,7 +76,17 @@ export const paths = {
   account: '/account',
   /** Full-page profile — identity and birth details. */
   profile: '/profile',
+  /** Browse / manage saved kundli profiles. */
+  savedProfiles: '/saved-profiles',
+  /** Full download history list. */
+  downloads: '/downloads',
+  /** Single download history item — open / re-download. */
+  downloadDetail: (id = ':id') => `/downloads/${id}`,
 
   // Development only
   foundation: '/foundation',
+  /** Cosmos token + component preview. */
+  themePreview: '/theme-preview',
+  /** Full Cosmos AI design system showcase. */
+  designSystem: '/design-system',
 } as const

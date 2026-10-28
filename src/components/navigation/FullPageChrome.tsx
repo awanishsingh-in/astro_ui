@@ -1,6 +1,5 @@
-import { ArrowLeft } from 'lucide-react'
 import { useEffect, useState, type ReactNode } from 'react'
-import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
+import { useLocation, useSearchParams } from 'react-router-dom'
 import { ProfilePillStrip } from '@/components/account/ProfilePillStrip'
 import { Logo } from '@/components/brand/Logo'
 import { AvatarMenu } from '@/components/navigation/AvatarMenu'
@@ -8,9 +7,7 @@ import { useToast } from '@/components/feedback/toast-context'
 import { useProfiles } from '@/profiles/profiles-context'
 import { paths } from '@/routes/paths'
 import type { User } from '@/types/user'
-import { requestAvatarMenuReopen } from '@/utils/avatar-menu'
 import { cn } from '@/utils/cn'
-import { tryMatchingBack } from '@/utils/matching-back'
 
 /** Session flag so Family → Profile can pulse the dashed + in the top chrome. */
 export const HIGHLIGHT_ADD_PROFILE_KEY = 'cyklos_highlight_add_profile'
@@ -32,19 +29,14 @@ export interface FullPageChromeProps {
 }
 
 /**
- * Top bar for immersive routes (My Chart, Matching, Your Past, Profile): back + Cyklos mark,
- * no side nav. On Profile, the name pills and dashed + sit beside the logo.
+ * Top bar for immersive routes: Cyklos mark, no side nav, no back control.
  */
 export function FullPageChrome({ user, action, className }: FullPageChromeProps) {
-  const navigate = useNavigate()
   const location = useLocation()
   const [params, setParams] = useSearchParams()
   const toast = useToast()
   const profiles = useProfiles()
   const onProfile = location.pathname === paths.profile
-  const onReportsHub = location.pathname === paths.reportsRoot
-  const onReportNested =
-    location.pathname.startsWith(`${paths.reportsRoot}/`) && !onReportsHub
   const [highlightAdd, setHighlightAdd] = useState(false)
   const [hideProfiles, setHideProfiles] = useState(false)
 
@@ -86,63 +78,14 @@ export function FullPageChrome({ user, action, className }: FullPageChromeProps)
     }
   }, [onProfile, location.key, params])
 
-  const goBack = () => {
-    if (onProfile) requestAvatarMenuReopen()
-
-    // Never use history.back() on reports — hub ↔ topic loops reopen Career/etc.
-    if (onReportsHub || onReportNested) {
-      navigate(paths.ask, { replace: true })
-      return
-    }
-
-    // Matching is one route with in-page steps — step back before leaving the flow.
-    if (location.pathname === paths.matching && tryMatchingBack()) {
-      return
-    }
-
-    // Calculator opened from Matching (or elsewhere) — prefer explicit return path.
-    // Replace so we don't stack Matching again (Matching ↔ calculator back-loop).
-    const from =
-      typeof (location.state as { from?: unknown } | null)?.from === 'string'
-        ? (location.state as { from: string }).from
-        : null
-    if (
-      from &&
-      (location.pathname === paths.calculatorRoot ||
-        location.pathname.startsWith(`${paths.calculatorRoot}/`))
-    ) {
-      navigate(from, { replace: true })
-      return
-    }
-
-    if (typeof window !== 'undefined' && window.history.length > 1) {
-      navigate(-1)
-      return
-    }
-    navigate(paths.ask)
-  }
-
   return (
     <header
       className={cn(
-        'sticky top-0 z-40 flex h-14 shrink-0 items-center gap-3 border-b border-border/80',
+        'sticky top-0 z-40 flex h-14 shrink-0 items-center gap-3 border-b border-border/80 pt-safe',
         'bg-surface/90 px-3 backdrop-blur-md sm:px-5',
         className,
       )}
     >
-      <button
-        type="button"
-        onClick={goBack}
-        className={cn(
-          'inline-flex min-h-10 shrink-0 items-center gap-1.5 rounded-control px-2 py-1.5',
-          'text-sm font-medium text-purple transition-colors',
-          'hover:bg-navy-soft hover:text-ink',
-        )}
-      >
-        <ArrowLeft className="size-4 shrink-0" aria-hidden />
-        <span className="hidden sm:inline">Back</span>
-      </button>
-
       <div className="flex min-w-0 flex-1 items-center gap-3">
         <Logo size="sm" className="pointer-events-none shrink-0" />
 

@@ -44,8 +44,8 @@ export function ZodiacRing({
   pace = 'calm',
   className,
 }: ZodiacRingProps) {
-  const line = tone === 'dark' ? 'var(--color-gold-soft-line)' : 'var(--color-chart-rim)'
-  const glyph = tone === 'dark' ? 'var(--color-gold-soft-line)' : 'var(--color-gold)'
+  const line = tone === 'dark' ? 'rgba(237,230,239,0.35)' : 'var(--color-chart-rim)'
+  const glyph = tone === 'dark' ? 'var(--color-silver-300)' : 'var(--color-silver-300)'
   const turn = pace === 'hero' ? TURN_LANDING : TURN
   const counter = pace === 'hero' ? COUNTER_TURN_LANDING : COUNTER_TURN
 

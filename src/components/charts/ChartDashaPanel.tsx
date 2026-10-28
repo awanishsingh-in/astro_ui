@@ -8,7 +8,7 @@ import {
   type ChartKundaliDownloadContext,
 } from '@/components/charts/ChartKundaliDownloads'
 import { expandDashaChildren, type DashaSummary } from '@/data/dasha-mock'
-import { paths } from '@/routes/paths'
+import { navigateAskFromChart } from '@/utils/ask-from-chart'
 import type { DashaLevel, DashaPeriod } from '@/types/astrology'
 import { cn } from '@/utils/cn'
 import { formatDateShort } from '@/utils/format'
@@ -127,7 +127,7 @@ export function ChartDashaPanel({ dasha, downloads, className }: ChartDashaPanel
     const q = `What does my ${maha.name} mahadasha${
       activeDetail && activeDetail.level !== 'maha' ? ` / ${breadcrumb.slice(1).concat(leaf.name).join(' / ')}` : ''
     } mean in my chart? Period ${formatDateShort(leaf.start)} – ${formatDateShort(leaf.end)}.`
-    navigate(`${paths.ask}?q=${encodeURIComponent(q)}&from=chart`)
+    navigateAskFromChart(navigate, { q, returnSection: 'dasha' })
   }
 
   if (!maha) {
@@ -165,8 +165,8 @@ export function ChartDashaPanel({ dasha, downloads, className }: ChartDashaPanel
                 checked={alertOn}
                 onChange={(e) => setAlertOn(e.target.checked)}
               />
-              <span className="absolute inset-0 rounded-full bg-surface-sunken peer-checked:bg-[#7c4dff]/45" />
-              <span className="absolute left-0.5 size-4 rounded-full bg-muted transition peer-checked:translate-x-4 peer-checked:bg-[#7c4dff]" />
+              <span className="absolute inset-0 rounded-full bg-surface-sunken peer-checked:bg-primary/45" />
+              <span className="absolute left-0.5 size-4 rounded-full bg-muted transition peer-checked:translate-x-4 peer-checked:bg-primary" />
             </span>
             <span>
               <span className="flex items-center gap-1.5 text-sm font-medium text-ink">
@@ -212,10 +212,10 @@ export function ChartDashaPanel({ dasha, downloads, className }: ChartDashaPanel
                   className={cn(
                     'relative flex min-w-0 items-center justify-center border-r border-border/50 px-1 text-[11px] font-semibold transition last:border-r-0',
                     selected
-                      ? 'bg-[#7c4dff]/35 text-ink ring-2 ring-inset ring-[#7c4dff]'
+                      ? 'bg-primary/35 text-ink ring-2 ring-inset ring-primary'
                       : period.current
-                        ? 'bg-[#7c4dff]/18 text-ink'
-                        : 'bg-[#7c4dff]/08 text-muted hover:bg-[#7c4dff]/14 hover:text-ink',
+                        ? 'bg-primary/18 text-ink'
+                        : 'bg-primary/08 text-muted hover:bg-primary/14 hover:text-ink',
                   )}
                 >
                   <span className="truncate">{period.name}</span>
@@ -249,7 +249,7 @@ export function ChartDashaPanel({ dasha, downloads, className }: ChartDashaPanel
                       onClick={() => selectMaha(period)}
                       className={cn(
                         'flex w-full items-center gap-3 px-4 py-3.5 text-left transition',
-                        selected ? 'bg-[#7c4dff]/12' : 'hover:bg-navy-soft/40',
+                        selected ? 'bg-primary/12' : 'hover:bg-navy-soft/40',
                       )}
                     >
                       <PlanetGlyph code={period.graha} size="sm" className="shrink-0" />
@@ -343,7 +343,7 @@ export function ChartDashaPanel({ dasha, downloads, className }: ChartDashaPanel
                         onClick={() => selectDetail(period)}
                         className={cn(
                           'flex w-full items-center gap-3 px-4 py-3.5 text-left transition sm:px-5',
-                          active ? 'bg-[#7c4dff]/14' : 'hover:bg-navy-soft/40',
+                          active ? 'bg-primary/14' : 'hover:bg-navy-soft/40',
                         )}
                       >
                         <PlanetGlyph code={period.graha} size="sm" className="shrink-0" />
@@ -368,7 +368,7 @@ export function ChartDashaPanel({ dasha, downloads, className }: ChartDashaPanel
               <button
                 type="button"
                 onClick={askAboutPeriod}
-                className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#7c4dff] to-[#3a7bd5] px-3 py-2.5 text-sm font-semibold text-white shadow-[0_10px_22px_-14px_rgba(124,77,255,0.65)] transition hover:from-[#8b5cff] hover:to-[#4a8be5]"
+                className="flex w-full items-center justify-center gap-2 rounded-xl btn-primary px-3 py-2.5 text-sm font-semibold shadow-[0_10px_22px_-14px_rgba(201,145,115,0.55)] transition"
               >
                 <MessageCircle className="size-3.5" aria-hidden />
                 Ask about this period
@@ -390,7 +390,7 @@ export function ChartDashaPanel({ dasha, downloads, className }: ChartDashaPanel
 
 function NowBadge() {
   return (
-    <span className="rounded-full bg-[#7c4dff] px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.1em] text-white">
+    <span className="rounded-full bg-primary px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.1em] text-on-primary">
       Now
     </span>
   )

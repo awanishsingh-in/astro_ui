@@ -7,8 +7,8 @@ export interface OverlayProps {
   isOpen: boolean
   onClose: () => void
   children: ReactNode
-  /** Aligns the panel — centred for modals, bottom for sheets, left for drawers. */
-  align?: 'center' | 'bottom' | 'left'
+  /** Aligns the panel — centred for modals, bottom for sheets, left/right for drawers. */
+  align?: 'center' | 'bottom' | 'left' | 'right'
   className?: string
 }
 
@@ -28,11 +28,12 @@ export function Overlay({ isOpen, onClose, children, align = 'center', className
         align === 'center' && 'items-center justify-center p-4',
         align === 'bottom' && 'items-end justify-center',
         align === 'left' && 'items-stretch justify-start',
+        align === 'right' && 'items-stretch justify-end',
         className,
       )}
     >
       <div
-        className="absolute inset-0 animate-fade-in bg-midnight/70"
+        className="absolute inset-0 animate-fade-in bg-overlay backdrop-blur-sm"
         onClick={onClose}
         aria-hidden
       />

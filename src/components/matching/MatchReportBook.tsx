@@ -47,7 +47,7 @@ export function MatchReportBook({ result, matchType, className }: MatchReportBoo
       <div
         className={cn(
           'relative hidden overflow-hidden rounded-panel lg:grid lg:grid-cols-2',
-          'border border-border/80 bg-[#1a1210] shadow-[0_24px_60px_-28px_rgba(0,0,0,0.75)]',
+          'border border-border/80 bg-[#0F0B19] shadow-[0_24px_60px_-28px_rgba(201,145,115,0.55)]',
         )}
       >
         <div
@@ -62,7 +62,7 @@ export function MatchReportBook({ result, matchType, className }: MatchReportBoo
         {pages[rightIndex] ? (
           <BookLeaf page={pages[rightIndex]!} side="right" />
         ) : (
-          <div className="min-h-[28rem] bg-[#f3ebe0]" />
+          <div className="min-h-[28rem] bg-[#F2D7C7]" />
         )}
       </div>
 
@@ -125,9 +125,9 @@ function BookLeaf({
       className={cn(
         'relative min-h-[22rem] overflow-hidden sm:min-h-[26rem]',
         side === 'single' &&
-          'rounded-panel border border-border/80 shadow-[0_20px_50px_-30px_rgba(0,0,0,0.7)]',
+          'rounded-panel border border-border/80 shadow-[0_20px_50px_-30px_rgba(201,145,115,0.55)]',
         side === 'left' && 'border-r border-black/10',
-        'bg-[#f3ebe0] text-[#2a211c]',
+        'bg-[#F2D7C7] text-[#1B101D]',
       )}
     >
       <div
@@ -140,13 +140,13 @@ function BookLeaf({
         )}
       />
       <div className="relative flex h-full flex-col px-5 py-6 sm:px-7 sm:py-8">
-        <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-[#8a6a4a]">
+        <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-[#6E4234]">
           {page.eyebrow}
         </p>
-        <h2 className="mt-2 font-serif text-xl leading-snug text-[#1f1712] sm:text-2xl">
+        <h2 className="mt-2 font-serif text-xl leading-snug text-[#1B101D] sm:text-2xl">
           {page.title}
         </h2>
-        <div className="mt-4 min-h-0 flex-1 space-y-3 overflow-y-auto text-sm leading-relaxed text-[#3d322b]">
+        <div className="mt-4 min-h-0 flex-1 space-y-3 overflow-y-auto text-sm leading-relaxed text-[#5C4750]">
           {page.body}
         </div>
       </div>
@@ -156,13 +156,13 @@ function BookLeaf({
 
 function personBlock(label: string, profile: MatchResult['a']) {
   return (
-    <div className="rounded-md border border-[#d6c4ae] bg-[#efe4d4]/60 px-3 py-2.5">
-      <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#8a6a4a]">{label}</p>
-      <p className="mt-1 font-medium text-[#1f1712]">{profile.name}</p>
-      <p className="mt-0.5 font-mono text-[11px] uppercase tracking-wide text-[#6b5748]">
+    <div className="rounded-md border border-[#D2C1C4] bg-[#F2D7C7]/60 px-3 py-2.5">
+      <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#6E4234]">{label}</p>
+      <p className="mt-1 font-medium text-[#1B101D]">{profile.name}</p>
+      <p className="mt-0.5 font-mono text-[11px] uppercase tracking-wide text-[#5C4750]">
         {formatDateShort(profile.details.date)} · {formatTime12(profile.details.time)}
       </p>
-      <p className="mt-0.5 font-mono text-[11px] uppercase tracking-wide text-[#6b5748]">
+      <p className="mt-0.5 font-mono text-[11px] uppercase tracking-wide text-[#5C4750]">
         {profile.moonRashi} · {profile.moonNakshatra}
       </p>
     </div>
@@ -182,11 +182,11 @@ function buildPages(result: MatchResult, matchType: MatchRelationType | null): B
       title: 'Detailed match report',
       body: (
         <>
-          <p className="font-serif text-3xl text-[#1f1712]">
+          <p className="font-serif text-3xl text-[#1B101D]">
             {result.total}
-            <span className="text-lg text-[#8a6a4a]"> / {result.max}</span>
+            <span className="text-lg text-[#6E4234]"> / {result.max}</span>
           </p>
-          <p className="text-[#6b5748]">Gunas matched across the eight kootas.</p>
+          <p className="text-[#5C4750]">Gunas matched across the eight kootas.</p>
           <div className="grid gap-2.5 pt-1 sm:grid-cols-1">
             {personBlock('Person 1', result.a)}
             {personBlock('Person 2', result.b)}
@@ -201,7 +201,7 @@ function buildPages(result: MatchResult, matchType: MatchRelationType | null): B
       body: (
         <>
           <p className="text-pretty">{result.summary}</p>
-          <p className="border-t border-[#d6c4ae] pt-3 text-pretty text-[#6b5748]">{result.caveat}</p>
+          <p className="border-t border-[#D2C1C4] pt-3 text-pretty text-[#5C4750]">{result.caveat}</p>
         </>
       ),
     },
@@ -212,14 +212,14 @@ function buildPages(result: MatchResult, matchType: MatchRelationType | null): B
       body: (
         <ul className="space-y-3">
           {kootaFirst.map((k) => (
-            <li key={k.id} className="border-b border-[#e0d2bf] pb-2.5 last:border-0">
+            <li key={k.id} className="border-b border-[#D2C1C4] pb-2.5 last:border-0">
               <div className="flex items-baseline justify-between gap-2">
-                <span className="font-medium text-[#1f1712]">{k.name}</span>
-                <span className="font-mono text-[11px] text-[#8a6a4a]">
+                <span className="font-medium text-[#1B101D]">{k.name}</span>
+                <span className="font-mono text-[11px] text-[#6E4234]">
                   {k.score}/{k.max}
                 </span>
               </div>
-              <p className="mt-1 text-xs text-[#6b5748] text-pretty">{k.detail}</p>
+              <p className="mt-1 text-xs text-[#5C4750] text-pretty">{k.detail}</p>
             </li>
           ))}
         </ul>
@@ -232,14 +232,14 @@ function buildPages(result: MatchResult, matchType: MatchRelationType | null): B
       body: (
         <ul className="space-y-3">
           {kootaSecond.map((k) => (
-            <li key={k.id} className="border-b border-[#e0d2bf] pb-2.5 last:border-0">
+            <li key={k.id} className="border-b border-[#D2C1C4] pb-2.5 last:border-0">
               <div className="flex items-baseline justify-between gap-2">
-                <span className="font-medium text-[#1f1712]">{k.name}</span>
-                <span className="font-mono text-[11px] text-[#8a6a4a]">
+                <span className="font-medium text-[#1B101D]">{k.name}</span>
+                <span className="font-mono text-[11px] text-[#6E4234]">
                   {k.score}/{k.max}
                 </span>
               </div>
-              <p className="mt-1 text-xs text-[#6b5748] text-pretty">{k.detail}</p>
+              <p className="mt-1 text-xs text-[#5C4750] text-pretty">{k.detail}</p>
             </li>
           ))}
         </ul>
@@ -254,13 +254,13 @@ function buildPages(result: MatchResult, matchType: MatchRelationType | null): B
           <ul className="space-y-2.5">
             {result.strengths.map((k) => (
               <li key={k.id} className="text-pretty">
-                <span className="font-medium text-[#1f1712]">{k.name}</span>
-                <span className="text-[#6b5748]"> — {k.detail}</span>
+                <span className="font-medium text-[#1B101D]">{k.name}</span>
+                <span className="text-[#5C4750]"> — {k.detail}</span>
               </li>
             ))}
           </ul>
         ) : (
-          <p className="text-[#6b5748]">No koota scores full marks.</p>
+          <p className="text-[#5C4750]">No koota scores full marks.</p>
         ),
     },
     {
@@ -272,13 +272,13 @@ function buildPages(result: MatchResult, matchType: MatchRelationType | null): B
           <ul className="space-y-2.5">
             {result.frictions.map((k) => (
               <li key={k.id} className="text-pretty">
-                <span className="font-medium text-[#1f1712]">{k.name}</span>
-                <span className="text-[#6b5748]"> — {k.concern ?? k.detail}</span>
+                <span className="font-medium text-[#1B101D]">{k.name}</span>
+                <span className="text-[#5C4750]"> — {k.concern ?? k.detail}</span>
               </li>
             ))}
           </ul>
         ) : (
-          <p className="text-[#6b5748]">No koota falls badly short.</p>
+          <p className="text-[#5C4750]">No koota falls badly short.</p>
         ),
     },
     {

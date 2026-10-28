@@ -64,12 +64,12 @@ export function AuthLayout({
         )}
         style={
           {
-            '--adv-bg': '#07041a',
-            '--adv-form': '#0b071c',
-            '--adv-violet': '#7c4dff',
-            '--adv-blue': '#3a7bd5',
-            '--adv-accent': '#c4a0ff',
-            '--adv-cyan': '#5ed7f2',
+            '--adv-bg': 'var(--color-bg)',
+            '--adv-form': 'var(--color-surface)',
+            '--adv-violet': 'var(--color-deep-burgundy)',
+            '--adv-blue': 'var(--color-copper)',
+            '--adv-accent': 'var(--color-accent)',
+            '--adv-cyan': 'var(--color-glow-nebula)',
           } as CSSProperties
         }
       >
@@ -80,12 +80,20 @@ export function AuthLayout({
 
         <div
           className={cn(
-            'relative flex flex-col',
+            'relative flex flex-col bg-[#0F0B19]',
             fitViewport ? 'h-full min-h-0 overflow-hidden' : 'min-h-dvh',
+            'lg:shadow-[-24px_0_48px_-28px_rgba(184,50,122,0.22)]',
           )}
-          style={{ background: 'var(--adv-form)' }}
           data-auth-form
         >
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-0 overflow-hidden"
+            style={{
+              background:
+                'radial-gradient(70% 55% at 100% 0%, rgba(184, 50, 122, 0.14) 0%, transparent 55%), radial-gradient(50% 45% at 0% 100%, rgba(61, 18, 51, 0.2) 0%, transparent 50%)',
+            }}
+          />
           <div className={cn('lg:hidden', fitViewport && 'shrink-0')}>
             {fitViewport ? (
               <div className="flex h-14 items-center gap-2 border-b border-white/10 px-3 pt-safe">
@@ -126,7 +134,7 @@ export function AuthLayout({
 
           <div
             className={cn(
-              'relative flex flex-1 flex-col justify-center',
+              'relative z-[1] flex flex-1 flex-col justify-center',
               fitViewport
                 ? 'min-h-0 overflow-hidden px-5 py-4 sm:px-8 sm:py-5 lg:px-10 lg:py-6'
                 : 'px-6 py-10 sm:px-10 lg:px-12 xl:px-16',
@@ -227,19 +235,19 @@ export function AuthLayout({
       <div
         className={cn(
           'flex min-h-dvh flex-col',
-          adventure ? 'bg-[#0b071c]' : 'bg-canvas',
+          adventure ? 'bg-[#0F0B19]' : 'bg-canvas',
           fitViewport && 'h-dvh max-h-dvh overflow-hidden',
           className,
         )}
         style={
           adventure
             ? ({
-                '--adv-bg': '#07041a',
-                '--adv-form': '#0b071c',
-                '--adv-violet': '#7c4dff',
-                '--adv-blue': '#3a7bd5',
-                '--adv-accent': '#c4a0ff',
-                '--adv-cyan': '#5ed7f2',
+                '--adv-bg': 'var(--color-bg)',
+                '--adv-form': 'var(--color-surface)',
+                '--adv-violet': 'var(--color-deep-burgundy)',
+                '--adv-blue': 'var(--color-copper)',
+                '--adv-accent': 'var(--color-accent)',
+                '--adv-cyan': 'var(--color-glow-nebula)',
               } as CSSProperties)
             : undefined
         }
@@ -247,7 +255,7 @@ export function AuthLayout({
         <div
           className={cn(
             'shrink-0 border-b',
-            adventure ? 'border-white/10 bg-[#07041a]' : 'border-transparent',
+            adventure ? 'border-white/10 bg-bg' : 'border-transparent',
           )}
         >
           {adventure ? (
@@ -257,7 +265,7 @@ export function AuthLayout({
                 className="pointer-events-none absolute inset-0 overflow-hidden"
                 style={{
                   background:
-                    'radial-gradient(60% 120% at 0% 0%, rgba(124,77,255,0.28) 0%, transparent 55%), radial-gradient(50% 100% at 100% 100%, rgba(58,123,213,0.18) 0%, transparent 50%)',
+                    'radial-gradient(60% 120% at 88% 0%, rgba(140,47,99,0.35) 0%, transparent 55%), radial-gradient(50% 100% at 50% 100%, rgba(46,22,35,0.55) 0%, transparent 50%)',
                 }}
               />
               <div className="relative mx-auto flex w-full max-w-5xl items-center">
@@ -343,7 +351,7 @@ export function AuthLayout({
         <div
           className={cn(
             'relative flex min-h-0 flex-[7] flex-col',
-            adventure ? 'bg-[#0b071c]' : 'bg-canvas',
+            adventure ? 'bg-[#0F0B19]' : 'bg-canvas',
             fitViewport && 'overflow-hidden',
           )}
           data-auth-form
@@ -354,7 +362,7 @@ export function AuthLayout({
               className="pointer-events-none absolute inset-0"
               style={{
                 background:
-                  'radial-gradient(70% 50% at 100% 0%, rgba(124, 77, 255, 0.08) 0%, transparent 55%), radial-gradient(50% 40% at 0% 100%, rgba(26, 15, 61, 0.1) 0%, transparent 50%)',
+                  'radial-gradient(70% 50% at 100% 0%,  rgba(140,47,99,0.32) 0%, transparent 55%), radial-gradient(50% 40% at 0% 100%,  rgba(184,50,122,0.22) 0%, transparent 50%)',
               }}
             />
           )}
@@ -364,7 +372,7 @@ export function AuthLayout({
               className="pointer-events-none absolute inset-0"
               style={{
                 background:
-                  'radial-gradient(70% 50% at 100% 0%, rgba(124,77,255,0.12) 0%, transparent 55%), radial-gradient(50% 40% at 0% 100%, rgba(58,123,213,0.1) 0%, transparent 50%)',
+                  'radial-gradient(70% 50% at 100% 0%, rgba(184, 50, 122, 0.12) 0%, transparent 55%), radial-gradient(50% 40% at 0% 100%, rgba(61, 18, 51, 0.18) 0%, transparent 50%)',
               }}
             />
           )}

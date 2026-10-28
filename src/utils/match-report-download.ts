@@ -1,6 +1,7 @@
 import type { MatchRelationType } from '@/data/match-types'
 import { matchTypeLabel } from '@/data/match-types'
 import type { MatchResult } from '@/data/matching-mock'
+import { recordDownload } from '@/data/download-history'
 import { formatDateShort, formatTime12 } from '@/utils/format'
 
 export type MatchReportKind = 'basic' | 'detailed'
@@ -150,5 +151,11 @@ export function downloadMatchReportPdf(
   link.download = filename
   link.click()
   URL.revokeObjectURL(url)
+  recordDownload({
+    kind: 'report',
+    title: kind === 'basic' ? 'Match report · basic' : 'Match report · detailed',
+    subtitle: `${result.a.name} & ${result.b.name}`,
+    filename,
+  })
   return filename
 }

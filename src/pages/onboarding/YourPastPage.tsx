@@ -1,10 +1,9 @@
 import type { GrahaCode } from '@/types/astrology'
-import { ArrowLeft, Check, Crown, Download, Lock, Orbit } from 'lucide-react'
+import { ArrowLeft, Check, Crown, Download, Lock, MessageCircle } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { PlanetGlyph } from '@/components/astrology/PlanetGlyph'
 import { ChatPaywall } from '@/components/ask/ChatPaywall'
-import { QuestionComposer } from '@/components/ask/QuestionComposer'
 import { Button } from '@/components/common/Button'
 import { useAuth } from '@/auth/auth-context'
 import {
@@ -66,7 +65,13 @@ export default function YourPastPage() {
   const pressCard = (id: PastInsightCategory) => {
     const isOn = picked.includes(id)
 
-    // Already at 3: unselected cards need a plan to change the set.
+    // After a full set is locked, nothing changes without Plus.
+    if (selectionsLocked && !planUnlocked) {
+      if (!isOn) setPaywallOpen(true)
+      return
+    }
+
+    // At 3 but not locked yet: remaining cards stay locked; selected can still be toggled off.
     if (!isOn && atLimit) {
       if (!planUnlocked) {
         setPaywallOpen(true)
@@ -74,9 +79,6 @@ export default function YourPastPage() {
       }
       return
     }
-
-    // Free tier at full lock: selected picks stay fixed until Plus.
-    if (selectionsLocked && !planUnlocked) return
 
     setPicked((prev) => {
       if (prev.includes(id)) return prev.filter((item) => item !== id)
@@ -88,7 +90,7 @@ export default function YourPastPage() {
   const openReveal = () => {
     if (!canContinue) return
     savePastSelections(user.id, picked)
-    // Lock the set only once all free slots are filled.
+    // Lock the set once all 3 free slots are filled (“Lock and continue”).
     if (picked.length >= MAX_PAST_SELECTIONS) {
       setSelectionsLocked(true)
     }
@@ -132,10 +134,7 @@ export default function YourPastPage() {
                   <ArrowLeft className="size-5" />
                 </button>
                 <div className="min-w-0">
-                  <p className="font-mono text-label uppercase tracking-[0.14em] text-gold-deep">
-                    Your past
-                  </p>
-                  <h1 className="mt-1 font-serif text-[1.65rem] leading-tight text-ink sm:text-title">
+                  <h1 className="font-serif text-[1.65rem] leading-tight text-ink sm:text-title">
                     {revealed.length} area{revealed.length === 1 ? '' : 's'} from your chart
                   </h1>
                   <p className="mt-1 text-sm text-purple">Tap a card to read each area.</p>
@@ -178,15 +177,10 @@ export default function YourPastPage() {
                   </div>
                 </aside>
 
-                <section
-                  role="tabpanel"
-                  aria-label={active.category}
-                  className="space-y-4"
-                >
+                <section role="tabpanel" aria-label={active.category} className="space-y-4">
                   <div className="rounded-panel border border-border bg-surface p-5 sm:p-7">
                     <PastReadingDetail
                       insight={active}
-                      onLookCalculation={() => navigate(paths.chart)}
                       onDownloadReport={() => {
                         if (!planUnlocked) {
                           setPaywallOpen(true)
@@ -198,16 +192,26 @@ export default function YourPastPage() {
                       downloadReady={downloadReady}
                     />
                   </div>
-                  <div className="rounded-panel border border-border bg-surface p-3.5 sm:p-4">
-                    <QuestionComposer
-                      key={active.id}
-                      variant="bar"
-                      placeholder={`Ask about your past in ${active.category.toLowerCase()}…`}
-                      onAsk={(question) =>
-                        navigate(`${paths.ask}?q=${encodeURIComponent(question)}`)
-                      }
-                    />
-                  </div>
+                  <Button
+                    variant="ghost"
+                    size="lg"
+                    fullWidth
+                    iconLeft={<MessageCircle className="size-4" strokeWidth={2} />}
+                    onClick={() =>
+                      navigate(
+                        `${paths.ask}?q=${encodeURIComponent(
+                          `Tell me more about my past in ${active.category.toLowerCase()}.`,
+                        )}`,
+                      )
+                    }
+                    className={cn(
+                      'rounded-full border-0 btn-primary',
+                      'shadow-[0_0_28px_-6px_rgba(201,145,115,0.55)]',
+                      'hover:shadow-[0_0_36px_-4px_rgba(201,145,115,0.55)]',
+                    )}
+                  >
+                    Ask about this
+                  </Button>
                 </section>
               </div>
             </PageContainer>
@@ -224,10 +228,7 @@ export default function YourPastPage() {
         <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain no-scrollbar">
           <PageContainer width="wide" className="flex min-h-full flex-col py-5 sm:py-6 lg:py-8">
             <header className="relative shrink-0 text-center lg:text-left">
-              <p className="font-mono text-label uppercase tracking-[0.14em] text-[#7c4dff]">
-                Chart history
-              </p>
-              <h1 className="mt-1 font-serif text-[1.85rem] leading-tight text-ink text-balance sm:text-title lg:text-title-lg">
+              <h1 className="font-serif text-[1.85rem] leading-tight text-ink text-balance sm:text-title lg:text-title-lg">
                 Your past
               </h1>
               <p className="mx-auto mt-2 max-w-lg text-sm text-purple text-pretty lg:mx-0 sm:text-body">
@@ -252,8 +253,8 @@ export default function YourPastPage() {
               <div className="grid grid-cols-2 gap-2.5 overflow-visible pt-1.5 sm:gap-3 lg:grid-cols-3">
                 {PAST_INSIGHTS.map((insight, index) => {
                   const isOn = picked.includes(insight.id)
-                  const showLock =
-                    !planUnlocked && !isOn && atLimit
+                  // Always lock remaining cards once 3 are picked.
+                  const showLock = !isOn && atLimit
                   // Selected picks freeze only when the free set of 3 is locked.
                   const freezeSelected = selectionsLocked && !planUnlocked && isOn
                   return (
@@ -264,6 +265,9 @@ export default function YourPastPage() {
                       selected={isOn}
                       disabled={freezeSelected}
                       showLock={showLock}
+                      lockHint={
+                        planUnlocked ? 'Locked · deselect one first' : 'Locked · plan to change'
+                      }
                       onToggle={() => pressCard(insight.id)}
                     />
                   )
@@ -280,11 +284,15 @@ export default function YourPastPage() {
                 className={cn(
                   'px-7',
                   canContinue
-                    ? 'rounded-full border-0 bg-gradient-to-r from-[#7c4dff] to-[#3a7bd5] text-white shadow-[0_12px_32px_-12px_rgba(124,77,255,0.75)] hover:from-[#8b5cff] hover:to-[#4a8be5]'
+                    ? 'rounded-full border-0 btn-primary shadow-[0_12px_32px_-12px_rgba(201,145,115,0.55)]'
                     : 'rounded-full border-0 bg-navy-soft text-muted',
                 )}
               >
-                {selectionsLocked && !planUnlocked ? 'Open my past →' : 'Save and continue'}
+                {selectionsLocked && !planUnlocked
+                  ? 'Open my past →'
+                  : atLimit
+                    ? 'Lock and continue'
+                    : 'Save and continue'}
               </Button>
             </div>
           </PageContainer>
@@ -301,6 +309,7 @@ function PastOptionCard({
   selected,
   disabled,
   showLock,
+  lockHint = 'Locked',
   onToggle,
 }: {
   insight: PastInsight
@@ -308,80 +317,123 @@ function PastOptionCard({
   selected: boolean
   disabled: boolean
   showLock?: boolean
+  lockHint?: string
   onToggle: () => void
 }) {
+  const locked = Boolean(showLock)
+
   return (
     <button
       type="button"
       onClick={onToggle}
       disabled={disabled}
       aria-pressed={selected}
+      aria-disabled={locked || undefined}
       className={cn(
-        'past-option-card group relative flex min-h-[10.5rem] flex-col overflow-hidden rounded-[18px] border px-4 py-3.5 text-left sm:min-h-[11.5rem] sm:py-4',
-        'transition-[border-color,transform,background-color,opacity] duration-300 ease-out-soft',
-        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7c4dff]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-canvas',
-        'hover:-translate-y-1 hover:scale-[1.015] active:scale-[0.99]',
+        'past-option-card group relative flex min-h-[11rem] flex-col overflow-hidden rounded-[1.35rem] border px-4 py-4 text-left sm:min-h-[12rem] sm:px-5 sm:py-5',
+        'backdrop-blur-md transition-[border-color,transform,background-color,opacity,box-shadow] duration-300 ease-out-soft',
+        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-glow/55 focus-visible:ring-offset-2 focus-visible:ring-offset-canvas',
+        !locked && 'hover:-translate-y-1.5 hover:scale-[1.02] active:scale-[0.99]',
         selected
-          ? 'border-[#7c4dff]/55 bg-[#7c4dff]/12'
-          : showLock
-            ? 'border-border bg-surface opacity-70 hover:border-[#7c4dff]/40 hover:opacity-100 hover:bg-navy-soft'
-            : 'border-border bg-surface hover:border-[#7c4dff]/35 hover:bg-navy-soft',
+          ? 'border-blue-light/50 bg-gradient-to-br from-blue-glow/20 via-surface-accent to-surface'
+          : locked
+            ? 'cursor-pointer border-border/70 bg-surface-sunken/80 opacity-80 hover:border-blue-light/35 hover:opacity-100'
+            : 'border-border/80 bg-gradient-to-br from-surface-accent/90 via-surface to-bg-secondary hover:border-blue-light/35 hover:from-blue-glow/10',
         disabled &&
-          'cursor-not-allowed opacity-100 hover:translate-y-0 hover:scale-100 hover:border-[#7c4dff]/55 hover:bg-[#7c4dff]/12',
+          'cursor-not-allowed opacity-100 hover:translate-y-0 hover:scale-100 hover:border-blue-light/50',
       )}
       style={{ animationDelay: `${80 + index * 60}ms` }}
     >
+      <span className="past-option-card__orb past-option-card__orb--a" aria-hidden />
+      <span className="past-option-card__orb past-option-card__orb--b" aria-hidden />
+      <span className="past-option-card__stars" aria-hidden />
       <span className="past-option-card__sheen" aria-hidden />
 
-      <div className="relative z-[1] flex items-start gap-2">
-        <span className="past-option-card__glyphs flex items-center gap-1.5 text-[#7c4dff]/90">
+      {locked && (
+        <span
+          aria-hidden
+          className="pointer-events-none absolute inset-0 z-[2] bg-bg/35"
+        />
+      )}
+
+      <div className="relative z-[3] flex items-start gap-3">
+        <span
+          className={cn(
+            'past-option-card__glyphs inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1.5',
+            selected
+              ? 'border-blue-light/40 bg-blue-glow/20 text-blue-light'
+              : locked
+                ? 'border-border bg-surface-sunken text-muted'
+                : 'border-border bg-surface text-blue-light/90 group-hover:border-blue-light/35',
+          )}
+        >
           {insight.planets.map((code) => (
             <PlanetGlyph key={code} code={code} size="sm" />
           ))}
         </span>
         <span
           className={cn(
-            'ml-auto inline-flex size-5 shrink-0 items-center justify-center rounded-full border transition-all duration-300',
+            'ml-auto inline-flex size-7 shrink-0 items-center justify-center rounded-full border transition-all duration-300',
             selected
-              ? 'past-option-card__check--on border-[#7c4dff] bg-[#7c4dff] text-white shadow-[0_0_12px_rgba(124,77,255,0.4)]'
-              : showLock
-                ? 'border-[#7c4dff]/35 bg-[#7c4dff]/15 text-[#7c4dff]'
-                : 'border-border text-transparent group-hover:border-[#7c4dff]/35',
+              ? 'past-option-card__check--on border-blue-light bg-blue-glow text-white shadow-[0_0_14px_rgba(201,145,115,0.55)]'
+              : locked
+                ? 'past-lock-ring border-blue-light/40 bg-blue-glow/15 text-blue-light'
+                : 'border-border text-transparent group-hover:border-blue-light/40',
           )}
           aria-hidden
         >
-          {showLock && !selected ? (
-            <Lock className="size-2.5" strokeWidth={2.5} />
+          {locked ? (
+            <Lock className="size-3.5" strokeWidth={2.5} />
           ) : (
-            <Check className="size-2.5" strokeWidth={3} />
+            <Check className="size-3" strokeWidth={3} />
           )}
         </span>
       </div>
 
+      <p
+        className={cn(
+          'relative z-[3] mt-3.5 font-mono text-[10px] font-semibold uppercase tracking-[0.16em]',
+          locked ? 'text-faint' : 'text-blue-light/85',
+        )}
+      >
+        Bhava {insight.bhava}
+      </p>
+
       <h2
         className={cn(
-          'past-option-card__title relative z-[1] mt-3 font-serif font-semibold leading-[1.05] tracking-[-0.03em] text-ink',
-          'text-[1.65rem] sm:text-[1.85rem] lg:text-[2rem]',
+          'past-option-card__title relative z-[3] mt-1 font-serif font-semibold leading-[1.05] tracking-[-0.03em]',
+          'text-[1.7rem] sm:text-[1.9rem] lg:text-[2.05rem]',
+          locked ? 'text-muted' : 'text-ink',
         )}
       >
         {insight.category}
       </h2>
-      <p className="relative z-[1] mt-2 flex-1 text-[13px] leading-relaxed text-purple">
+      <p
+        className={cn(
+          'relative z-[3] mt-2 flex-1 text-[13.5px] leading-relaxed',
+          locked ? 'text-faint' : 'text-text-secondary',
+        )}
+      >
         {insight.blurb}
       </p>
+
+      {locked && (
+        <p className="relative z-[3] mt-3 inline-flex items-center gap-1.5 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-blue-light/80">
+          <Lock className="size-3" strokeWidth={2.5} aria-hidden />
+          {lockHint}
+        </p>
+      )}
     </button>
   )
 }
 
 function PastReadingDetail({
   insight,
-  onLookCalculation,
   onDownloadReport,
   reportPaid = false,
   downloadReady = false,
 }: {
   insight: PastInsight
-  onLookCalculation: () => void
   onDownloadReport: () => void
   reportPaid?: boolean
   downloadReady?: boolean
@@ -389,44 +441,9 @@ function PastReadingDetail({
   return (
     <article className="animate-fade-in space-y-5">
       <div className="space-y-3">
-        <div className="flex flex-wrap items-start justify-between gap-2.5">
-          <p className="pt-1 text-[11px] font-medium uppercase tracking-[0.16em] text-[#7c4dff]">
-            {insight.category}
-          </p>
-
-          <div className="ml-auto flex flex-wrap items-center justify-end gap-2">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onLookCalculation}
-              iconLeft={<Orbit className="size-3.5" strokeWidth={2} />}
-              className="rounded-full border-0 bg-gradient-to-r from-[#7c4dff] to-[#3a7bd5] text-white hover:from-[#8b5cff] hover:to-[#4a8be5]"
-            >
-              Look your calculation
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onDownloadReport}
-              iconLeft={
-                reportPaid ? (
-                  <Crown className="size-3.5" strokeWidth={2} />
-                ) : (
-                  <Download className="size-3.5" strokeWidth={2} />
-                )
-              }
-              className="rounded-full border border-border"
-            >
-              {downloadReady && !reportPaid ? 'Report ready' : 'Download report'}
-              {reportPaid && (
-                <span className="ml-1 font-mono text-[9px] uppercase tracking-[0.12em] text-[#7c4dff]">
-                  Plus
-                </span>
-              )}
-            </Button>
-          </div>
-        </div>
-
+        <p className="text-[11px] font-medium uppercase tracking-[0.16em] text-silver-300">
+          {insight.category}
+        </p>
         <p className="font-serif text-title text-ink text-pretty lg:text-title-lg">
           {insight.verdict}
         </p>
@@ -439,7 +456,7 @@ function PastReadingDetail({
         <ul className="mt-3 space-y-2">
           {insight.points.map((point) => (
             <li key={point} className="flex gap-2 text-body text-ink text-pretty">
-              <span className="mt-2 size-1.5 shrink-0 rounded-full bg-[#3a7bd5]" aria-hidden />
+              <span className="mt-2 size-1.5 shrink-0 rounded-full bg-info" aria-hidden />
               <span>{point}</span>
             </li>
           ))}
@@ -465,9 +482,31 @@ function PastReadingDetail({
         </ul>
       </section>
 
-      <p className="border-t border-border pt-4 text-[10px] font-medium uppercase tracking-[0.14em] text-muted">
-        Source · {bhavaRef(insight.bhava)} · {insight.source}
-      </p>
+      <div className="flex flex-wrap items-end justify-between gap-3 border-t border-border pt-4">
+        <p className="text-[10px] font-medium uppercase tracking-[0.14em] text-muted">
+          Source · {bhavaRef(insight.bhava)} · {insight.source}
+        </p>
+        <Button
+          variant="secondary"
+          size="sm"
+          onClick={onDownloadReport}
+          iconLeft={
+            reportPaid ? (
+              <Crown className="size-3.5" strokeWidth={2} />
+            ) : (
+              <Download className="size-3.5" strokeWidth={2} />
+            )
+          }
+          className="rounded-full"
+        >
+          {downloadReady && !reportPaid ? 'Report ready' : 'Download report'}
+          {reportPaid && (
+            <span className="ml-1 font-mono text-[9px] uppercase tracking-[0.12em] text-silver-300">
+              Plus
+            </span>
+          )}
+        </Button>
+      </div>
     </article>
   )
 }

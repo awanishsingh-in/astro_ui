@@ -68,3 +68,13 @@ export function calculatorById(id: string): CalculatorCard | undefined {
 }
 
 export const CALCULATOR_KINDS = CALCULATOR_CARDS.map((c) => c.id)
+
+/** Soft accent tint per calculator — hub cards + form hero. */
+export const CALCULATOR_ACCENT: Record<CalculatorKind, string> = {
+  manglik: 'var(--color-primary)',
+  kaal: 'var(--color-secondary)',
+  'sade-sati': 'var(--color-info)',
+  pitra: 'var(--color-accent)',
+  'birth-time': 'var(--color-warning)',
+  nakshatra: 'var(--color-primary-hover)',
+}

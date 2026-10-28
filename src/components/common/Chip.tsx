@@ -35,9 +35,7 @@ export function Chip({
         'disabled:text-faint disabled:border-border disabled:bg-surface disabled:pointer-events-none',
         mono ? 'font-mono text-data' : 'text-sm font-medium',
         size === 'sm' ? 'h-9 px-3.5' : 'h-11 px-4',
-        selected
-          ? 'bg-gold-soft border-gold text-gold-deep font-semibold'
-          : 'bg-surface border-border text-purple hover:border-border-strong hover:bg-navy-soft',
+        selected ? 'rg-tab font-semibold' : 'btn-glass text-silver-400 hover:text-text',
         className,
       )}
       {...rest}

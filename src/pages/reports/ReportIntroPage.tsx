@@ -27,26 +27,15 @@ export default function ReportIntroPage() {
   return (
     <PageContainer width="content" className="pb-16 pt-4 sm:pt-6">
       <article className="mx-auto flex max-w-lg flex-col gap-6 animate-rise">
-        <button
-          type="button"
-          onClick={() => navigate(paths.reportsRoot, { replace: true })}
-          className="self-start text-xs text-muted underline-offset-2 hover:text-ink hover:underline"
-        >
-          ← All reports
-        </button>
-
         <Card
           padding="none"
           className="flex flex-col gap-6 border-border/80 p-6 sm:gap-7 sm:p-8"
         >
           <div className="flex items-start gap-4">
-            <span className="inline-flex size-12 shrink-0 items-center justify-center rounded-full border border-copper/35 bg-copper/15 text-copper">
+            <span className="rg-icon-tile inline-flex size-12 shrink-0 items-center justify-center rounded-full">
               <Icon className="size-5" aria-hidden />
             </span>
             <div className="min-w-0 space-y-2">
-              <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-gold-deep">
-                About this report
-              </p>
               <h1 className="text-2xl font-semibold tracking-tight text-ink sm:text-3xl">
                 {topic.title}
               </h1>
@@ -74,7 +63,7 @@ export default function ReportIntroPage() {
         </Card>
 
         <div className="rounded-2xl border border-copper/35 bg-copper/10 px-5 py-5">
-          <p className="text-sm font-semibold text-gold-deep">What’s inside</p>
+          <p className="text-sm font-semibold text-silver-400">What’s inside</p>
           <ul className="mt-3 space-y-2.5">
             {topic.covers.map((item) => (
               <li key={item} className="flex gap-2.5 text-sm leading-snug text-ink">

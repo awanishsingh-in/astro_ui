@@ -15,11 +15,11 @@ export interface ErrorStateProps {
 export function ErrorState({
   error,
   onRetry,
-  title = 'This did not load',
+  title = 'The stars are misaligned. Try again.',
   variant = 'page',
   className,
 }: ErrorStateProps) {
-  const message = error?.message ?? 'Something went wrong. Try again.'
+  const message = error?.message ?? 'The stars are misaligned. Try again.'
   const canRetry = Boolean(onRetry) && error?.retryable !== false
 
   return (

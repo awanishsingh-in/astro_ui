@@ -82,7 +82,9 @@ export function PanchangDownloadsFlow({
       dateIso,
       range,
     })
-    toast.success('Downloaded', { description: name })
+    toast.success('Downloaded', {
+      description: `${name} · also saved under Account → Downloads.`,
+    })
   }
 
   function copyIcal() {
@@ -112,7 +114,7 @@ export function PanchangDownloadsFlow({
           </div>
 
           <div className="flex flex-wrap items-center gap-4 rounded-2xl border border-border/80 bg-surface-sunken/40 px-4 py-4 sm:px-5">
-            <div className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-copper/15 text-copper">
+            <div className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-copper/15 text-silver-300">
               <FileText className="size-5" aria-hidden />
             </div>
             <div className="min-w-0 flex-1">
@@ -124,7 +126,7 @@ export function PanchangDownloadsFlow({
                 {meta.label} · {meta.pages} · {meta.size}
               </p>
             </div>
-            <Button variant="primary" size="sm" className="rounded-full" onClick={handleDownloadPdf}>
+            <Button variant="secondary" size="sm" className="rounded-full" onClick={handleDownloadPdf}>
               Download
             </Button>
           </div>
@@ -158,9 +160,6 @@ export function PanchangDownloadsFlow({
               onClick={() => setPhase('gate')}
             >
               Choose another range
-            </Button>
-            <Button variant="ghost" size="sm" className="rounded-full" onClick={() => setPhase('gate')}>
-              Back
             </Button>
           </div>
         </Card>

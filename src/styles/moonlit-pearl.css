@@ -1,0 +1,1278 @@
+/* =========================================================================
+   CYKLOS LIGHT "DAWN" — ported 1:1 from design/cyklos-light-reference.html
+   Dark mode must stay untouched. All rules scoped to [data-theme='light'].
+   ========================================================================= */
+
+/* —— Page —— */
+[data-theme='light'] body {
+  background: var(--bg);
+  background-image: none;
+  color: var(--ink);
+  box-shadow: none;
+}
+
+[data-theme='light'] .astro-app-bg,
+[data-theme='light'] .app-bg,
+[data-theme='light'] .bg-hero-gradient {
+  background-color: var(--bg);
+  background-image: none;
+}
+
+/* Sky wash (reference .main::before) */
+[data-theme='light'] .app-shell-main,
+[data-theme='light'] [data-app-main],
+[data-theme='light'] .ask-main,
+[data-theme='light'] main.relative {
+  position: relative;
+}
+
+[data-theme='light'] body::before {
+  content: '';
+  position: fixed;
+  inset: 0 0 auto 0;
+  height: 560px;
+  background: var(--sky);
+  pointer-events: none;
+  z-index: 0;
+}
+
+[data-theme='light'] #root {
+  position: relative;
+  z-index: 1;
+}
+
+[data-theme='light'] .ask-idle-wash {
+  display: none !important;
+}
+
+/* —— Typography (reference .serif / .eyebrow / .mono) —— */
+[data-theme='light'] h1,
+[data-theme='light'] h2,
+[data-theme='light'] h3,
+[data-theme='light'] h4,
+[data-theme='light'] .serif,
+[data-theme='light'] .font-serif {
+  color: var(--ink);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+[data-theme='light'] .text-chrome,
+[data-theme='light'] .text-gradient-gold {
+  background: none;
+  -webkit-background-clip: unset;
+  background-clip: unset;
+  color: var(--ink);
+  -webkit-text-fill-color: var(--ink);
+  filter: none;
+}
+
+/* Welcome name = rose-gold gradient (reference h1.hello em) */
+[data-theme='light'] .ask-welcome-name {
+  background: var(--rg);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  font-style: normal;
+}
+
+[data-theme='light'] .eyebrow {
+  font: 600 11px/1 var(--font-sans), Manrope, system-ui, sans-serif;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--eyebrow);
+}
+
+[data-theme='light'] .mono,
+[data-theme='light'] .font-mono {
+  color: var(--muted);
+  letter-spacing: 0.12em;
+}
+
+[data-theme='light'] .text-ink,
+[data-theme='light'] .text-text,
+[data-theme='light'] .text-text-primary {
+  color: var(--ink) !important;
+}
+
+[data-theme='light'] .text-secondary,
+[data-theme='light'] .text-text-secondary,
+[data-theme='light'] .text-purple {
+  color: var(--ink-2) !important;
+}
+
+[data-theme='light'] .text-muted,
+[data-theme='light'] .text-text-muted,
+[data-theme='light'] .text-faint {
+  color: var(--muted) !important;
+}
+
+/* White text on porcelain → ink; night surfaces re-whitelist below */
+[data-theme='light'] .text-white {
+  color: var(--ink) !important;
+}
+
+[data-theme='light'] [class*='text-white\/'] {
+  color: var(--ink-2) !important;
+}
+
+/* —— Sidebar (reference .side / .nav a.on) —— */
+[data-theme='light'] aside.sticky {
+  background: var(--surface) !important;
+  border-right: 1px solid var(--line) !important;
+}
+
+[data-theme='light'] aside .rg-selected,
+[data-theme='light'] .rg-selected {
+  background: var(--aubergine-soft) !important;
+  border: none !important;
+  color: var(--aubergine) !important;
+  font-weight: 600;
+  box-shadow: none !important;
+}
+
+/* One indicator only: the .nav-active-bar span (hide ::before glow/bar) */
+[data-theme='light'] .rg-selected::before {
+  display: none !important;
+  content: none !important;
+}
+
+[data-theme='light'] .nav-active-bar {
+  width: 3px;
+  top: 9px;
+  bottom: 9px;
+  border-radius: 3px;
+  background: var(--rg);
+  box-shadow: none !important;
+}
+
+[data-theme='light'] .rg-selected svg,
+[data-theme='light'] .rg-selected .text-silver-100 {
+  color: var(--aubergine) !important;
+  stroke: var(--aubergine);
+}
+
+[data-theme='light'] aside a:not(.rg-selected),
+[data-theme='light'] aside button:not(.rg-selected) {
+  color: var(--ink-2);
+}
+
+[data-theme='light'] aside a:not(.rg-selected) svg,
+[data-theme='light'] aside button:not(.rg-selected) svg {
+  color: var(--muted);
+}
+
+[data-theme='light'] aside .eyebrow,
+[data-theme='light'] aside .font-mono.uppercase {
+  color: var(--eyebrow) !important;
+}
+
+/* —— Cards (reference .card) —— */
+[data-theme='light'] .card,
+[data-theme='light'] .bg-card-gradient,
+[data-theme='light'] .chart-panel,
+[data-theme='light'] .history-card,
+[data-theme='light'] .past-option-card,
+[data-theme='light'] .panchang-lang-card {
+  position: relative;
+  background: var(--surface) !important;
+  background-image: none !important;
+  border: 1px solid var(--line) !important;
+  border-radius: 20px;
+  box-shadow: var(--sh-1) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  transition: transform 0.2s, box-shadow 0.25s;
+}
+
+[data-theme='light'] .card:hover,
+[data-theme='light'] .chart-panel:hover,
+[data-theme='light'] .history-card:hover,
+[data-theme='light'] .past-option-card:hover:not(:disabled),
+[data-theme='light'] .panchang-lang-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--sh-2) !important;
+}
+
+[data-theme='light'] .card-premium::before,
+[data-theme='light'] .card-premium::after,
+[data-theme='light'] .past-option-card__orb,
+[data-theme='light'] .past-option-card__stars,
+[data-theme='light'] .past-option-card__sheen {
+  display: none !important;
+}
+
+[data-theme='light'] .shadow-card {
+  box-shadow: var(--sh-1) !important;
+}
+
+[data-theme='light'] .shadow-raised {
+  box-shadow: var(--sh-2) !important;
+}
+
+/* Selected card (reference .card.sel) */
+[data-theme='light'] .past-option-card[aria-pressed='true'],
+[data-theme='light'] .card.sel {
+  background: linear-gradient(180deg, #ffffff 0%, var(--surface-sel) 100%) !important;
+  box-shadow: var(--sh-2) !important;
+  border-color: transparent !important;
+  animation: none !important;
+}
+
+[data-theme='light'] .past-option-card[aria-pressed='true']::before,
+[data-theme='light'] .card.sel::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1.5px;
+  background: var(--rg-line);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  z-index: 1;
+}
+
+[data-theme='light'] .past-option-card[aria-pressed='true']::after,
+[data-theme='light'] .card.sel::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 60%;
+  height: 70%;
+  border-radius: 0 20px 0 0;
+  background: radial-gradient(60% 60% at 100% 0%, rgba(214, 150, 190, 0.18), transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+[data-theme='light'] .past-option-card:disabled,
+[data-theme='light'] .past-option-card[aria-disabled='true'],
+[data-theme='light'] .card.locked h3,
+[data-theme='light'] .card.locked p {
+  opacity: 0.72;
+}
+
+/* Glyphs / tick / lock (reference) */
+[data-theme='light'] .past-option-card__glyphs,
+[data-theme='light'] .glyphs {
+  background: var(--aubergine-soft) !important;
+  border: none !important;
+  color: var(--aubergine) !important;
+}
+
+[data-theme='light'] .past-option-card__check--on,
+[data-theme='light'] .tick {
+  width: 24px !important;
+  height: 24px !important;
+  border-radius: 50% !important;
+  background: var(--rg) !important;
+  border: none !important;
+  box-shadow: var(--sh-cta) !important;
+  color: #fff !important;
+}
+
+[data-theme='light'] .past-lock-ring,
+[data-theme='light'] .lock {
+  width: 24px !important;
+  height: 24px !important;
+  border-radius: 50% !important;
+  border: 1px solid var(--line-2) !important;
+  background: transparent !important;
+  color: var(--muted) !important;
+  box-shadow: none !important;
+}
+
+[data-theme='light'] .icontile,
+[data-theme='light'] .rg-icon-tile,
+[data-theme='light'] .panchang-lang-icon,
+[data-theme='light'] .icon-tile-light {
+  width: 46px !important;
+  height: 46px !important;
+  border-radius: 14px !important;
+  background: var(--aubergine-soft) !important;
+  border: none !important;
+  color: var(--aubergine) !important;
+  box-shadow: none !important;
+}
+
+/* —— Buttons (reference .btn-primary / .btn-outline / .btn-ghost) —— */
+[data-theme='light'] .btn-primary,
+[data-theme='light'] .btn-copper {
+  border: 0;
+  color: #fff !important;
+  background: var(--rg);
+  background-size: 100% 100%;
+  box-shadow: var(--sh-cta);
+  text-shadow: 0 1px 2px rgba(20, 8, 16, 0.5);
+  font-weight: 600;
+}
+
+[data-theme='light'] .btn-primary:hover,
+[data-theme='light'] .btn-copper:hover {
+  background: var(--rg-hover);
+  filter: none;
+  box-shadow: var(--sh-cta-hover);
+}
+
+[data-theme='light'] .btn-copper-outline,
+[data-theme='light'] .btn-outline {
+  position: relative;
+  background: var(--surface) !important;
+  border: 0 !important;
+  color: var(--rg-text) !important;
+  box-shadow: var(--sh-1);
+  text-shadow: none !important;
+}
+
+[data-theme='light'] .btn-copper-outline::before,
+[data-theme='light'] .btn-outline::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: var(--rg-line);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0.75;
+  pointer-events: none;
+}
+
+[data-theme='light'] .btn-copper-outline:hover,
+[data-theme='light'] .btn-outline:hover {
+  background: #fdf6f2 !important;
+}
+
+[data-theme='light'] .btn-ghost,
+[data-theme='light'] .history-actions button {
+  background: transparent !important;
+  border: 0 !important;
+  color: var(--aubergine) !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+}
+
+[data-theme='light'] .btn-ghost:hover,
+[data-theme='light'] .history-actions button:hover {
+  background: var(--aubergine-soft) !important;
+}
+
+[data-theme='light'] .history-actions button svg {
+  color: var(--aubergine) !important;
+}
+
+[data-theme='light'] .history-trash {
+  color: var(--muted) !important;
+}
+
+[data-theme='light'] .history-trash:hover {
+  color: #b4475a !important;
+  background: rgba(180, 71, 90, 0.08) !important;
+}
+
+/* —— Tabs (reference .tabs) —— */
+[data-theme='light'] .rubber-segment {
+  --rs-track: var(--surface-2);
+  --rs-thumb: var(--surface);
+  --rs-ink: var(--ink-2);
+  --rs-ink-active: var(--aubergine);
+  --rs-idle: 1;
+  gap: 4px;
+  padding: 5px;
+  border-radius: 14px;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+}
+
+[data-theme='light'] .rubber-segment__thumb {
+  background: var(--surface);
+  border: none;
+  box-shadow: var(--sh-1);
+  color: var(--aubergine);
+  font-weight: 700;
+}
+
+[data-theme='light'] .rubber-segment__item {
+  color: var(--ink-2);
+  font-weight: 500;
+}
+
+[data-theme='light'] .rubber-segment__item[aria-checked='true'] {
+  color: var(--aubergine);
+  font-weight: 700;
+}
+
+[data-theme='light'] .rg-tab,
+[data-theme='light'] .rg-tab[aria-selected='true'],
+[data-theme='light'] .rg-tab[data-state='active'] {
+  background: var(--surface) !important;
+  border: none !important;
+  color: var(--aubergine) !important;
+  font-weight: 700 !important;
+  box-shadow: var(--sh-1) !important;
+}
+
+/* —— Chips —— */
+[data-theme='light'] .rg-chip,
+[data-theme='light'] .chip {
+  background: var(--surface-2) !important;
+  border: 1px solid var(--line) !important;
+  color: var(--ink) !important;
+  box-shadow: none !important;
+  border-radius: 999px;
+}
+
+/* —— Composer (reference .composer) —— */
+[data-theme='light'] .ask-composer {
+  margin-top: 0;
+  position: relative;
+  border-radius: 22px !important;
+  background: rgba(255, 255, 255, 0.88) !important;
+  backdrop-filter: blur(14px) !important;
+  -webkit-backdrop-filter: blur(14px) !important;
+  box-shadow: var(--sh-2), 0 0 0 6px rgba(237, 227, 243, 0.5) !important;
+  border: 0 !important;
+  overflow: visible !important;
+}
+
+[data-theme='light'] .ask-composer::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: var(--rg-line);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0.7;
+  pointer-events: none;
+  z-index: 2;
+}
+
+[data-theme='light'] .ask-composer > .pointer-events-none.absolute.inset-x-0.top-0.h-20 {
+  display: none !important;
+}
+
+[data-theme='light'] .ask-composer .text-silver-400 {
+  color: var(--muted) !important;
+  opacity: 1;
+}
+
+[data-theme='light'] .ask-composer span:hover {
+  color: var(--rg-text) !important;
+}
+
+[data-theme='light'] .ask-composer textarea {
+  color: var(--ink) !important;
+  font-weight: 500;
+}
+
+[data-theme='light'] .ask-composer textarea::placeholder {
+  color: var(--muted) !important;
+}
+
+[data-theme='light'] .ask-composer button[type='submit'] {
+  width: 42px;
+  height: 42px;
+  border-radius: 50% !important;
+  border: 0 !important;
+  background: var(--rg) !important;
+  box-shadow: var(--sh-cta) !important;
+  color: #fff !important;
+  text-shadow: none;
+}
+
+[data-theme='light'] .ask-composer button[type='submit']:disabled {
+  opacity: 0.45;
+  background: var(--rg) !important;
+  color: #fff !important;
+}
+
+/* —— History row (reference .row) —— */
+[data-theme='light'] .history-card {
+  border-radius: 18px !important;
+  box-shadow: var(--sh-1) !important;
+}
+
+[data-theme='light'] .history-preview {
+  color: var(--ink-2) !important;
+}
+
+[data-theme='light'] .history-meta {
+  color: var(--muted) !important;
+}
+
+/* —— Night card (reference .night) —— */
+/* Lagna chart panel is a white .card in light — exclude it from night ink. */
+[data-theme='light'] .night-card,
+[data-theme='light'] .horoscope-night-card,
+[data-theme='light'] .night-sky-panel,
+[data-theme='light'] .auth-adventure-sky,
+[data-theme='light'] .bg-midnight:not(.lagna-chart-panel),
+[data-theme='light'] [class*='bg-midnight']:not(.lagna-chart-panel) {
+  --color-on-celestial: #fbf7f5;
+  --color-on-celestial-muted: #d6cad8;
+  --color-on-celestial-faint: rgba(251, 247, 245, 0.55);
+  --color-text: #fbf7f5;
+  --color-text-primary: #fbf7f5;
+  --color-text-secondary: #d6cad8;
+  --color-text-muted: rgba(251, 247, 245, 0.55);
+  --text-primary: #fbf7f5;
+  --text-secondary: #d6cad8;
+  --text-muted: rgba(251, 247, 245, 0.55);
+  color: #fbf7f5;
+}
+
+[data-theme='light'] .night-card,
+[data-theme='light'] .horoscope-night-card {
+  background: var(--night) !important;
+  border: none !important;
+  border-radius: 24px !important;
+  box-shadow: 0 30px 60px -30px rgba(43, 22, 49, 0.6) !important;
+  overflow: hidden;
+  position: relative;
+}
+
+[data-theme='light'] .bg-midnight:not(.lagna-chart-panel),
+[data-theme='light'] [class*='bg-midnight']:not(.lagna-chart-panel) {
+  background-color: #160c1b !important;
+  background-image: var(--night) !important;
+}
+
+[data-theme='light'] .night-card .eyebrow,
+[data-theme='light'] .night-card .font-mono.uppercase,
+[data-theme='light'] .horoscope-night-card .font-mono.uppercase,
+[data-theme='light'] .horoscope-night-card .eyebrow {
+  color: #ebc3a6 !important;
+}
+
+[data-theme='light'] .night-card .text-white,
+[data-theme='light'] .night-card [class*='text-white'],
+[data-theme='light'] .horoscope-night-card .text-white,
+[data-theme='light'] .horoscope-night-card [class*='text-white'],
+[data-theme='light'] .bg-midnight:not(.lagna-chart-panel) .text-white,
+[data-theme='light'] .bg-midnight:not(.lagna-chart-panel) [class*='text-white'],
+[data-theme='light'] .auth-adventure-sky .text-white,
+[data-theme='light'] .auth-adventure-sky [class*='text-white'],
+[data-theme='light'] .night-card h1,
+[data-theme='light'] .night-card h2,
+[data-theme='light'] .night-card h3,
+[data-theme='light'] .horoscope-night-card h2,
+[data-theme='light'] .horoscope-night-card h3 {
+  color: #fbf7f5 !important;
+  -webkit-text-fill-color: #fbf7f5;
+}
+
+[data-theme='light'] .night-card p,
+[data-theme='light'] .horoscope-night-card p,
+[data-theme='light'] .night-card.premium-ad p.text-xs {
+  color: #d6cad8 !important;
+}
+
+[data-theme='light'] .horoscope-night-card [class*='bg-white'],
+[data-theme='light'] .night-card [class*='bg-white\/'] {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(255, 255, 255, 0.16) !important;
+  color: #f3e6ec !important;
+}
+
+[data-theme='light'] .horoscope-night-card li span[aria-hidden] {
+  background: #e2b394 !important;
+}
+
+/* —— Horoscope area / reading heroes → white cards (not night) —— */
+[data-theme='light'] .horoscope-area-card,
+[data-theme='light'] .horoscope-reading-hero,
+[data-theme='light'] .horoscope-source-card {
+  background: var(--surface) !important;
+  background-image: none !important;
+  border: 1px solid var(--line) !important;
+  box-shadow: var(--sh-1) !important;
+  color: var(--ink);
+  --color-text: var(--ink);
+  --color-text-primary: var(--ink);
+  --color-text-secondary: var(--ink-2);
+  --color-text-muted: var(--muted);
+  --text-primary: var(--ink);
+  --text-secondary: var(--ink-2);
+  --text-muted: var(--muted);
+}
+
+[data-theme='light'] .horoscope-area-card > [aria-hidden],
+[data-theme='light'] .horoscope-reading-hero > [aria-hidden],
+[data-theme='light'] .horoscope-source-card > [aria-hidden] {
+  display: none !important;
+}
+
+[data-theme='light'] .horoscope-area-card h1,
+[data-theme='light'] .horoscope-area-card h2,
+[data-theme='light'] .horoscope-area-card h3,
+[data-theme='light'] .horoscope-area-card .font-serif,
+[data-theme='light'] .horoscope-reading-hero h1,
+[data-theme='light'] .horoscope-reading-hero h2,
+[data-theme='light'] .horoscope-reading-hero h3,
+[data-theme='light'] .horoscope-reading-hero .font-serif {
+  color: var(--ink) !important;
+  -webkit-text-fill-color: var(--ink);
+}
+
+[data-theme='light'] .horoscope-area-card .text-white,
+[data-theme='light'] .horoscope-area-card [class*='text-white'],
+[data-theme='light'] .horoscope-reading-hero .text-white,
+[data-theme='light'] .horoscope-reading-hero [class*='text-white'],
+[data-theme='light'] .horoscope-source-card .text-white,
+[data-theme='light'] .horoscope-source-card [class*='text-white'] {
+  color: var(--ink) !important;
+  -webkit-text-fill-color: var(--ink);
+}
+
+[data-theme='light'] .horoscope-area-card [class*='text-white\/'],
+[data-theme='light'] .horoscope-reading-hero [class*='text-white\/'],
+[data-theme='light'] .horoscope-source-card [class*='text-white\/'] {
+  color: var(--ink-2) !important;
+  -webkit-text-fill-color: var(--ink-2);
+}
+
+[data-theme='light'] .horoscope-area-card .text-silver-300,
+[data-theme='light'] .horoscope-reading-hero .text-silver-300,
+[data-theme='light'] .horoscope-source-card .text-silver-300,
+[data-theme='light'] .horoscope-area-card .font-mono,
+[data-theme='light'] .horoscope-reading-hero .font-mono,
+[data-theme='light'] .horoscope-source-card .font-mono {
+  color: var(--eyebrow) !important;
+}
+
+[data-theme='light'] .horoscope-source-card li,
+[data-theme='light'] .horoscope-source-card [class*='bg-white'] {
+  background: var(--surface-2) !important;
+  border-color: var(--line) !important;
+  color: var(--ink) !important;
+}
+
+[data-theme='light'] .horoscope-source-card [class*='border-white'] {
+  border-color: var(--line) !important;
+}
+
+[data-theme='light'] .horoscope-area-card .bg-white\/10,
+[data-theme='light'] .horoscope-area-card [class*='bg-white\/10'] {
+  background: var(--surface-2) !important;
+}
+
+[data-theme='light'] .horoscope-reading-hero blockquote,
+[data-theme='light'] .horoscope-reading-hero [class*='bg-white\/\[0\.05\]'],
+[data-theme='light'] .horoscope-reading-hero [class*='bg-white\/5'],
+[data-theme='light'] .horoscope-reading-hero [class*='border-white\/10'] {
+  background: var(--surface-2) !important;
+  border-color: var(--line) !important;
+  color: var(--ink);
+  box-shadow: none !important;
+}
+
+[data-theme='light'] .horoscope-reading-hero blockquote p,
+[data-theme='light'] .horoscope-reading-hero blockquote .text-white {
+  color: var(--ink) !important;
+}
+
+[data-theme='light'] .horoscope-area-card [class*='border-accent'],
+[data-theme='light'] .horoscope-area-card [class*='bg-primary'],
+[data-theme='light'] .horoscope-reading-hero [class*='border-accent'],
+[data-theme='light'] .horoscope-reading-hero [class*='bg-primary'] {
+  background: var(--surface-sel) !important;
+  border-color: rgba(174, 111, 82, 0.25) !important;
+  color: var(--rg-text) !important;
+  box-shadow: none !important;
+}
+
+/* Score % + bar accents on white cards */
+[data-theme='light'] .horoscope-area-card .text-2xl.tabular-nums,
+[data-theme='light'] .horoscope-area-card [class*='text-[#E6BC9F]'],
+[data-theme='light'] .horoscope-area-card [class*='text-[#F2D7C7]'],
+[data-theme='light'] .horoscope-area-card [class*='text-[#6E4234]'],
+[data-theme='light'] .horoscope-area-card [class*='text-[#2E1623]'] {
+  color: var(--rg-text) !important;
+}
+
+[data-theme='light'] .horoscope-area-card [class*='bg-[#E6BC9F]'],
+[data-theme='light'] .horoscope-area-card [class*='bg-[#BF8466]'],
+[data-theme='light'] .horoscope-area-card [class*='bg-[#6E4234]'],
+[data-theme='light'] .horoscope-area-card [class*='bg-[#2E1623]'],
+[data-theme='light'] .horoscope-area-card [class*='bg-[var(--color-primary-hover)]'] {
+  background: linear-gradient(90deg, #e2b394, #ae6f52) !important;
+}
+
+/* Personalised CTA = outline (not second primary) */
+[data-theme='light'] .horoscope-personal-cta button {
+  position: relative;
+  background: var(--surface) !important;
+  color: var(--rg-text) !important;
+  font-weight: 600;
+  text-shadow: none !important;
+  box-shadow: var(--sh-1) !important;
+  border: 0 !important;
+}
+
+[data-theme='light'] .horoscope-personal-cta button::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: var(--rg-line);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0.75;
+  pointer-events: none;
+}
+
+[data-theme='light'] .horoscope-personal-cta button:hover {
+  background: #fdf6f2 !important;
+}
+
+/* —— Auth dark form panel —— */
+[data-theme='light'] [data-auth-form] {
+  --color-on-celestial: #fbf7f5;
+  --color-on-celestial-muted: #d6cad8;
+  --color-text: #fbf7f5;
+  --color-text-primary: #fbf7f5;
+  --color-text-secondary: #d6cad8;
+  --text-primary: #fbf7f5;
+  --text-secondary: #d6cad8;
+  --text-muted: rgba(251, 247, 245, 0.6);
+  color: #fbf7f5;
+}
+
+[data-theme='light'] [data-auth-form] .text-white,
+[data-theme='light'] [data-auth-form] [class*='text-white'],
+[data-theme='light'] [data-auth-form] .text-on-celestial,
+[data-theme='light'] [data-auth-form] .text-ink,
+[data-theme='light'] [data-auth-form] .text-text {
+  color: #fbf7f5 !important;
+}
+
+[data-theme='light'] [data-auth-form] .text-on-celestial-muted,
+[data-theme='light'] [data-auth-form] .text-muted,
+[data-theme='light'] [data-auth-form] .text-secondary {
+  color: #d6cad8 !important;
+}
+
+[data-theme='light'] [data-auth-form] .input-astro,
+[data-theme='light'] [data-auth-form] input,
+[data-theme='light'] [data-auth-form] textarea {
+  background: rgba(255, 255, 255, 0.96) !important;
+  color: #1f1426 !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+[data-theme='light'] [data-auth-form] input::placeholder,
+[data-theme='light'] [data-auth-form] textarea::placeholder {
+  color: #8c8093 !important;
+}
+
+/* —— Inputs —— */
+[data-theme='light'] .input-astro {
+  background: var(--surface);
+  border: 1px solid var(--line-2);
+  box-shadow: inset 0 1px 2px rgba(31, 20, 38, 0.04);
+  color: var(--ink);
+}
+
+[data-theme='light'] .input-astro:focus-within,
+[data-theme='light'] .input-astro:focus {
+  border-color: #ae6f52 !important;
+  box-shadow: var(--ring) !important;
+  background: var(--surface) !important;
+}
+
+[data-theme='light'] ::placeholder {
+  color: var(--muted);
+}
+
+/* —— Panchang tiles —— */
+[data-theme='light'] ul:has(.panchang-lang-card) {
+  gap: 1rem;
+}
+
+[data-theme='light'] .panchang-lang-wash {
+  background: transparent !important;
+  min-height: auto;
+  padding-top: 1.25rem;
+}
+
+[data-theme='light'] .panchang-lang-wash > div[aria-hidden] {
+  display: none;
+}
+
+[data-theme='light'] .panchang-lang-mark {
+  color: var(--aubergine) !important;
+  font-size: 1.35rem;
+}
+
+[data-theme='light'] .panchang-lang-foot {
+  background: transparent !important;
+  border-top: none !important;
+}
+
+[data-theme='light'] .panchang-lang-foot p {
+  color: var(--ink-2) !important;
+  font-weight: 500 !important;
+}
+
+/* —— Chart / Kundali —— */
+[data-theme='light'] .chart-panel {
+  background: var(--surface) !important;
+  border: 1px solid var(--line) !important;
+  box-shadow: var(--sh-1) !important;
+}
+
+[data-theme='light'] .chart-panel [class*='bg-surface-sunken'] {
+  background: var(--surface-2) !important;
+}
+
+[data-theme='light'] .kundali-diamond {
+  --chart-line: rgba(31, 20, 38, 0.22);
+}
+
+[data-theme='light'] .kundali-draw-rim {
+  stroke-width: 1.5;
+}
+
+[data-theme='light'] .night-card.premium-ad {
+  background: var(--night) !important;
+  box-shadow: 0 30px 60px -30px rgba(43, 22, 49, 0.6) !important;
+}
+
+/* —— Top bar —— */
+[data-theme='light'] .mobile-header,
+[data-theme='light'] header[class*='border-b'] {
+  background: var(--surface) !important;
+  border-bottom: 1px solid var(--line) !important;
+}
+
+[data-theme='light'] .avatar-ring {
+  box-shadow: 0 0 0 1px var(--line);
+}
+
+/* —— Celestial / orbits (reference pearl planets, aubergine lines) —— */
+[data-theme='light'] .celestial-scene {
+  --orbit-line: rgba(75, 37, 69, 0.1);
+  --orbit-line-gold: rgba(75, 37, 69, 0.12);
+  opacity: 0.95;
+}
+
+[data-theme='light'] .celestial-scene .opacity-\[0\.28\] {
+  opacity: 0.12 !important;
+}
+
+[data-theme='light'] .planet-body:not(.planet-sun) {
+  filter: none !important;
+  background: radial-gradient(circle at 35% 30%, #fff, #ebdde6 55%, #b49bae) !important;
+  box-shadow: 0 2px 6px rgba(75, 37, 69, 0.16) !important;
+}
+
+[data-theme='light'] .planet-sun {
+  filter: none !important;
+  background: radial-gradient(circle at 35% 30%, #fff4ea 0%, #e7b48f 40%, #9c5e43 100%) !important;
+  box-shadow: 0 0 18px rgba(174, 111, 82, 0.35) !important;
+}
+
+[data-theme='light'] .zodiac-orbit-ring {
+  color: #4b2545;
+  opacity: 0.55;
+}
+
+[data-theme='light'] .zodiac-orbit-glyph {
+  fill: #4b2545;
+  opacity: 0.35;
+  font-size: 16px;
+}
+
+[data-theme='light'] .planet-glyph {
+  color: rgba(75, 37, 69, 0.35);
+}
+
+[data-theme='light'] .rg-today {
+  color: var(--ink);
+  box-shadow: 0 0 0 1.5px var(--rg-text);
+}
+
+[data-theme='light'] .festival-chip,
+[data-theme='light'] .rg-festival {
+  background: var(--surface-sel);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-theme='light'] .card:hover,
+  [data-theme='light'] .past-option-card:hover:not(:disabled),
+  [data-theme='light'] .panchang-lang-card:hover {
+    transform: none;
+  }
+}
+
+/* =========================================================================
+   Screen fixes — My Chart / Matching / Calendar (light only)
+   ========================================================================= */
+
+/* —— My Chart: Lagna panel = white card, NOT night —— */
+[data-theme='light'] .lagna-chart-panel {
+  background: var(--surface) !important;
+  background-color: #ffffff !important;
+  background-image: none !important;
+  border: 1px solid var(--line) !important;
+  box-shadow: var(--sh-1) !important;
+  color: var(--ink);
+  /* Reset night celestial ink so SVG + labels use Dawn tokens */
+  --color-on-celestial: var(--ink);
+  --color-on-celestial-muted: var(--ink-2);
+  --color-on-celestial-faint: var(--muted);
+  --color-text: var(--ink);
+  --color-text-primary: var(--ink);
+  --color-text-secondary: var(--ink-2);
+  --color-text-muted: var(--muted);
+  --text-primary: var(--ink);
+  --text-secondary: var(--ink-2);
+  --text-muted: var(--muted);
+  --color-chart-field: #ffffff;
+  --chart-line: rgba(31, 20, 38, 0.22);
+  --kundali-la-0: var(--rg-text);
+  --kundali-la-1: var(--rg-text);
+  --kundali-la-2: var(--rg-text);
+  --kundali-wash-0: rgba(214, 150, 190, 0.16);
+  --kundali-wash-1: rgba(214, 150, 190, 0.16);
+  --kundali-active-stroke: #ae6f52;
+}
+
+[data-theme='light'] .lagna-chart-panel > [aria-hidden],
+[data-theme='light'] .lagna-chart-panel .kundali-nebula,
+[data-theme='light'] .lagna-chart-panel canvas,
+[data-theme='light'] .lagna-chart-panel .star-field {
+  display: none !important;
+}
+
+[data-theme='light'] .lagna-chart-panel h2 {
+  color: var(--ink) !important;
+  -webkit-text-fill-color: var(--ink);
+  font-family: var(--font-serif), 'Cormorant Garamond', Georgia, serif;
+}
+
+[data-theme='light'] .lagna-chart-panel .text-text-secondary,
+[data-theme='light'] .lagna-chart-panel p.text-sm {
+  color: var(--ink-2) !important;
+  -webkit-text-fill-color: var(--ink-2);
+}
+
+[data-theme='light'] .lagna-chart-panel .text-white,
+[data-theme='light'] .lagna-chart-panel [class*='text-white'],
+[data-theme='light'] .lagna-chart-panel .text-silver-400,
+[data-theme='light'] .lagna-chart-panel .text-silver-300,
+[data-theme='light'] .lagna-chart-panel .text-silver-100,
+[data-theme='light'] .lagna-chart-panel .text-ink {
+  color: var(--ink) !important;
+  -webkit-text-fill-color: var(--ink);
+}
+
+[data-theme='light'] .lagna-chart-panel .text-muted {
+  color: var(--ink-2) !important;
+  -webkit-text-fill-color: var(--ink-2);
+}
+
+[data-theme='light'] .lagna-varga-tabs {
+  background: var(--surface-2) !important;
+  border: 1px solid var(--line) !important;
+  border-radius: 14px !important;
+  padding: 5px !important;
+  backdrop-filter: none !important;
+}
+
+[data-theme='light'] .lagna-varga-thumb {
+  background: var(--surface) !important;
+  box-shadow: var(--sh-1) !important;
+  border-radius: 10px !important;
+}
+
+[data-theme='light'] .lagna-varga-tabs button {
+  color: var(--ink-2) !important;
+}
+
+[data-theme='light'] .lagna-varga-tabs button[aria-selected='true'],
+[data-theme='light'] .lagna-varga-tabs button.font-semibold {
+  color: var(--aubergine) !important;
+  font-weight: 700 !important;
+}
+
+[data-theme='light'] .lagna-expand-btn {
+  background: var(--surface) !important;
+  border: 1px solid var(--line-2) !important;
+  color: var(--ink-2) !important;
+  box-shadow: none !important;
+}
+
+[data-theme='light'] .lagna-expand-btn:hover {
+  background: var(--surface-2) !important;
+  color: var(--ink) !important;
+  border-color: var(--line-2) !important;
+}
+
+[data-theme='light'] .lagna-chart-footer {
+  border-top: 1px solid var(--line) !important;
+  background: var(--surface) !important;
+}
+
+[data-theme='light'] .lagna-chart-footer .eyebrow {
+  color: var(--eyebrow) !important;
+}
+
+[data-theme='light'] .lagna-style-btn {
+  background: var(--surface-2) !important;
+  border: 1px solid var(--line) !important;
+  color: var(--ink-2) !important;
+  box-shadow: none !important;
+}
+
+[data-theme='light'] .lagna-style-btn:hover {
+  color: var(--ink) !important;
+  border-color: var(--line-2) !important;
+}
+
+[data-theme='light'] .lagna-style-btn.border-blue-light\/40,
+[data-theme='light'] .lagna-style-btn[class*='bg-surface-raised'] {
+  background: var(--surface) !important;
+  border-color: color-mix(in srgb, var(--rg-text) 35%, transparent) !important;
+  color: var(--aubergine) !important;
+  box-shadow: var(--sh-1) !important;
+}
+
+[data-theme='light'] .lagna-ayanamsa {
+  background: var(--surface) !important;
+  border: 1px solid var(--line-2) !important;
+  color: var(--ink) !important;
+  color-scheme: light;
+  accent-color: #AE6F52;
+}
+
+/* Kundali SVG readability */
+[data-theme='light'] .kundali-diamond,
+[data-theme='light'] .kundali-diamond--glow {
+  --color-chart-field: #ffffff;
+  --chart-line: rgba(31, 20, 38, 0.22);
+  filter: none !important;
+}
+
+[data-theme='light'] .kundali-diamond > rect.kundali-rim-frame,
+[data-theme='light'] .kundali-diamond > rect:first-of-type {
+  fill: #ffffff;
+  /* Keep glossy copper↔aubergine rim gradient (do not flatten to solid) */
+  stroke-width: 2.25;
+}
+
+[data-theme='light'] .kundali-house-num {
+  fill: var(--muted) !important;
+  font-weight: 600;
+}
+
+[data-theme='light'] .kundali-planet-label {
+  fill: var(--ink) !important;
+  font-weight: 600;
+}
+
+[data-theme='light'] .kundali-la {
+  fill: var(--rg-text) !important;
+  font-weight: 700;
+}
+
+[data-theme='light'] .kundali-active-house {
+  fill: rgba(214, 150, 190, 0.16) !important;
+  stroke: #ae6f52 !important;
+  stroke-width: 1.5;
+}
+
+[data-theme='light'] .kundali-active-house ~ g text,
+[data-theme='light'] .kundali-diamond g[aria-label*='selected'] text {
+  fill: var(--ink);
+}
+
+/* Planet detail / tooltip */
+[data-theme='light'] aside.border-copper\/35,
+[data-theme='light'] .planet-detail-sheet {
+  background: var(--surface) !important;
+  border: 1px solid var(--line) !important;
+  box-shadow: var(--sh-1) !important;
+  color: var(--ink);
+}
+
+[data-theme='light'] aside.border-copper\/35 .text-white,
+[data-theme='light'] aside.border-copper\/35 [class*='text-white'] {
+  color: var(--ink) !important;
+}
+
+/* —— Matching —— */
+[data-theme='light'] .match-theme-wash {
+  display: none !important;
+}
+
+[data-theme='light'] .match-theme-shell {
+  background: transparent;
+}
+
+[data-theme='light'] .match-subtitle,
+[data-theme='light'] .match-footer-note {
+  color: var(--ink-2) !important;
+  font-size: 13px !important;
+}
+
+[data-theme='light'] .match-plus-blur {
+  display: none !important;
+}
+
+[data-theme='light'] .match-plus {
+  width: 48px !important;
+  height: 48px !important;
+  background: var(--surface) !important;
+  border: 1px solid transparent !important;
+  background-image:
+    linear-gradient(var(--surface), var(--surface)),
+    var(--rg-line) !important;
+  background-origin: border-box !important;
+  background-clip: padding-box, border-box !important;
+  color: var(--rg-text) !important;
+  box-shadow: var(--sh-2) !important;
+}
+
+[data-theme='light'] .match-plus svg {
+  color: var(--rg-text) !important;
+  filter: none !important;
+}
+
+[data-theme='light'] .person-form-orb {
+  display: none !important;
+}
+
+[data-theme='light'] .person-details-heading {
+  font-family: var(--font-serif), 'Cormorant Garamond', Georgia, serif !important;
+  font-size: 20px !important;
+  font-weight: 600 !important;
+  color: var(--ink) !important;
+}
+
+[data-theme='light'] .match-field > label {
+  font: 600 11px/1 var(--font-sans), Manrope, system-ui, sans-serif !important;
+  letter-spacing: 0.18em !important;
+  text-transform: uppercase !important;
+  color: var(--eyebrow) !important;
+}
+
+[data-theme='light'] .match-gender-tabs {
+  display: inline-flex !important;
+  grid-template-columns: none !important;
+  gap: 4px !important;
+  padding: 5px !important;
+  border-radius: 14px !important;
+  background: var(--surface-2) !important;
+  border: 1px solid var(--line) !important;
+  width: 100%;
+}
+
+[data-theme='light'] .match-gender-tabs button {
+  flex: 1;
+  border: 0 !important;
+  background: transparent !important;
+  color: var(--ink-2) !important;
+  border-radius: 10px !important;
+  box-shadow: none !important;
+  font-weight: 500 !important;
+}
+
+[data-theme='light'] .match-gender-tabs button[aria-checked='true'] {
+  background: var(--surface) !important;
+  color: var(--aubergine) !important;
+  font-weight: 700 !important;
+  box-shadow: var(--sh-1) !important;
+}
+
+[data-theme='light'] .person-form .input-astro,
+[data-theme='light'] .person-form input,
+[data-theme='light'] .person-form input[type='date'],
+[data-theme='light'] .person-form input[type='time'] {
+  background: var(--surface) !important;
+  border: 1px solid var(--line-2) !important;
+  color: var(--ink) !important;
+  color-scheme: light;
+  accent-color: #AE6F52;
+}
+
+[data-theme='light'] .match-saved-row {
+  background: var(--surface) !important;
+  border: 1px solid var(--line-2) !important;
+}
+
+[data-theme='light'] .match-saved-row:hover {
+  background: var(--surface-sel) !important;
+}
+
+[data-theme='light'] .match-saved-arrow {
+  background: var(--rg) !important;
+  color: #fff !important;
+  border: none !important;
+  box-shadow: var(--sh-cta);
+}
+
+[data-theme='light'] .match-saved-arrow svg {
+  color: #fff !important;
+}
+
+/* —— Calendar festival chips —— */
+[data-theme='light'] .cal-festival-chip,
+[data-theme='light'] .rg-chip.cal-festival-chip,
+[data-theme='light'] .festival-chip {
+  background: var(--surface-2) !important;
+  border: 1px solid var(--line) !important;
+  color: var(--ink) !important;
+  box-shadow: none !important;
+}
+
+[data-theme='light'] .cal-festival-chip--major,
+[data-theme='light'] .festival-chip.major {
+  background: var(--surface-sel) !important;
+  border: 1px solid rgba(174, 111, 82, 0.25) !important;
+  color: var(--ink) !important;
+}
+
+[data-theme='light'] .cal-event-chip {
+  background: var(--surface-2) !important;
+  border: 1px solid var(--line) !important;
+  color: var(--ink) !important;
+}
+
+/* —— Sidebar: one bar only (kill double border/glow) —— */
+[data-theme='light'] .rg-selected {
+  background: var(--aubergine-soft) !important;
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+[data-theme='light'] aside .rounded-card.border {
+  border-color: transparent !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+/* Matching title: both words ink (no grey second word) */
+[data-theme='light'] .match-theme-shell h1,
+[data-theme='light'] .match-theme-shell h1 span {
+  color: var(--ink) !important;
+}
+
+[data-theme='light'] .match-theme-shell h1 .text-silver-300 {
+  color: var(--ink) !important;
+}

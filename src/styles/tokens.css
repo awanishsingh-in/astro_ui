@@ -1,152 +1,225 @@
 /* ============================================================================
-   CYKLOS — Design tokens (Adventure blue / violet system)
-   The single source of truth for colour, type, space, radius, shadow, motion.
-   Everything in the app must read from here. Never hardcode a hex or a px
-   value that belongs to the system.
-
-   Tailwind v4 reads this @theme block and generates the utilities:
-     --color-navy      -> bg-navy   text-navy   border-navy
-     --radius-control  -> rounded-control
-     --text-title      -> text-title
+   CYKLOS — Astrovate premium finish
+   Deep space + magenta nebula + silver chrome + polished copper (rare).
    ========================================================================= */
 
 @theme {
-  /* ---------------------------------------------------------------------
-     COLOUR — Adventure primary (deep indigo → soft violet)
-     Matches login / birth-details sky: #07041a · #7c4dff · #3a7bd5 · #5ed7f2
-     --------------------------------------------------------------------- */
-  --color-deep-space: #07041a;
-  --color-dark-purple: #0f0c24;
-  --color-deep-burgundy: #1a0f3d;
-  --color-nebula-plum: #221a48;
-  --color-dark-mauve: #3a3270;
-  --color-muted-plum: #6b6298;
+  /* space */
+  --color-bg: #08060f;
+  --color-bg-secondary: #0f0b19;
+  --color-surface-accent: #1b101d;
+  --color-surface: #1a1220;
+  --color-surface-mid: #241827;
+  --color-surface-raised: #2e1f30;
+  --color-surface-high: #2e1f30;
+  --color-card-tint: #2e1f30;
+  --color-border: #2e1f30;
+  --color-border-strong: #a097a7;
 
-  /* ---------------------------------------------------------------------
-     COLOUR — Adventure accents (token names kept for existing utilities)
-     copper → violet · light-copper → lavender · copper-shadow → blue
-     --------------------------------------------------------------------- */
-  --color-copper-shadow: #3a7bd5;
-  --color-copper: #7c4dff;
-  --color-light-copper: #c4a0ff;
-  --color-pale-copper: #2a2155;
+  /* satin rose-gold (jewellery — rare) */
+  --color-primary: #bf8466;
+  --color-primary-hover: #d4a081;
+  --color-primary-pressed: #9e6650;
+  --color-primary-soft: #fbefe6;
+  --color-brand-gold: #e6bc9f;
+  --color-accent: #e6bc9f;
+  --color-on-primary: #2a1418;
+  --color-secondary: #6e4234;
+  --color-secondary-hover: #bf8466;
+  --color-on-secondary: #fbf7f5;
 
-  /* ---------------------------------------------------------------------
-     COLOUR — text & light accents
-     --------------------------------------------------------------------- */
-  --color-warm-white: #f5f2ff;
-  --color-pale-rose: #c8c0e0;
-  --color-lavender-gray: #9b93b8;
-  --color-gray-purple: #6f6888;
+  /* legacy blue* → glossy magenta / nebula */
+  --color-blue-deep: #4a1540;
+  --color-blue: #d94a9a;
+  --color-blue-glow: #e85aad;
+  --color-blue-light: #f0a8d4;
 
-  /* ---------------------------------------------------------------------
-     COLOUR — brand (semantic aliases → Adventure)
-     Interactive chrome uses violet; soft fills sit on deep indigo.
-     --------------------------------------------------------------------- */
-  --color-navy: #7c4dff;
-  --color-navy-hover: #c4a0ff;
-  --color-navy-active: #3a7bd5;
-  --color-navy-soft: #1a0f3d;
+  /* text */
+  --color-text: #fbf7f5;
+  --color-text-primary: #fbf7f5;
+  --color-text-highlight: #ede6ef;
+  --color-text-secondary: #b8aebf;
+  --color-text-muted: #7d7385;
+  --color-text-disabled: #6e6577;
 
-  /* ---------------------------------------------------------------------
-     COLOUR — celestial
-     Near-black cosmic field; panels lift just above the void.
-     --------------------------------------------------------------------- */
-  --color-midnight: #07041a;
-  --color-indigo-deep: #0f0c24;
-  --color-indigo-royal: #1a0f3d;
+  /* states from copper / silver */
+  --color-success: #e6bc9f;
+  --color-warning: #bf8466;
+  --color-error: #6e4234;
+  --color-info: #d94a9a;
+  --color-overlay: rgb(8 6 15 / 0.78);
+  --color-focus-ring: rgb(232 90 173 / 0.45);
 
-  /* Text and lines that sit ON a celestial surface. */
-  --color-on-celestial: #f5f2ff;
-  --color-on-celestial-muted: #c8c0e0;
-  --color-on-celestial-faint: #9b93b8;
-  --color-celestial-line: #3a3270;
+  --color-success-soft: color-mix(in srgb, var(--color-success) 14%, var(--color-surface));
+  --color-warning-soft: color-mix(in srgb, var(--color-warning) 14%, var(--color-surface));
+  --color-error-soft: color-mix(in srgb, var(--color-error) 18%, var(--color-surface));
+  --color-info-soft: color-mix(in srgb, var(--color-info) 14%, var(--color-surface));
 
-  --color-gold: #7c4dff;
-  --color-gold-soft-line: #c4a0ff;
-  --color-gold-deep: #3a7bd5;
-  --color-gold-soft: #1a0f3d;
-  --color-gold-border: #3a7bd5;
+  /* nebula atmosphere — brighter glossy magenta */
+  --color-glow-nebula: #e85aad;
+  --color-glow-ember: #9b2d6e;
+  --color-nebula-core: #d94a9a;
+  --color-nebula-mid: #9b2d6e;
+  --color-nebula-deep: #4a1540;
+  --color-nebula-spark: #ffb0d9;
 
-  /* Primary / celestial button gradient — Matching remaps these to orange */
-  --btn-primary-from: #7c4dff;
-  --btn-primary-to: #3a7bd5;
-  --btn-primary-hover-from: #8b5cff;
-  --btn-primary-hover-to: #4a8be5;
-  --btn-primary-active-from: #6b3de8;
-  --btn-primary-active-to: #2f6bc0;
-  --btn-primary-shadow: rgba(124, 77, 255, 0.75);
-  --btn-primary-fg: #ffffff;
+  /* rose-gold scale */
+  --color-rg-50: #fbefe6;
+  --color-rg-100: #f3d9c4;
+  --color-rg-200: #e6bc9f;
+  --color-rg-300: #d4a081;
+  --color-rg-400: #bf8466;
+  --color-rg-500: #9e6650;
+  --color-rg-600: #6e4234;
+  --color-rg-ink: #2a1418;
 
-  /* Form fields on mixed auth screens — remapped in light theme. */
-  --color-field: #0f0c24;
-  --color-field-border: #3a3270;
-  --color-field-inset: rgba(245, 242, 255, 0.04);
+  /* silver */
+  --color-silver-100: #ffffff;
+  --color-silver-200: #ede6ef;
+  --color-silver-300: #c9c0cf;
+  --color-silver-400: #a097a7;
+  --color-silver-500: #6e6577;
 
-  /* ---------------------------------------------------------------------
-     COLOUR — text (on lifted dark canvas)
-     --------------------------------------------------------------------- */
-  --color-ink: #f5f2ff;
-  --color-purple: #c8c0e0;
-  --color-muted: #9b93b8;
-  --color-faint: #6f6888;
+  /* copper named */
+  --color-copper-hi: #fbefe6;
+  --color-copper-shadow: #6e4234;
+  --color-copper: #bf8466;
+  --color-light-copper: #f3d9c4;
+  --color-pale-copper: #fbefe6;
 
-  /* ---------------------------------------------------------------------
-     COLOUR — surfaces and lines
-     --------------------------------------------------------------------- */
-  --color-canvas: #07041a;
-  --color-surface: #0f0c24;
-  --color-surface-raised: #221a48;
-  --color-surface-sunken: #07041a;
-  --color-border: #3a3270;
-  --color-border-strong: #6b6298;
+  --color-deep-space: #08060f;
+  --color-dark-purple: #0f0b19;
+  --color-deep-burgundy: #1b101d;
+  --color-nebula-plum: #1a1220;
+  --color-dark-mauve: #241827;
+  --color-muted-plum: #2e1f30;
 
-  /* ---------------------------------------------------------------------
-     COLOUR — semantic status
-     --------------------------------------------------------------------- */
-  --color-positive: #8fbf9a;
-  --color-positive-soft: #0f0c24;
-  --color-caution: #c4a0ff;
-  --color-caution-soft: #1a0f3d;
-  --color-critical: #d4848a;
-  --color-critical-soft: #1a0f3d;
-  --color-info: #5ed7f2;
-  --color-info-soft: #1a0f3d;
+  --color-warm-white: #fbf7f5;
+  --color-pale-rose: #ede6ef;
+  --color-lavender-gray: #b8aebf;
+  --color-gray-purple: #7d7385;
 
-  /* ---------------------------------------------------------------------
-     COLOUR — astrology semantics
-     --------------------------------------------------------------------- */
-  --color-dignity-own: #7c4dff;
-  --color-dignity-exalted: #8fbf9a;
-  --color-dignity-debilitated: #d4848a;
-  --color-dignity-neutral: #9b93b8;
-  --color-retrograde: #d4848a;
-  --color-benefic: #7c4dff;
-  --color-malefic: #c8c0e0;
-  --color-node: #9b93b8;
+  --color-navy: var(--color-primary);
+  --color-navy-hover: var(--color-primary-hover);
+  --color-navy-active: var(--color-primary-pressed);
+  --color-navy-soft: var(--color-surface);
 
-  /* Same roles on an even deeper celestial panel. */
-  --color-benefic-dark: #c4a0ff;
-  --color-malefic-dark: #c8c0e0;
-  --color-node-dark: #9b93b8;
-  --color-retrograde-dark: #d4848a;
+  --color-midnight: var(--color-bg);
+  --color-indigo-deep: var(--color-bg-secondary);
+  --color-indigo-royal: var(--color-surface-accent);
 
-  /* Chart geometry */
-  --color-chart-line: #c8c0e0;
-  --color-chart-rim: #7c4dff;
-  --color-chart-highlight: #1a0f3d;
-  --color-chart-field: #0f0c24;
+  --color-on-celestial: var(--color-text);
+  --color-on-celestial-muted: var(--color-text-secondary);
+  --color-on-celestial-faint: var(--color-text-muted);
+  --color-celestial-line: rgba(237, 230, 239, 0.18);
 
-  /* Deeper celestial chart panels. */
-  --color-chart-line-dark: #6b6298;
-  --color-chart-rim-dark: #7c4dff;
-  --color-chart-highlight-dark: #0f0c24;
+  --color-gold: var(--color-primary);
+  --color-gold-soft-line: var(--color-light-copper);
+  --color-gold-deep: var(--color-copper-shadow);
+  --color-gold-soft: var(--color-surface);
+  --color-gold-border: var(--color-primary);
+
+  --btn-primary-from: var(--color-copper-hi);
+  --btn-primary-to: var(--color-copper-shadow);
+  --btn-primary-hover-from: var(--color-copper-hi);
+  --btn-primary-hover-to: var(--color-primary);
+  --btn-primary-active-from: var(--color-primary);
+  --btn-primary-active-to: var(--color-copper-shadow);
+  --btn-primary-shadow: rgb(201 145 115 / 0.55);
+  --btn-primary-fg: var(--color-on-primary);
+
+  --color-field: #140e1b;
+  --color-field-border: rgba(237, 230, 239, 0.22);
+  --color-field-inset: rgb(0 0 0 / 0.35);
+
+  --color-ink: var(--color-text);
+  /* Visible lilac — used by text-purple across the app */
+  --color-purple: #e4c4e8;
+  --color-muted: var(--color-text-secondary);
+  --color-faint: var(--color-text-muted);
+
+  --color-canvas: var(--color-bg);
+  --color-surface-sunken: var(--color-bg);
+
+  --color-positive: var(--color-success);
+  --color-positive-soft: var(--color-success-soft);
+  --color-caution: var(--color-warning);
+  --color-caution-soft: var(--color-warning-soft);
+  --color-critical: var(--color-error);
+  --color-critical-soft: var(--color-error-soft);
+
+  --color-dignity-own: var(--color-primary);
+  --color-dignity-exalted: var(--color-light-copper);
+  --color-dignity-debilitated: var(--color-copper-shadow);
+  --color-dignity-neutral: var(--color-text-muted);
+  --color-retrograde: var(--color-copper-shadow);
+  --color-benefic: var(--color-primary);
+  --color-malefic: var(--color-text-secondary);
+  --color-node: var(--color-text-muted);
+  --color-benefic-dark: var(--color-light-copper);
+  --color-malefic-dark: var(--color-text-secondary);
+  --color-node-dark: var(--color-text-muted);
+  --color-retrograde-dark: var(--color-copper-shadow);
+
+  --color-chart-line: rgba(237, 230, 239, 0.25);
+  --color-chart-rim: #c87848;
+  --color-chart-highlight: color-mix(in srgb, #d94a9a 42%, transparent);
+  --color-chart-field: #140e1b;
+  --color-chart-line-dark: rgba(237, 230, 239, 0.28);
+  --color-chart-rim-dark: #c87848;
+  --color-chart-highlight-dark: color-mix(in srgb, #d94a9a 45%, #4a1540);
+
+  --color-element-fire: var(--color-primary);
+  --color-element-water: #3d1233;
+  --color-element-air: var(--color-silver-300);
+  --color-element-earth: var(--color-copper-shadow);
+
+  --color-hairline: rgba(237, 230, 239, 0.10);
+  --color-hairline-strong: rgba(237, 230, 239, 0.22);
+
+  --gradient-gold: linear-gradient(
+    125deg,
+    #6b3550 0%,
+    #4a2038 18%,
+    #3d1a2e 38%,
+    #2a1220 52%,
+    #3d1a2e 68%,
+    #5c2a42 84%,
+    #8b4550 100%
+  );
+  --gradient-rg-line: linear-gradient(
+    90deg,
+    #ffe0b4 0%,
+    #e8a86a 18%,
+    #8b4550 42%,
+    #3d1a2e 58%,
+    #c87848 82%,
+    #f5c896 100%
+  );
+  --gradient-copper-text: linear-gradient(90deg, #f0c090, #e8a86a 35%, #8b4550 70%, #e8b888);
+  --gradient-hero:
+    radial-gradient(ellipse 60% 50% at 78% 18%, rgba(232, 90, 173, 0.55) 0%, rgba(155, 45, 110, 0.28) 42%, transparent 72%),
+    radial-gradient(ellipse 45% 40% at 12% 88%, rgba(74, 21, 64, 0.7) 0%, transparent 65%),
+    radial-gradient(ellipse 100% 80% at 50% 50%, #160c22 0%, #08060f 100%);
+  /* Glossy purple glass — specular top + magenta wash */
+  --gradient-card:
+    linear-gradient(180deg, rgba(255, 220, 240, 0.12) 0%, rgba(255, 255, 255, 0.03) 28%, transparent 55%),
+    linear-gradient(145deg, rgba(217, 74, 154, 0.22) 0%, rgba(74, 21, 64, 0.18) 45%, transparent 70%),
+    linear-gradient(160deg, #24162e 0%, #140e1b 100%);
+  --gradient-purple-gloss: linear-gradient(
+    135deg,
+    rgba(255, 176, 217, 0.35) 0%,
+    rgba(232, 90, 173, 0.55) 28%,
+    rgba(155, 45, 110, 0.65) 62%,
+    rgba(74, 21, 64, 0.9) 100%
+  );
+  --gradient-text: linear-gradient(180deg, #ffffff 0%, #f3eef4 35%, #e4c4e8 70%, #c9a0d0 100%);
 
   /* ---------------------------------------------------------------------
      TYPEFACES
-     Manrope            — all UI text
-     IBM Plex Mono      — degrees, dates, labels, tabular chart data
-     Cormorant Garamond — display headings and editorial titles
+     Cormorant Garamond — headlines
+     Manrope — body / UI
+     IBM Plex Mono — data
      --------------------------------------------------------------------- */
   --font-sans: 'Manrope', 'Noto Sans Devanagari', ui-sans-serif, system-ui, -apple-system,
     'Segoe UI', sans-serif;
@@ -154,108 +227,116 @@
   --font-serif: 'Cormorant Garamond', ui-serif, Georgia, 'Times New Roman', serif;
 
   /* ---------------------------------------------------------------------
-     TYPE SCALE — each pairs a size with its intended line-height
+     TYPE SCALE — H1 56/64 · H2 40/48 · H3 24/32 · body 16/26 · small 14/22
      --------------------------------------------------------------------- */
-  --text-display: 2.125rem; /* 34px — landing headline, mobile */
-  --text-display--line-height: 1.18;
+  --text-display: 2.25rem; /* 36px mobile H1 */
+  --text-display--line-height: 2.75rem; /* 44 */
   --text-display--letter-spacing: -0.02em;
 
-  --text-display-lg: 3rem; /* 48px — landing headline, desktop */
-  --text-display-lg--line-height: 1.12;
+  --text-display-lg: 3.5rem; /* 56px desktop H1 */
+  --text-display-lg--line-height: 4rem; /* 64 */
   --text-display-lg--letter-spacing: -0.022em;
 
-  --text-title: 1.375rem; /* 22px — screen title */
-  --text-title--line-height: 1.25;
+  --text-title: 1.75rem; /* 28px mobile H2 */
+  --text-title--line-height: 2.25rem; /* 36 */
   --text-title--letter-spacing: -0.012em;
 
-  --text-title-lg: 1.75rem; /* 28px — desktop section title */
-  --text-title-lg--line-height: 1.22;
+  --text-title-lg: 2.5rem; /* 40px desktop H2 */
+  --text-title-lg--line-height: 3rem; /* 48 */
   --text-title-lg--letter-spacing: -0.016em;
 
-  --text-heading: 1.0625rem; /* 17px — card heading */
-  --text-heading--line-height: 1.35;
+  --text-heading: 1.5rem; /* 24px H3 */
+  --text-heading--line-height: 2rem; /* 32 */
 
-  --text-body: 0.96875rem; /* 15.5px — prose */
-  --text-body--line-height: 1.55;
+  --text-body: 1rem; /* 16 */
+  --text-body--line-height: 1.625rem; /* 26 */
 
-  --text-sub: 0.90625rem; /* 14.5px — secondary prose */
-  --text-sub--line-height: 1.5;
+  --text-sub: 0.875rem; /* 14 */
+  --text-sub--line-height: 1.375rem; /* 22 */
 
-  --text-sm: 0.8125rem; /* 13px */
-  --text-sm--line-height: 1.5;
+  --text-sm: 0.875rem; /* 14 */
+  --text-sm--line-height: 1.375rem;
 
-  --text-xs: 0.71875rem; /* 11.5px — helper text */
-  --text-xs--line-height: 1.45;
+  --text-xs: 0.75rem; /* 12 */
+  --text-xs--line-height: 1.25rem;
 
-  /* Mono label — uppercase, wide tracking. The product's signature detail. */
-  --text-label: 0.65625rem; /* 10.5px */
-  --text-label--line-height: 1.4;
-  --text-label--letter-spacing: 0.14em;
+  --text-label: 0.75rem; /* 12 — eyebrow */
+  --text-label--line-height: 1rem;
+  --text-label--letter-spacing: 0.15em;
 
-  --text-data: 0.78125rem; /* 12.5px — mono chart data */
+  --text-data: 0.78125rem;
   --text-data--line-height: 1.6;
 
-  --text-data-lg: 0.9375rem; /* 15px — mono, emphasised figures */
+  --text-data-lg: 0.9375rem;
   --text-data-lg--line-height: 1.5;
 
   /* ---------------------------------------------------------------------
-     RADIUS — rounded, but restrained
+     RADIUS — 10 controls · 16 cards · 24 panels
      --------------------------------------------------------------------- */
-  --radius-xs: 4px;
-  --radius-control: 6px; /* buttons, inputs, chips */
-  --radius-card: 8px;
-  --radius-panel: 10px;
-  --radius-sheet: 16px; /* bottom sheets, large modals */
+  --radius-xs: 6px;
+  --radius-control: 10px;
+  --radius-card: 16px;
+  --radius-panel: 24px;
+  --radius-sheet: 24px;
 
   /* ---------------------------------------------------------------------
-     CONTROL HEIGHTS — large touch targets, mobile first
+     CONTROL HEIGHTS — ≥44px tap targets
      --------------------------------------------------------------------- */
   --spacing-control-sm: 40px;
   --spacing-control-md: 48px;
   --spacing-control-lg: 56px;
 
-  /* Layout containers */
-  --spacing-reading: 760px; /* the reading column on desktop */
-  --spacing-content: 1120px; /* standard desktop content width */
-  --spacing-wide: 1320px; /* chart dashboard on large desktop */
+  --spacing-reading: 760px;
+  --spacing-content: 1120px;
+  --spacing-wide: 1320px;
 
-  /* Fixed chrome */
   --spacing-topnav: 76px;
   --spacing-mobilebar: 56px;
   --spacing-bottomnav: 64px;
 
+  --spacing-section: 7rem; /* 112 desktop-ish */
+  --spacing-section-sm: 4rem; /* 64 mobile */
+
   /* ---------------------------------------------------------------------
-     ELEVATION — soft lift on deep indigo; violet/cyan glow & focus.
+     ELEVATION
      --------------------------------------------------------------------- */
-  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(124, 77, 255, 0.08);
+  --shadow-card:
+    0 10px 30px rgba(15, 11, 25, 0.6),
+    0 0 0 1px rgba(232, 90, 173, 0.14),
+    0 0 40px -16px rgba(217, 74, 154, 0.35);
   --shadow-raised:
-    0 1px 2px rgba(0, 0, 0, 0.35),
-    0 18px 48px -20px rgba(0, 0, 0, 0.75),
-    0 0 40px -16px rgba(124, 77, 255, 0.28);
-  --shadow-overlay: 0 16px 56px -12px rgba(0, 0, 0, 0.8), 0 0 48px -20px rgba(58, 123, 213, 0.18);
-  --shadow-sheet: 0 -12px 48px -16px rgba(0, 0, 0, 0.8);
-  --shadow-focus: 0 0 0 3px rgba(124, 77, 255, 0.42);
-  --shadow-glow: 0 0 24px rgba(124, 77, 255, 0.4), 0 8px 28px -8px rgba(58, 123, 213, 0.45);
+    0 4px 24px -8px rgba(15, 11, 25, 0.65),
+    0 0 36px -8px rgba(232, 90, 173, 0.4);
+  --shadow-overlay: 0 16px 56px -12px rgba(15, 11, 25, 0.85);
+  --shadow-sheet: 0 -12px 48px -16px rgba(15, 11, 25, 0.85);
+  --shadow-focus: 0 0 0 2px var(--color-focus-ring);
+  --shadow-glow:
+    0 0 28px rgba(232, 90, 173, 0.45),
+    0 6px 24px rgba(155, 45, 110, 0.35),
+    0 8px 24px -10px rgba(15, 11, 25, 0.5);
+  --shadow-card-hover:
+    0 0 40px rgba(232, 90, 173, 0.38),
+    0 12px 32px rgba(15, 11, 25, 0.55);
 
   /* ---------------------------------------------------------------------
-     MOTION — purposeful, short, never bouncy
+     MOTION — 150 / 250 / 450 · cubic-bezier(0.16, 1, 0.3, 1)
      --------------------------------------------------------------------- */
-  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-out-soft: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-in-out-soft: cubic-bezier(0.65, 0, 0.35, 1);
+  --duration-fast: 150ms;
+  --duration-base: 250ms;
+  --duration-slow: 450ms;
 
-  --animate-fade-in: fade-in 180ms var(--ease-out-soft) both;
-  --animate-rise: rise 240ms var(--ease-out-soft) both;
-  --animate-sheet-up: sheet-up 280ms var(--ease-out-soft) both;
-  --animate-drawer-in: drawer-in 280ms var(--ease-out-soft) both;
-  --animate-scale-in: scale-in 180ms var(--ease-out-soft) both;
+  --animate-fade-in: fade-in 150ms var(--ease-out-soft) both;
+  --animate-rise: rise 250ms var(--ease-out-soft) both;
+  --animate-sheet-up: sheet-up 450ms var(--ease-out-soft) both;
+  --animate-drawer-in: drawer-in 450ms var(--ease-out-soft) both;
+  --animate-drawer-in-right: drawer-in-right 450ms var(--ease-out-soft) both;
+  --animate-scale-in: scale-in 250ms var(--ease-out-soft) both;
   --animate-shimmer: shimmer 1.4s linear infinite;
-  --animate-toast-in: toast-in 260ms var(--ease-out-soft) both;
+  --animate-toast-in: toast-in 250ms var(--ease-out-soft) both;
   --animate-orbit: orbit 2.4s linear infinite;
 
-  /*
-    Celestial motion runs an order of magnitude slower than UI motion — it is
-    atmosphere, not feedback. Nothing here should ever pull the eye.
-  */
   --animate-zodiac-turn: orbit 240s linear infinite;
   --animate-zodiac-turn-slow: orbit 480s linear infinite;
   --animate-twinkle: twinkle 6s ease-in-out infinite;
@@ -263,19 +344,26 @@
   --animate-float: float 9s ease-in-out infinite;
   --animate-pulse-soft: pulse-soft 4.5s ease-in-out infinite;
   --animate-meteor: meteor 4.8s ease-in infinite;
-  --animate-rise-slow: rise-slow 700ms var(--ease-out-soft) both;
-  --animate-auth-step: auth-step-in 520ms var(--ease-out-soft) both;
+  --animate-rise-slow: rise-slow 450ms var(--ease-out-soft) both;
+  --animate-auth-step: auth-step-in 450ms var(--ease-out-soft) both;
   --animate-auth-shimmer: auth-shimmer 2.8s ease-in-out infinite;
   --animate-constellation-draw: constellation-draw 2.4s var(--ease-out-soft) both;
+  --animate-kundali-fade: kundali-fade 700ms var(--ease-out-soft) both;
+  --animate-kundali-label: kundali-label 520ms var(--ease-out-soft) both;
+  --animate-kundali-lagna: kundali-lagna-sweep 1.4s var(--ease-out-soft) both;
+  --animate-kundali-ripple: kundali-ripple 700ms var(--ease-out-soft) both;
+  --animate-nebula-drift: nebula-drift 48s ease-in-out infinite;
+  --animate-btn-shimmer: btn-shimmer 1.8s var(--ease-out-soft) infinite;
+  --animate-gold-pulse: gold-pulse 2.4s ease-in-out infinite;
 
   /* ---------------------------------------------------------------------
-     BREAKPOINTS — mobile 320-767 / tablet 768-1023 / desktop 1024-1439 / lg 1440+
+     BREAKPOINTS — 360 → 1440+
      --------------------------------------------------------------------- */
   --breakpoint-xs: 22.5rem; /* 360px */
   --breakpoint-sm: 30rem; /* 480px */
-  --breakpoint-md: 48rem; /* 768px  tablet */
-  --breakpoint-lg: 64rem; /* 1024px desktop */
-  --breakpoint-xl: 90rem; /* 1440px large desktop */
+  --breakpoint-md: 48rem; /* 768px */
+  --breakpoint-lg: 64rem; /* 1024px */
+  --breakpoint-xl: 90rem; /* 1440px */
 }
 
 @keyframes fade-in {
@@ -290,7 +378,7 @@
 @keyframes rise {
   from {
     opacity: 0;
-    transform: translateY(8px);
+    transform: translateY(16px);
   }
   to {
     opacity: 1;
@@ -316,10 +404,19 @@
   }
 }
 
+@keyframes drawer-in-right {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: none;
+  }
+}
+
 @keyframes scale-in {
   from {
     opacity: 0;
-    transform: scale(0.97);
+    transform: scale(0.96);
   }
   to {
     opacity: 1;
@@ -344,6 +441,25 @@
   }
   to {
     background-position: 160% 0;
+  }
+}
+
+@keyframes btn-shimmer {
+  0% {
+    background-position: -120% 0;
+  }
+  100% {
+    background-position: 220% 0;
+  }
+}
+
+@keyframes gold-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgb(220 132 79 / 0.35), 0 14px 40px -10px rgb(220 132 79 / 0.45);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgb(220 132 79 / 0), 0 14px 40px -10px rgb(220 132 79 / 0.65);
   }
 }
 
@@ -418,7 +534,7 @@
 @keyframes rise-slow {
   from {
     opacity: 0;
-    transform: translateY(18px);
+    transform: translateY(16px);
   }
   to {
     opacity: 1;
@@ -434,6 +550,61 @@
   to {
     stroke-dashoffset: 0;
     opacity: 0.55;
+  }
+}
+
+@keyframes kundali-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes kundali-label {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes kundali-lagna-sweep {
+  0% {
+    opacity: 0;
+    stroke-dashoffset: 480;
+  }
+  35% {
+    opacity: 0.85;
+  }
+  100% {
+    opacity: 0.55;
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes kundali-ripple {
+  0% {
+    opacity: 0.45;
+    transform: scale(0.55);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.65);
+  }
+}
+
+@keyframes nebula-drift {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(2.5%, -1.5%, 0) scale(1.04);
   }
 }
 
@@ -457,83 +628,428 @@
   }
 }
 
+@keyframes orb-drift {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(4%, -3%, 0);
+  }
+}
+
 /* =========================================================================
-   THEME — default is dark (values above). Light overrides semantic colours.
-   Celestial / midnight panels keep their night tokens.
+   THEME — semantic tokens · Dark (default) + Light (Pearl & Rose-gold)
+   Source of truth: <html data-theme="dark|light">
+   Dark values match the previous Astrovate finish exactly.
    ========================================================================= */
 
-:root {
+:root,
+[data-theme='dark'] {
   color-scheme: dark;
+
+  /* Semantic */
+  --bg: #08060f;
+  --bg-elevated: #0f0b19;
+  --surface: #1a1220;
+  --surface-2: #241827;
+  --surface-selected: #2e1f30;
+  --text-primary: #fbf7f5;
+  --text-secondary: #b8aebf;
+  --text-muted: #7d7385;
+  --text-on-accent: #2a1418;
+  --hairline: rgba(237, 230, 239, 0.1);
+  --hairline-strong: rgba(237, 230, 239, 0.22);
+
+  /* Default = glossy aubergine / magenta metal · Hover = glossy copper */
+  --accent-metal: linear-gradient(
+    125deg,
+    #9b2d6e 0%,
+    #6b3550 16%,
+    #4a2038 32%,
+    #2a1220 50%,
+    #4a1540 66%,
+    #9b2d6e 84%,
+    #d94a9a 100%
+  );
+  --accent-metal-hover: linear-gradient(
+    115deg,
+    #f5d4a8 0%,
+    #e8b888 18%,
+    #d4925a 40%,
+    #c07848 62%,
+    #a85e38 82%,
+    #c88858 100%
+  );
+  --accent-line: linear-gradient(
+    90deg,
+    #ffe0b4 0%,
+    #e8a86a 18%,
+    #8b4550 42%,
+    #3d1a2e 58%,
+    #c87848 82%,
+    #f5c896 100%
+  );
+  --accent-text: #e8b888;
+  --accent-eyebrow: #a097a7;
+
+  --nebula-1: rgba(232, 90, 173, 0.58);
+  --nebula-2: rgba(74, 21, 64, 0.72);
+  --star-color: #ffb0d9;
+  --star-opacity: 0.72;
+
+  --heading-gradient: linear-gradient(180deg, #ffffff 0%, #f3eef4 35%, #e4c4e8 70%, #c9a0d0 100%);
+
+  --shadow-card:
+    0 10px 30px rgba(15, 11, 25, 0.6),
+    0 0 0 1px rgba(232, 90, 173, 0.16),
+    0 0 44px -14px rgba(217, 74, 154, 0.4);
+  --shadow-cta:
+    inset 0 1px 0 rgba(255, 176, 217, 0.22),
+    inset 0 -2px 6px rgba(20, 8, 16, 0.55),
+    0 0 0 1px rgba(155, 45, 110, 0.55),
+    0 0 28px -6px rgba(232, 90, 173, 0.45),
+    0 12px 28px -12px rgba(20, 8, 16, 0.7);
+  --shadow-cta-hover:
+    inset 0 1px 0 rgba(255, 246, 228, 0.75),
+    inset 0 -1px 0 rgba(110, 66, 52, 0.28),
+    0 0 0 1px rgba(168, 94, 56, 0.5),
+    0 0 36px -4px rgba(240, 184, 120, 0.7),
+    0 16px 40px -10px rgba(200, 120, 72, 0.75);
+  --focus-ring: 0 0 0 3px rgba(232, 90, 173, 0.35);
+
+  /* Atmosphere — stronger glossy purple nebula */
+  --app-bg-image:
+    radial-gradient(ellipse 62% 52% at 78% 16%, rgba(232, 90, 173, 0.58) 0%, rgba(155, 45, 110, 0.28) 42%, transparent 72%),
+    radial-gradient(ellipse 48% 42% at 92% 8%, rgba(255, 176, 217, 0.22) 0%, transparent 58%),
+    radial-gradient(ellipse 55% 45% at 8% 95%, rgba(74, 21, 64, 0.75) 0%, transparent 68%),
+    radial-gradient(ellipse 40% 35% at 40% 40%, rgba(217, 74, 154, 0.12) 0%, transparent 55%),
+    radial-gradient(ellipse 100% 80% at 50% 50%, #160c22 0%, #08060f 100%);
+  --app-vignette: inset 0 0 200px rgba(8, 6, 15, 0.82);
+  --glass-fill: rgba(36, 18, 48, 0.55);
+  --glass-panel: rgba(232, 90, 173, 0.06);
+  --field-fill: #140e1b;
+  --orbit-line: rgba(237, 230, 239, 0.14);
+  --chart-line: rgba(237, 230, 239, 0.25);
+  --chart-house-fill: color-mix(in srgb, #d94a9a 42%, transparent);
+  --kundali-la-0: #ffffff;
+  --kundali-la-1: #ede6ef;
+  --kundali-la-2: #c9c0cf;
+  --kundali-wash-0: rgba(232, 90, 173, 0.48);
+  --kundali-wash-1: rgba(74, 21, 64, 0.7);
+  --kundali-active-stroke: none;
+  --kundali-rim-0: #ffe0b4;
+  --kundali-rim-1: #e8a86a;
+  --kundali-rim-2: #8b4550;
+  --kundali-rim-3: #3d1a2e;
+  --kundali-rim-4: #f0c090;
+  --logo-shadow: none;
+
+  /* Legacy aliases */
+  --bg-void: var(--bg);
+  --bg-deep: var(--bg-elevated);
+  --bg-plum: #1b101d;
+  --surface-1: var(--surface);
+  --surface-3: var(--surface-selected);
+
+  --nebula-core: #d94a9a;
+  --nebula-mid: #9b2d6e;
+  --nebula-deep: #4a1540;
+  --nebula-spark: #ffb0d9;
+
+  --silver-100: #ffffff;
+  --silver-200: #ede6ef;
+  --silver-300: #c9c0cf;
+  --silver-400: #a097a7;
+  --silver-500: #6e6577;
+
+  --rg-50: #fbefe6;
+  --rg-100: #f3d9c4;
+  --rg-200: #e6bc9f;
+  --rg-300: #d4a081;
+  --rg-400: #bf8466;
+  --rg-500: #9e6650;
+  --rg-600: #6e4234;
+  --rg-ink: var(--text-on-accent);
+  --rg-metal: var(--accent-metal);
+  --rg-line: var(--accent-line);
+
+  --copper-hi: var(--rg-50);
+  --copper-light: var(--rg-100);
+  --copper: var(--rg-400);
+  --copper-mid: var(--rg-500);
+  --copper-dark: var(--rg-600);
 }
 
-html[data-theme='light'] {
+/* Cyklos Light "Dawn" — tokens from design/cyklos-light-reference.html (verbatim + semantic aliases) */
+[data-theme='light'] {
   color-scheme: light;
 
-  --color-navy: #7c4dff;
-  --color-navy-hover: #3a7bd5;
-  --color-navy-active: #5a2fd0;
-  --color-navy-soft: #ede8ff;
+  /* ===== Reference tokens (verbatim) ===== */
+  --bg: #FBF9F8;
+  --sky: linear-gradient(180deg, #E8D4F0 0%, #F0D8EC 28%, #F6E6EC 48%, #FBF0E9 72%, rgba(251, 249, 248, 0) 100%);
+  --surface: #FFFFFF;
+  --surface-2: #F7F3F2;
+  --surface-sel: #FBF3F1;
+  --ink: #1F1426;
+  --ink-2: #574A5E;
+  --muted: #8C8093;
+  --line: rgba(31, 20, 38, 0.07);
+  --line-2: rgba(31, 20, 38, 0.12);
+  --aubergine: #4B2545;
+  --aubergine-soft: rgba(75, 37, 69, 0.07);
+  --rg: linear-gradient(
+    125deg,
+    #6b3550 0%,
+    #4a2038 18%,
+    #3d1a2e 38%,
+    #2a1220 52%,
+    #3d1a2e 68%,
+    #5c2a42 84%,
+    #8b4550 100%
+  );
+  --rg-hover: linear-gradient(
+    115deg,
+    #f5d4a8 0%,
+    #e8b888 18%,
+    #d4925a 40%,
+    #c07848 62%,
+    #a85e38 82%,
+    #c88858 100%
+  );
+  --rg-line: linear-gradient(
+    90deg,
+    #ffe0b4 0%,
+    #e8a86a 18%,
+    #8b4550 42%,
+    #3d1a2e 58%,
+    #c87848 82%,
+    #f5c896 100%
+  );
+  --rg-text: #8E5236;
+  --eyebrow: #9A5D42;
+  --sh-1: 0 1px 2px rgba(31, 20, 38, 0.04), 0 6px 20px -10px rgba(75, 37, 69, 0.14);
+  --sh-2: 0 2px 4px rgba(31, 20, 38, 0.05), 0 18px 40px -16px rgba(75, 37, 69, 0.24);
+  --sh-cta:
+    inset 0 1px 0 rgba(240, 192, 144, 0.15),
+    inset 0 -2px 5px rgba(42, 18, 32, 0.35),
+    0 0 0 1px rgba(61, 26, 46, 0.4),
+    0 10px 24px -12px rgba(61, 26, 46, 0.45);
+  --sh-cta-hover:
+    inset 0 1px 0 rgba(255, 224, 180, 0.35),
+    inset 0 -1px 0 rgba(110, 66, 52, 0.22),
+    0 0 0 1px rgba(168, 94, 56, 0.35),
+    0 0 20px -8px rgba(212, 146, 90, 0.4),
+    0 12px 26px -12px rgba(174, 111, 82, 0.5);
+  --ring: 0 0 0 4px rgba(174, 111, 82, 0.16);
+  --night: radial-gradient(65% 70% at 88% 0%, rgba(190, 60, 130, 0.42), transparent 60%),
+    radial-gradient(50% 60% at 0% 100%, rgba(232, 190, 159, 0.16), transparent 60%),
+    linear-gradient(160deg, #2B1631 0%, #160C1B 100%);
 
-  --color-ink: #0f0c24;
-  --color-purple: #4a4270;
-  --color-muted: #6f6888;
-  --color-faint: #9b93b8;
+  /* ===== Semantic aliases (app code) ===== */
+  --bg-elevated: var(--surface);
+  --surface-selected: var(--surface-sel);
+  --text-primary: var(--ink);
+  --text-secondary: var(--ink-2);
+  --text-muted: var(--muted);
+  --text-on-accent: #ffffff;
+  --hairline: var(--line);
+  --hairline-strong: var(--line-2);
+  --plum: var(--aubergine);
+  --plum-soft: var(--aubergine-soft);
+  --accent-metal: var(--rg);
+  --accent-metal-hover: var(--rg-hover);
+  --accent-line: var(--rg-line);
+  --accent-text: var(--rg-text);
+  --accent-eyebrow: var(--eyebrow);
+  --heading-color: var(--ink);
+  --heading-gradient: none;
+  --shadow-card: var(--sh-1);
+  --shadow-hover: var(--sh-2);
+  --shadow-cta: var(--sh-cta);
+  --shadow-cta-hover: var(--sh-cta-hover);
+  --focus-ring: var(--ring);
+  --night-bg: var(--night);
+  --app-bg-image: var(--sky);
+  --app-vignette: none;
+  --glass-fill: rgba(255, 255, 255, 0.88);
+  --glass-panel: rgba(255, 255, 255, 0.88);
+  --field-fill: #ffffff;
+  --orbit-line: rgba(75, 37, 69, 0.10);
+  --chart-line: rgba(31, 20, 38, 0.22);
+  --chart-house-fill: rgba(214, 150, 190, 0.16);
+  --kundali-la-0: var(--rg-text);
+  --kundali-la-1: var(--rg-text);
+  --kundali-la-2: var(--eyebrow);
+  --kundali-wash-0: rgba(214, 150, 190, 0.16);
+  --kundali-wash-1: rgba(214, 150, 190, 0.16);
+  --kundali-active-stroke: #AE6F52;
+  --kundali-rim-0: #ffe0b4;
+  --kundali-rim-1: #e8a86a;
+  --kundali-rim-2: #8b4550;
+  --kundali-rim-3: #3d1a2e;
+  --kundali-rim-4: #f0c090;
+  --logo-shadow: 0 1px 2px rgba(31, 20, 38, 0.12);
+  --aurora: var(--sky);
+  --nebula-1: rgba(237, 227, 243, 0.9);
+  --nebula-2: rgba(246, 230, 236, 0.7);
+  --star-color: #4B2545;
+  --star-opacity: 0.1;
 
-  --color-canvas: #f5f2ff;
-  --color-surface: #ffffff;
-  --color-surface-raised: #ede8ff;
-  --color-surface-sunken: #ede8ff;
-  --color-border: #c8c0e0;
-  --color-border-strong: #9b93b8;
+  --bg-void: var(--bg);
+  --bg-deep: var(--surface);
+  --bg-plum: var(--surface-sel);
+  --surface-1: var(--surface);
+  --surface-3: var(--surface-sel);
 
-  --color-gold: #7c4dff;
-  --color-gold-soft-line: #3a7bd5;
-  --color-gold-deep: #3a7bd5;
-  --color-gold-soft: #ede8ff;
-  --color-gold-border: #c4a0ff;
+  --nebula-core: #be3c82;
+  --nebula-mid: #4B2545;
+  --nebula-deep: #FBF3F1;
+  --nebula-spark: #E2B394;
 
-  --color-field: #ffffff;
-  --color-field-border: #c8c0e0;
-  --color-field-inset: transparent;
+  --silver-100: #1F1426;
+  --silver-200: #2a1a32;
+  --silver-300: #574A5E;
+  --silver-400: #8C8093;
+  --silver-500: #a89aa6;
 
-  --color-positive: #3d7a52;
-  --color-positive-soft: #e8f2ea;
-  --color-caution: #5a2fd0;
-  --color-caution-soft: #ede8ff;
-  --color-critical: #a84a52;
-  --color-critical-soft: #f8e8e8;
-  --color-info: #3a7bd5;
-  --color-info-soft: #e8f4fc;
+  --rg-50: #FDF6F2;
+  --rg-100: #E2B394;
+  --rg-200: #D49F80;
+  --rg-300: #B97556;
+  --rg-400: #AE6F52;
+  --rg-500: #9A5D42;
+  --rg-600: #93553B;
+  --rg-ink: #ffffff;
+  --rg-metal: var(--rg);
 
-  --color-dignity-own: #5a2fd0;
-  --color-dignity-exalted: #3d7a52;
-  --color-dignity-debilitated: #a84a52;
-  --color-dignity-neutral: #6f6888;
-  --color-retrograde: #a84a52;
-  --color-benefic: #5a2fd0;
-  --color-malefic: #4a4270;
-  --color-node: #6f6888;
+  --copper-hi: var(--rg-50);
+  --copper-light: var(--rg-100);
+  --copper: var(--rg-400);
+  --copper-mid: var(--rg-500);
+  --copper-dark: var(--rg-600);
 
-  --color-chart-line: #4a4270;
-  --color-chart-rim: #7c4dff;
-  --color-chart-highlight: #ede8ff;
-  --color-chart-field: #ede8ff;
+  /* Tailwind @theme overrides */
+  --color-bg: var(--bg);
+  --color-bg-secondary: var(--surface);
+  --color-surface-accent: var(--surface-2);
+  --color-surface: var(--surface);
+  --color-surface-mid: var(--surface-2);
+  --color-surface-raised: var(--surface-sel);
+  --color-surface-high: var(--surface-sel);
+  --color-card-tint: var(--surface);
+  --color-border: var(--line);
+  --color-border-strong: var(--line-2);
 
-  --shadow-card: 0 1px 2px rgba(7, 4, 26, 0.06), 0 0 0 1px rgba(124, 77, 255, 0.08);
-  --shadow-raised: 0 1px 2px rgba(7, 4, 26, 0.06), 0 14px 40px -18px rgba(7, 4, 26, 0.16), 0 0 32px -12px rgba(124, 77, 255, 0.22);
-  --shadow-overlay: 0 12px 48px -12px rgba(7, 4, 26, 0.24);
-  --shadow-sheet: 0 -10px 48px -16px rgba(7, 4, 26, 0.18);
-  --shadow-focus: 0 0 0 3px rgba(124, 77, 255, 0.35);
-  --shadow-glow: 0 0 20px rgba(124, 77, 255, 0.28), 0 8px 24px -8px rgba(58, 123, 213, 0.35);
+  --color-primary: #AE6F52;
+  --color-primary-hover: #B97556;
+  --color-primary-pressed: #93553B;
+  --color-primary-soft: #FDF6F2;
+  --color-brand-gold: #8E5236;
+  --color-accent: #8E5236;
+  --color-on-primary: #ffffff;
+  --color-secondary: #4B2545;
+  --color-secondary-hover: #6e3a5c;
+  --color-on-secondary: #ffffff;
+
+  --color-blue-deep: #FBF3F1;
+  --color-blue: #4B2545;
+  --color-blue-glow: #AE6F52;
+  --color-blue-light: #574A5E;
+
+  --color-text: var(--ink);
+  --color-text-primary: var(--ink);
+  --color-text-highlight: #2a1a32;
+  --color-text-secondary: var(--ink-2);
+  --color-text-muted: var(--muted);
+  --color-text-disabled: #a89aa6;
+
+  --color-success: #4B2545;
+  --color-warning: #AE6F52;
+  --color-error: #B4475A;
+  --color-info: #4B2545;
+  --color-overlay: rgb(31 20 38 / 0.4);
+  --color-focus-ring: rgb(174 111 82 / 0.35);
+
+  --color-glow-nebula: #be3c82;
+  --color-glow-ember: #B97556;
+  --color-nebula-core: #be3c82;
+  --color-nebula-mid: #4B2545;
+  --color-nebula-deep: #FBF3F1;
+  --color-nebula-spark: #E2B394;
+
+  --color-rg-50: #FDF6F2;
+  --color-rg-100: #E2B394;
+  --color-rg-200: #D49F80;
+  --color-rg-300: #B97556;
+  --color-rg-400: #AE6F52;
+  --color-rg-500: #9A5D42;
+  --color-rg-600: #93553B;
+  --color-rg-ink: #ffffff;
+
+  --color-silver-100: #1F1426;
+  --color-silver-200: #2a1a32;
+  --color-silver-300: #574A5E;
+  --color-silver-400: #8C8093;
+  --color-silver-500: #a89aa6;
+
+  --color-copper-hi: #FDF6F2;
+  --color-copper-shadow: #93553B;
+  --color-copper: #AE6F52;
+  --color-light-copper: #E2B394;
+  --color-pale-copper: #FDF6F2;
+
+  --color-deep-space: var(--bg);
+  --color-dark-purple: var(--surface);
+  --color-deep-burgundy: var(--surface-sel);
+  --color-nebula-plum: var(--surface);
+  --color-dark-mauve: var(--surface-2);
+  --color-muted-plum: var(--surface-sel);
+
+  --color-warm-white: #1F1426;
+  --color-pale-rose: #2a1a32;
+  --color-lavender-gray: #574A5E;
+  --color-gray-purple: #8C8093;
+
+  --color-midnight: #160C1B;
+
+  --color-field: var(--surface);
+  --color-field-border: var(--line-2);
+  --color-field-inset: rgb(31 20 38 / 0.04);
+
+  --color-chart-line: var(--chart-line);
+  --color-chart-rim: #c87848;
+  --color-chart-highlight: var(--chart-house-fill);
+  --color-chart-field: var(--surface);
+  --color-chart-line-dark: var(--chart-line);
+  --color-chart-rim-dark: #c87848;
+  --color-chart-highlight-dark: var(--chart-house-fill);
+
+  --color-hairline: var(--line);
+  --color-hairline-strong: var(--line-2);
+  --color-celestial-line: var(--orbit-line);
+  --color-element-water: #4B2545;
+  --color-navy: var(--aubergine);
+  --color-navy-soft: var(--aubergine-soft);
+
+  --gradient-gold: var(--rg);
+  --gradient-rg-line: var(--rg-line);
+  --gradient-hero: var(--sky);
+  --gradient-card: none;
+  --gradient-text: none;
+  --gradient-copper-text: none;
+
+  --shadow-raised: var(--sh-2);
+  --shadow-overlay: 0 16px 48px -12px rgba(75, 37, 69, 0.22);
+  --shadow-sheet: 0 -12px 40px -16px rgba(75, 37, 69, 0.16);
+  --shadow-focus: var(--ring);
+  --shadow-glow: 0 6px 20px rgba(174, 111, 82, 0.22);
+  --shadow-card-hover: var(--sh-2);
+
+  --btn-primary-shadow: rgb(174 111 82 / 0.5);
+
+  --color-on-celestial: var(--ink);
+  --color-on-celestial-muted: var(--ink-2);
+  --color-on-celestial-faint: var(--muted);
 }
 
-html[data-theme='light'] body {
-  background-image:
-    radial-gradient(100% 70% at 10% 0%, rgba(196, 160, 255, 0.35) 0%, transparent 55%),
-    radial-gradient(80% 50% at 100% 20%, rgba(94, 215, 242, 0.22) 0%, transparent 50%),
-    linear-gradient(180deg, #f5f2ff 0%, #ede8ff 55%, #f5f2ff 100%);
-}
-
-html[data-theme='light'] [data-auth-form] {
-  color-scheme: light;
-}

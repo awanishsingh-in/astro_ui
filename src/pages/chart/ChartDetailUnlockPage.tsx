@@ -26,19 +26,8 @@ export default function ChartDetailUnlockPage() {
   return (
     <PageContainer width="content" className="pb-16 pt-4 sm:pt-6">
       <article className="mx-auto flex max-w-lg flex-col gap-6 animate-rise">
-        <button
-          type="button"
-          onClick={() => navigate(paths.chartDetail)}
-          className="self-start text-xs text-muted underline-offset-2 hover:text-ink hover:underline"
-        >
-          ← Back
-        </button>
-
         <Card padding="lg" className="flex flex-col gap-5 border-border/80 p-6 sm:p-8">
           <div className="space-y-2">
-            <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-gold-deep">
-              Payment required
-            </p>
             <h1 className="text-2xl font-semibold tracking-tight text-ink sm:text-3xl">
               Unlock the detailed kundli report
             </h1>

@@ -28,13 +28,6 @@ function isNavActive(id: string, pathname: string, isActive: boolean): boolean {
   if (id === 'reports') {
     return pathname === paths.reportsRoot || pathname.startsWith(`${paths.reportsRoot}/`)
   }
-  if (id === 'tools') {
-    return (
-      pathname === paths.everything ||
-      pathname.startsWith(`${paths.everything}/`) ||
-      pathname.startsWith('/explore/')
-    )
-  }
   return isActive
 }
 
@@ -49,7 +42,7 @@ export function BottomNav({ className }: { className?: string }) {
       aria-label="Primary"
       data-bottom-nav=""
       className={cn(
-        'pb-safe sticky bottom-0 z-30 shrink-0 border-t border-border/60 bg-surface/80 backdrop-blur-xl lg:hidden',
+        'pb-safe sticky bottom-0 z-30 shrink-0 border-t border-[rgba(237,230,239,0.10)] bg-[#0C0914]/90 backdrop-blur-xl lg:hidden',
         className,
       )}
     >
@@ -66,7 +59,7 @@ export function BottomNav({ className }: { className?: string }) {
                   return cn(
                     'relative flex h-full flex-col items-center justify-center gap-1 px-0.5',
                     'transition-colors duration-150',
-                    active ? 'text-[#7c4dff]' : 'text-muted',
+                    active ? 'text-silver-300' : 'text-silver-400',
                   )
                 }}
               >
@@ -77,14 +70,14 @@ export function BottomNav({ className }: { className?: string }) {
                       <span
                         aria-hidden
                         className={cn(
-                          'absolute inset-x-[28%] top-0 h-0.5 rounded-full bg-[#7c4dff] transition-opacity duration-200',
-                          active ? 'opacity-100' : 'opacity-0',
+                          'absolute inset-x-[28%] top-0 h-0.5 rounded-full bg-gradient-to-r from-copper-hi via-copper to-copper-dark transition-opacity duration-200',
+                          active ? 'opacity-100 shadow-[0_0_10px_rgba(201,145,115,0.45)]' : 'opacity-0',
                         )}
                       />
                       <span
                         className={cn(
                           'inline-flex size-9 items-center justify-center rounded-full transition-colors',
-                          active ? 'bg-navy-soft text-gold-deep' : 'text-current',
+                          active ? 'btn-glass text-silver-300' : 'text-current',
                         )}
                       >
                         {isValidElement(item.icon)

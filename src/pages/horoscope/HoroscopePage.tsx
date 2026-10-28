@@ -1,12 +1,5 @@
-import {
-  ArrowLeft,
-  Compass,
-  MessageCircle,
-  Sparkles,
-  Sun,
-  TriangleAlert,
-} from 'lucide-react'
-import { Navigate, useNavigate, useParams } from 'react-router-dom'
+import { Compass, MessageCircle, Sparkles, Sun, TriangleAlert } from 'lucide-react'
+import { Navigate, useParams } from 'react-router-dom'
 import { Button } from '@/components/common/Button'
 import { ErrorState } from '@/components/common/ErrorState'
 import { GalaxyBackdrop } from '@/components/celestial/GalaxyBackdrop'
@@ -97,27 +90,14 @@ function YearlyPersonalBody({
   yearly: YearlyEnrichment
   profileName: string
 }) {
-  const navigate = useNavigate()
   const peakMonths = yearly.months.filter((m) => m.peak)
 
   return (
     <GalaxyBackdrop intensity="quiet" className="min-h-full">
       <article className="relative mx-auto w-full max-w-reading px-5 pb-20 pt-6 sm:px-6 lg:pb-24 lg:pt-8">
-        <button
-          type="button"
-          onClick={() => navigate(paths.horoscopeRoot)}
-          className="animate-rise mb-8 inline-flex items-center gap-1.5 text-xs text-on-celestial-muted underline-offset-2 hover:text-on-celestial hover:underline"
-        >
-          <ArrowLeft className="size-3.5" aria-hidden />
-          Back to horoscope
-        </button>
-
         {/* ——— Hero: one composition ——— */}
         <header className="animate-rise space-y-8 border-b border-celestial-line/60 pb-12 sm:space-y-10 sm:pb-14">
           <div className="space-y-3">
-            <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-gold-soft-line">
-              Personalised yearly · {horoscope.period.label}
-            </p>
             <p className="text-sm text-on-celestial-muted">Written for {profileName}</p>
           </div>
 
@@ -132,14 +112,14 @@ function YearlyPersonalBody({
           <blockquote className="relative max-w-2xl pt-2">
             <span
               aria-hidden
-              className="absolute -left-1 top-0 font-serif text-5xl leading-none text-copper/50 sm:text-6xl"
+              className="absolute -left-1 top-0 font-serif text-5xl leading-none text-silver-300/50 sm:text-6xl"
             >
               “
             </span>
             <p className="pl-6 font-serif text-2xl font-normal leading-snug text-on-celestial text-balance sm:pl-8 sm:text-3xl">
               {yearly.theme}
             </p>
-            <p className="mt-4 pl-6 font-mono text-[11px] uppercase tracking-[0.18em] text-copper sm:pl-8">
+            <p className="mt-4 pl-6 font-mono text-[11px] uppercase tracking-[0.18em] text-silver-300 sm:pl-8">
               {yearly.themeWords.join(' · ')}
             </p>
           </blockquote>
@@ -151,7 +131,7 @@ function YearlyPersonalBody({
 
         {/* ——— Arc ——— */}
         <section className="animate-rise space-y-4 border-b border-celestial-line/50 py-12 sm:py-14">
-          <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-gold-deep">
+          <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-silver-400">
             The arc
           </p>
           <p className="text-lg leading-relaxed text-ink text-pretty sm:text-xl sm:leading-relaxed">
@@ -162,7 +142,7 @@ function YearlyPersonalBody({
         {/* ——— Four seasons: vertical timeline ——— */}
         <section className="animate-rise space-y-8 border-b border-celestial-line/50 py-12 sm:py-14">
           <div className="space-y-2">
-            <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-gold-deep">
+            <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-silver-400">
               Four seasons
             </p>
             <h2 className="font-serif text-3xl text-ink sm:text-4xl">How the year moves</h2>
@@ -179,8 +159,8 @@ function YearlyPersonalBody({
                   className={cn(
                     'relative z-[1] mt-1 flex size-7 shrink-0 items-center justify-center rounded-full border font-mono text-[10px] font-semibold sm:size-9 sm:text-xs',
                     ch.tone === 'push'
-                      ? 'border-copper bg-copper text-midnight shadow-[0_0_20px_-4px_rgba(124, 77, 255,0.7)]'
-                      : 'border-celestial-line bg-midnight text-light-copper',
+                      ? 'border-copper bg-copper text-midnight shadow-[0_0_20px_-4px_rgba(201,145,115,0.55)]'
+                      : 'border-celestial-line bg-midnight text-silver-300',
                   )}
                 >
                   {String(i + 1).padStart(2, '0')}
@@ -202,7 +182,7 @@ function YearlyPersonalBody({
         {/* ——— Life threads: editorial rows, not score cards ——— */}
         <section className="animate-rise space-y-8 border-b border-celestial-line/50 py-12 sm:py-14">
           <div className="space-y-2">
-            <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-gold-deep">
+            <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-silver-400">
               Where energy sits
             </p>
             <h2 className="font-serif text-3xl text-ink sm:text-4xl">Five threads</h2>
@@ -215,7 +195,7 @@ function YearlyPersonalBody({
             {yearly.lifeAreas.map((area) => (
               <li key={area.id} className="grid gap-3 py-6 first:pt-0 last:pb-0 sm:grid-cols-[7rem_1fr] sm:gap-8">
                 <div>
-                  <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-copper">
+                  <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-silver-300">
                     {area.verdict}
                   </p>
                   <p className="mt-1 font-serif text-xl text-ink">{area.label}</p>
@@ -261,14 +241,14 @@ function YearlyPersonalBody({
         {/* ——— Month ribbon ——— */}
         <section className="animate-rise space-y-6 border-b border-celestial-line/50 py-12 sm:py-14">
           <div className="space-y-2">
-            <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-gold-deep">
+            <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-silver-400">
               Month by month
             </p>
             <h2 className="font-serif text-3xl text-ink sm:text-4xl">The year in twelve beats</h2>
             {peakMonths.length > 0 && (
               <p className="text-sm text-muted">
                 Peak windows:{' '}
-                <span className="text-copper">{peakMonths.map((m) => m.month).join(' · ')}</span>
+                <span className="text-silver-300">{peakMonths.map((m) => m.month).join(' · ')}</span>
               </p>
             )}
           </div>
@@ -281,14 +261,14 @@ function YearlyPersonalBody({
                   className={cn(
                     'flex w-[9.5rem] shrink-0 flex-col gap-3 rounded-2xl border px-4 py-4',
                     m.peak
-                      ? 'border-copper/50 bg-copper/15 shadow-[0_0_28px_-10px_rgba(124, 77, 255,0.55)]'
+                      ? 'border-copper/50 bg-copper/15 shadow-[0_0_28px_-10px_rgba(201,145,115,0.55)]'
                       : 'border-celestial-line/70 bg-indigo-deep/40',
                   )}
                 >
                   <span
                     className={cn(
                       'font-mono text-[10px] font-semibold uppercase tracking-[0.12em]',
-                      m.peak ? 'text-copper' : 'text-muted',
+                      m.peak ? 'text-silver-300' : 'text-muted',
                     )}
                   >
                     {m.month}
@@ -303,7 +283,7 @@ function YearlyPersonalBody({
         {/* ——— Timing ——— */}
         <section className="animate-rise space-y-6 border-b border-celestial-line/50 py-12 sm:py-14">
           <div className="space-y-2">
-            <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-gold-deep">
+            <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-silver-400">
               Windows
             </p>
             <h2 className="font-serif text-3xl text-ink sm:text-4xl">When to push, when to hold</h2>
@@ -314,7 +294,7 @@ function YearlyPersonalBody({
                 <p
                   className={cn(
                     'font-mono text-[11px] font-semibold uppercase tracking-[0.12em]',
-                    slot.strong ? 'text-copper' : 'text-muted',
+                    slot.strong ? 'text-silver-300' : 'text-muted',
                   )}
                 >
                   {slot.label}
@@ -335,7 +315,7 @@ function YearlyPersonalBody({
         {/* ——— Practices ——— */}
         <section className="animate-rise space-y-6 border-b border-celestial-line/50 py-12 sm:py-14">
           <div className="space-y-2">
-            <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-gold-deep">
+            <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-silver-400">
               Keep close
             </p>
             <h2 className="font-serif text-3xl text-ink sm:text-4xl">Practices for the year</h2>
@@ -343,7 +323,7 @@ function YearlyPersonalBody({
           <ol className="space-y-5">
             {yearly.practices.map((line, i) => (
               <li key={line} className="flex gap-4">
-                <span className="font-serif text-2xl leading-none text-copper/80">
+                <span className="font-serif text-2xl leading-none text-silver-300/80">
                   {String(i + 1).padStart(2, '0')}
                 </span>
                 <p className="pt-1 text-base leading-relaxed text-purple text-pretty">{line}</p>
@@ -354,7 +334,7 @@ function YearlyPersonalBody({
 
         {/* ——— Closing ——— */}
         <section className="animate-rise space-y-6 py-12 sm:py-14">
-          <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-gold-soft-line">
+          <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-silver-300">
             Closing note
           </p>
           <p className="font-serif text-2xl leading-snug text-on-celestial text-pretty sm:text-3xl">
@@ -410,36 +390,33 @@ export function HoroscopeBody({ horoscope }: { horoscope: Horoscope }) {
       {/* Hero */}
       <section
         className={cn(
-          'relative overflow-hidden rounded-[1.75rem] border border-[#7c4dff]/40',
-          'bg-[linear-gradient(155deg,#24105a_0%,#120e28_45%,#0d1a38_100%)]',
-          'px-5 py-7 shadow-[0_0_0_1px_rgba(124,77,255,0.16),0_28px_64px_-28px_rgba(124,77,255,0.75)]',
+          'horoscope-reading-hero relative overflow-hidden rounded-[1.75rem] border border-primary/40',
+          'bg-[linear-gradient(155deg,#1a2b4a_0%,#060b19_45%,#0f1a2e_100%)]',
+          'px-5 py-7 shadow-[0_0_0_1px_rgba(201,145,115,0.45),0_28_64_28_rgba(15,11,25,0.55)]',
           'sm:px-8 sm:py-9',
         )}
       >
         <div
           aria-hidden
-          className="pointer-events-none absolute -right-20 -top-24 h-64 w-64 rounded-full bg-[#7c4dff]/35 blur-3xl"
+          className="pointer-events-none absolute -right-20 -top-24 h-64 w-64 rounded-full bg-primary/10 blur-3xl"
         />
         <div
           aria-hidden
-          className="pointer-events-none absolute -bottom-28 -left-16 h-56 w-56 rounded-full bg-[#3a7bd5]/25 blur-3xl"
+          className="pointer-events-none absolute -bottom-28 -left-16 h-56 w-56 rounded-full bg-secondary/25 blur-3xl"
         />
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-x-12 top-0 h-px bg-gradient-to-r from-transparent via-[#c4a0ff]/70 to-transparent"
+          className="pointer-events-none absolute inset-x-12 top-0 h-px bg-gradient-to-r from-transparent via-accent/70 to-transparent"
         />
 
         <div className="relative space-y-5">
           <div className="flex flex-wrap items-center gap-2">
-            <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-[#c4a0ff]">
-              {horoscope.period.label}
-            </p>
             <span
               className={cn(
                 'inline-flex items-center gap-1.5 rounded-full border px-3 py-1',
                 'font-mono text-[10px] font-semibold uppercase tracking-[0.12em]',
                 horoscope.personal
-                  ? 'border-[#c4a0ff]/40 bg-[#7c4dff]/25 text-[#e8d6ff]'
+                  ? 'border-accent/40 bg-primary/25 text-[var(--color-accent)]'
                   : 'border-white/15 bg-white/5 text-white/70',
               )}
             >
@@ -460,7 +437,7 @@ export function HoroscopeBody({ horoscope }: { horoscope: Horoscope }) {
           <blockquote
             className={cn(
               'rounded-2xl border border-white/10 bg-white/[0.05] px-5 py-4',
-              'shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]',
+              'shadow-[inset_0_1px_0_rgba(253,248,244,0.08)]',
             )}
           >
             <p className="font-serif text-xl leading-snug text-white text-pretty sm:text-2xl">
@@ -480,9 +457,9 @@ export function HoroscopeBody({ horoscope }: { horoscope: Horoscope }) {
               ).map(([label, value]) => (
                 <div
                   key={label}
-                  className="rounded-2xl border border-[#c4a0ff]/25 bg-[#7c4dff]/15 px-3.5 py-3"
+                  className="rounded-2xl border border-accent/25 bg-primary/15 px-3.5 py-3"
                 >
-                  <p className="font-mono text-[9px] font-semibold uppercase tracking-[0.14em] text-[#c4a0ff]">
+                  <p className="font-mono text-[9px] font-semibold uppercase tracking-[0.14em] text-silver-300">
                     {label}
                   </p>
                   <p className="mt-1 text-sm font-semibold text-white">{value}</p>
@@ -499,7 +476,7 @@ export function HoroscopeBody({ horoscope }: { horoscope: Horoscope }) {
             'rounded-[1.35rem] border border-border/80 bg-surface/90 p-5 shadow-card sm:p-6',
           )}
         >
-          <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-gold-deep">
+          <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-silver-400">
             Overview
           </p>
           <p className="mt-3 text-base leading-relaxed text-ink text-pretty sm:text-lg">
@@ -522,11 +499,11 @@ export function HoroscopeBody({ horoscope }: { horoscope: Horoscope }) {
           )}
         >
           <div className="mb-4 flex items-center gap-2">
-            <span className="inline-flex size-8 items-center justify-center rounded-xl border border-copper/35 bg-copper/15 text-copper">
+            <span className="rg-icon-tile inline-flex size-8 items-center justify-center rounded-xl">
               <Sun className="size-3.5" aria-hidden />
             </span>
             <div>
-              <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-gold-deep">
+              <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-silver-400">
                 Timing
               </p>
               <p className="text-xs text-muted">When the sky favours push or pause</p>
@@ -539,14 +516,14 @@ export function HoroscopeBody({ horoscope }: { horoscope: Horoscope }) {
                 className={cn(
                   'rounded-2xl border px-4 py-3.5',
                   slot.strong
-                    ? 'border-copper/45 bg-copper/10 shadow-[0_0_24px_-12px_rgba(124,77,255,0.55)]'
+                    ? 'border-copper/45 bg-copper/10 shadow-[0_0_24px_-12px_rgba(201,145,115,0.55)]'
                     : 'border-border/80 bg-surface-raised/50',
                 )}
               >
                 <p
                   className={cn(
                     'font-mono text-[10px] font-semibold uppercase tracking-[0.12em]',
-                    slot.strong ? 'text-copper' : 'text-muted',
+                    slot.strong ? 'text-silver-300' : 'text-muted',
                   )}
                 >
                   {slot.label}
@@ -560,16 +537,16 @@ export function HoroscopeBody({ horoscope }: { horoscope: Horoscope }) {
         <aside className="space-y-4">
           <div
             className={cn(
-              'relative overflow-hidden rounded-[1.35rem] border border-[#7c4dff]/35',
-              'bg-[linear-gradient(160deg,#1a1040_0%,#0f0c24_100%)] p-5',
-              'shadow-[0_16px_40px_-24px_rgba(124,77,255,0.65)]',
+              'horoscope-source-card relative overflow-hidden rounded-[1.35rem] border border-primary/35',
+              'bg-[linear-gradient(160deg,#0f1a2e_0%,var(--color-surface)_100%)] p-5',
+              'shadow-[0_16px_40px_-24px_rgba(201,145,115,0.55)]',
             )}
           >
             <div
               aria-hidden
-              className="pointer-events-none absolute -right-10 -top-10 size-28 rounded-full bg-[#7c4dff]/25 blur-2xl"
+              className="pointer-events-none absolute -right-10 -top-10 size-28 rounded-full bg-primary/25 blur-2xl"
             />
-            <p className="relative font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-[#c4a0ff]">
+            <p className="relative font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-silver-300">
               Read from
             </p>
             <ul className="relative mt-3 space-y-2">

@@ -3,7 +3,14 @@ import { Link } from 'react-router-dom'
 import { cn } from '@/utils/cn'
 
 export type ButtonVariant =
-  'primary' | 'secondary' | 'ghost' | 'gold' | 'danger' | 'celestial' | 'celestialGhost'
+  | 'primary'
+  | 'secondary'
+  | 'outline'
+  | 'ghost'
+  | 'gold'
+  | 'danger'
+  | 'celestial'
+  | 'celestialGhost'
 export type ButtonSize = 'sm' | 'md' | 'lg'
 
 interface BaseProps {
@@ -16,6 +23,8 @@ interface BaseProps {
   iconRight?: ReactNode
   children?: ReactNode
   className?: string
+  /** Soft pulse — hero CTA only (one strong glow per viewport). */
+  pulse?: boolean
 }
 
 export interface ButtonProps
@@ -24,30 +33,34 @@ export interface ButtonProps
   to?: string
 }
 
+/** Style A — satin rose-gold (single most important action). */
+const PRIMARY = 'btn-primary'
+
+/** Style B — dark with rose-gold rim (repeated / secondary copper actions). */
+const COPPER_OUTLINE = 'btn-copper-outline'
+
 const VARIANTS: Record<ButtonVariant, string> = {
-  primary:
-    'bg-gradient-to-r from-[var(--btn-primary-from)] to-[var(--btn-primary-to)] text-[var(--btn-primary-fg)] shadow-[0_12px_32px_-12px_var(--btn-primary-shadow)] hover:from-[var(--btn-primary-hover-from)] hover:to-[var(--btn-primary-hover-to)] active:from-[var(--btn-primary-active-from)] active:to-[var(--btn-primary-active-to)] disabled:bg-none disabled:bg-border-strong disabled:text-muted disabled:shadow-none',
-  secondary:
-    'bg-surface-raised/80 text-ink border border-border-strong/80 backdrop-blur-sm hover:border-copper/50 hover:bg-nebula-plum hover:shadow-card active:bg-navy-soft disabled:border-border disabled:text-faint',
-  ghost: 'bg-transparent text-ink hover:bg-navy-soft/80 active:bg-navy-soft disabled:text-faint',
-  gold: 'bg-gold-soft text-copper border border-copper/40 hover:border-copper hover:bg-copper/15 hover:shadow-glow active:bg-copper/25 disabled:text-faint',
+  primary: PRIMARY,
+  gold: PRIMARY,
+  celestial: PRIMARY,
+  secondary: COPPER_OUTLINE,
+  outline: COPPER_OUTLINE,
+  ghost:
+    'bg-transparent text-silver-300 hover:bg-white/[0.04] active:bg-white/[0.06] ' +
+    'disabled:text-text-disabled',
   danger:
-    'bg-transparent text-critical border border-critical/35 hover:bg-critical-soft disabled:text-faint',
-  celestial:
-    'bg-gradient-to-r from-[var(--btn-primary-from)] to-[var(--btn-primary-to)] text-[var(--btn-primary-fg)] shadow-[0_12px_32px_-12px_var(--btn-primary-shadow)] hover:from-[var(--btn-primary-hover-from)] hover:to-[var(--btn-primary-hover-to)] active:from-[var(--btn-primary-active-from)] active:to-[var(--btn-primary-active-to)] disabled:bg-none disabled:bg-celestial-line disabled:text-on-celestial-faint disabled:shadow-none focus-visible:outline-gold-soft-line',
-  celestialGhost:
-    'bg-transparent text-on-celestial border border-light-copper/40 hover:border-light-copper hover:bg-copper/10 hover:shadow-glow disabled:text-on-celestial-faint focus-visible:outline-gold-soft-line',
+    'bg-transparent text-error border border-error/35 hover:bg-error-soft disabled:text-text-disabled',
+  celestialGhost: COPPER_OUTLINE,
 }
 
 const SIZES: Record<ButtonSize, string> = {
-  sm: 'h-control-sm px-4 text-sm gap-1.5',
-  md: 'h-control-md px-5 text-sub gap-2',
-  lg: 'h-control-lg px-6 text-body gap-2',
+  sm: 'h-control-sm min-h-10 px-4 text-sm gap-1.5',
+  md: 'h-control-md min-h-11 px-5 text-sub gap-2',
+  lg: 'h-control-md min-h-12 px-6 text-body gap-2',
 }
 
 /**
- * The product's one button. Primary is violet→blue (adventure); gold soft is
- * reserved for accent actions and never becomes the dominant colour on a screen.
+ * Astrovate buttons — Style A satin rose-gold primary; Style B copper outline secondary.
  */
 export function Button({
   variant = 'primary',
@@ -60,22 +73,20 @@ export function Button({
   className,
   to,
   disabled,
+  pulse = false,
   type = 'button',
   ...rest
 }: ButtonProps) {
   const classes = cn(
     'inline-flex shrink-0 items-center justify-center rounded-control font-semibold',
-    // A button label never wraps: it is a target, and a two-line target reads
-    // as broken layout rather than as emphasis.
     'whitespace-nowrap',
-    'transition-[background-color,border-color,color,transform,box-shadow]',
+    'transition-[background-color,border-color,color,transform,box-shadow,filter,background-position]',
     'duration-150 ease-out-soft select-none',
-    // A press should be felt, not watched: a 1% dip, no bounce.
-    'active:scale-[0.985]',
-    'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-navy',
+    'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus-ring',
     VARIANTS[variant],
     SIZES[size],
     fullWidth && 'w-full',
+    pulse && (variant === 'primary' || variant === 'gold' || variant === 'celestial') && 'animate-gold-pulse',
     (disabled || loading) && 'pointer-events-none',
     loading && 'opacity-80',
     className,
@@ -83,9 +94,9 @@ export function Button({
 
   const content = (
     <>
-      {loading ? <Spinner /> : iconLeft}
-      {children}
-      {iconRight}
+      {loading ? <Spinner /> : iconLeft ? <span className="relative z-[1]">{iconLeft}</span> : null}
+      <span className="relative z-[1]">{children}</span>
+      {iconRight ? <span className="relative z-[1]">{iconRight}</span> : null}
     </>
   )
 
@@ -108,7 +119,7 @@ function Spinner() {
   return (
     <span
       aria-hidden
-      className="size-4 shrink-0 rounded-full border-2 border-current border-t-transparent animate-spin"
+      className="relative z-[1] size-4 shrink-0 rounded-full border-2 border-current border-t-transparent animate-spin"
     />
   )
 }

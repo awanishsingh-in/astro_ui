@@ -133,7 +133,7 @@ export function ChartVargasPanel({
           <>
             <header className="flex flex-wrap items-start justify-between gap-3">
               <div>
-                <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-copper">
+                <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-silver-300">
                   {varga}
                 </p>
                 <h2 className="mt-1 font-serif text-3xl font-semibold text-ink">
@@ -186,8 +186,8 @@ export function ChartVargasPanel({
 
               <div className="space-y-3">
                 {vargottama.length > 0 && (
-                  <div className="rounded-2xl border border-[#7c4dff]/35 bg-[#7c4dff]/12 px-4 py-3 text-sm text-ink">
-                    <span className="mr-2 inline-block size-2 rounded-full bg-[#7c4dff]" aria-hidden />
+                  <div className="rounded-2xl border border-primary/35 bg-primary/12 px-4 py-3 text-sm text-ink">
+                    <span className="mr-2 inline-block size-2 rounded-full bg-primary" aria-hidden />
                     Vargottama — same sign in D1 and this chart. Yours:{' '}
                     <strong>
                       {vargottama
@@ -209,7 +209,7 @@ export function ChartVargasPanel({
                         <span
                           className={cn(
                             'font-semibold',
-                            p.highlight ? 'text-copper' : 'text-ink',
+                            p.highlight ? 'text-silver-300' : 'text-ink',
                           )}
                         >
                           {p.sign}

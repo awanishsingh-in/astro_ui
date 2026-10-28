@@ -11,7 +11,7 @@ export function PanchangTithiView({ day }: { day: PanchangDayDetail }) {
       <Card padding="lg" className="gap-7 border-border/80 sm:p-7">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <h2 className="text-heading font-semibold text-ink">Tithi & nakshatra — right now</h2>
-          <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-gold-deep">
+          <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-silver-400">
             Live · 11:20
           </p>
         </div>

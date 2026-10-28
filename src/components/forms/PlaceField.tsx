@@ -117,7 +117,7 @@ export function PlaceField({
             <span
               className={cn(
                 'inline-flex size-5 items-center justify-center rounded-full',
-                adventure ? 'bg-[#7c4dff]/25 text-[#c4a0ff]' : 'bg-gold/20 text-gold',
+                adventure ? 'bg-blue-glow/25 text-blue-light' : 'bg-info-soft text-info',
               )}
             >
               <Check className="size-3" strokeWidth={2.5} />
@@ -145,9 +145,9 @@ export function PlaceField({
             'absolute inset-x-0 bottom-[calc(100%+0.5rem)] z-50',
             'animate-scale-in origin-bottom rounded-card border shadow-overlay',
             adventure
-              ? 'border-white/10 bg-[#0e0820]'
+              ? 'border-white/10 bg-surface'
               : celestial
-                ? 'border-[var(--color-field-border)] bg-[var(--color-field)] backdrop-blur-md'
+                ? 'border-field-border bg-field backdrop-blur-md'
                 : 'border-border bg-surface',
           )}
         >
@@ -157,14 +157,14 @@ export function PlaceField({
               adventure
                 ? 'border-white/10'
                 : celestial
-                  ? 'border-[var(--color-field-border)]'
+                  ? 'border-field-border'
                   : 'border-border',
             )}
           >
             <span
               className={cn(
                 'font-mono text-[10px] uppercase tracking-[0.14em]',
-                adventure ? 'text-[#c4a0ff]' : celestial ? 'text-copper' : 'text-muted',
+                adventure ? 'text-blue-light' : celestial ? 'text-blue-light' : 'text-muted',
               )}
             >
               {results.length > 0
@@ -198,9 +198,9 @@ export function PlaceField({
                         'transition-colors duration-150 ease-out-soft',
                         active
                           ? adventure
-                            ? 'bg-[#7c4dff]/20'
+                            ? 'bg-blue-glow/20'
                             : celestial
-                              ? 'bg-gold-soft/50'
+                              ? 'bg-info-soft'
                               : 'bg-navy-soft'
                           : adventure
                             ? 'bg-transparent hover:bg-white/5'
@@ -213,12 +213,12 @@ export function PlaceField({
                           'mt-0.5 inline-flex size-8 shrink-0 items-center justify-center rounded-full border',
                           active
                             ? adventure
-                              ? 'border-[#c4a0ff]/45 bg-[#7c4dff]/20 text-[#c4a0ff]'
-                              : 'border-gold/45 bg-gold/15 text-gold'
+                              ? 'border-blue-light/45 bg-blue-glow/20 text-blue-light'
+                              : 'border-info/45 bg-info-soft text-info'
                             : adventure
-                              ? 'border-white/10 text-[#c4a0ff]/70'
+                              ? 'border-white/10 text-blue-light/70'
                               : celestial
-                                ? 'border-[var(--color-field-border)] text-copper/70'
+                                ? 'border-field-border text-blue-light/70'
                                 : 'border-border text-muted',
                         )}
                       >

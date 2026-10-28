@@ -20,7 +20,7 @@ export function ChartBasicPanel({ birth, className }: ChartBasicPanelProps) {
   return (
     <div className={cn('animate-rise space-y-5', className)}>
       <div className="space-y-1.5">
-        <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-gold-deep">
+        <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-silver-400">
           Basic
         </p>
         <h2 className="font-serif text-2xl font-semibold tracking-tight text-ink sm:text-3xl">
@@ -34,7 +34,7 @@ export function ChartBasicPanel({ birth, className }: ChartBasicPanelProps) {
       <article
         className={cn(
           'relative overflow-hidden rounded-3xl border border-copper/30',
-          'bg-[radial-gradient(120%_90%_at_10%_0%,rgba(196, 160, 255,0.22),transparent_55%),linear-gradient(160deg,color-mix(in_oklab,var(--color-surface)_85%,#1a0f3d)_0%,var(--color-surface)_100%)]',
+          'bg-[radial-gradient(120%_90%_at_10%_0%,,transparent_55%),linear-gradient(160deg,color-mix(in_oklab,var(--color-surface)_85%,var(--color-surface-raised))_0%,var(--color-surface)_100%)]',
           'px-5 py-8 text-center sm:px-8 sm:py-10',
         )}
       >
@@ -42,7 +42,7 @@ export function ChartBasicPanel({ birth, className }: ChartBasicPanelProps) {
           aria-hidden
           className="pointer-events-none absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-copper/50 to-transparent"
         />
-        <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-gold-deep">
+        <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-silver-400">
           Birth time
         </p>
         <p
@@ -97,7 +97,7 @@ function Fact({
 }) {
   return (
     <div className="rounded-2xl border border-border/80 bg-surface/80 px-4 py-4">
-      <div className="flex items-center gap-2 text-copper">
+      <div className="flex items-center gap-2 text-silver-300">
         {icon}
         <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-muted">
           {label}

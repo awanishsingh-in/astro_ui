@@ -8,8 +8,6 @@ import { ReadingVerdict } from '@/components/reading-parts/ReadingVerdict'
 import { ReadingActions } from '@/components/readings/ReadingActions'
 import type { Reading } from '@/types/readings'
 import { cn } from '@/utils/cn'
-import { formatRelativeDay } from '@/utils/format'
-
 export interface ReadingDetailProps {
   reading: Reading
   onFollowUp?: (question: string) => void
@@ -31,9 +29,6 @@ export function ReadingDetail({ reading, onFollowUp, onAskAgain, className }: Re
     <article className={cn('mx-auto w-full max-w-reading', className)}>
       {/* 1 · Question */}
       <header className="space-y-4 border-b border-border pb-6">
-        <p className="font-mono text-label uppercase text-muted">
-          Asked {formatRelativeDay(reading.askedAt)}
-        </p>
         <h1 className="text-title font-semibold text-ink text-balance lg:text-title-lg">
           {reading.question}
         </h1>

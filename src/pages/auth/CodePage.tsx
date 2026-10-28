@@ -133,15 +133,15 @@ export default function CodePage() {
     >
       <form onSubmit={handleSubmit} noValidate className="flex w-full flex-col gap-7">
         <header className="space-y-2">
-          <h1 className="text-3xl font-bold uppercase tracking-tight text-white sm:text-4xl">
+          <h1 className="text-chrome text-3xl font-bold uppercase tracking-tight sm:text-4xl">
             Enter code
           </h1>
-          <p className="text-sm text-white/55 text-pretty">
-            Sent to <span className="font-mono text-white">{phone}</span>
+          <p className="text-sm text-text-secondary text-pretty">
+            Sent to <span className="font-mono text-text-primary">{phone}</span>
             {' · '}
             <Link
               to={isSignUp ? paths.signUp : paths.signIn}
-              className="font-semibold text-[#c4a0ff] hover:text-white"
+              className="font-semibold text-silver-300 hover:text-white"
             >
               Change
             </Link>
@@ -160,7 +160,7 @@ export default function CodePage() {
             disabled={isVerifying}
             autoFocus
             label="6-digit verification code"
-            className="[&_input]:border-[#5b3d9a]/70 [&_input]:bg-[#140d2c] [&_input]:text-white [&_input]:focus:border-[#c4a0ff] [&_input]:focus:shadow-[0_0_0_3px_rgba(124,77,255,0.25)]"
+            className="[&_input]:input-astro [&_input]:text-text-primary"
           />
 
           {error ? (
@@ -182,7 +182,7 @@ export default function CodePage() {
                   type="button"
                   onClick={handleResend}
                   disabled={isResending}
-                  className="font-semibold text-[#c4a0ff] hover:text-white disabled:text-white/30"
+                  className="font-semibold text-silver-300 hover:text-white disabled:text-text-muted"
                 >
                   {isResending ? 'Sending…' : 'Resend code'}
                 </button>
@@ -193,11 +193,12 @@ export default function CodePage() {
 
         <Button
           type="submit"
+          variant="primary"
           fullWidth
           size="lg"
           loading={isVerifying}
           disabled={code.length !== 6}
-          className="mt-4 rounded-2xl border-0 bg-gradient-to-r from-[#7c4dff] to-[#3a7bd5] text-white shadow-[0_12px_32px_-12px_rgba(124,77,255,0.75)] hover:from-[#8b5cff] hover:to-[#4a8be5] focus-visible:outline-[#c4a0ff] sm:mt-6"
+          className="mt-4 h-14 text-base font-bold tracking-wide sm:mt-6"
         >
           {isVerifying ? 'Verifying' : 'Verify'}
         </Button>

@@ -1,6 +1,6 @@
 import { Avatar } from '@/components/common/Avatar'
 import { ChartProfilePicker } from '@/components/charts/ChartProfilePicker'
-import { RELATION_LABEL, type ChartProfile } from '@/data/profiles'
+import type { ChartProfile } from '@/data/profiles'
 import type { Chart } from '@/types/astrology'
 import { cn } from '@/utils/cn'
 import { formatDateLong, formatTime12 } from '@/utils/format'
@@ -32,8 +32,8 @@ export function ChartProfileHero({
     <header
       className={cn(
         'relative overflow-hidden rounded-3xl border border-border/70',
-        'bg-[linear-gradient(145deg,color-mix(in_oklab,var(--color-surface)_88%,#3a2418)_0%,var(--color-surface)_45%,color-mix(in_oklab,var(--color-surface)_92%,#1a2838)_100%)]',
-        'px-4 py-5 shadow-[0_20px_50px_-36px_rgba(20,12,8,0.65)] sm:px-6 sm:py-6',
+        'bg-[linear-gradient(145deg,color-mix(in_oklab,var(--color-surface)_88%,#6E4234)_0%,var(--color-surface)_45%,color-mix(in_oklab,var(--color-surface)_92%,#1B101D)_100%)]',
+        'px-4 py-5 shadow-[0_20px_50px_-36px_rgba(201,145,115,0.55)] sm:px-6 sm:py-6',
         className,
       )}
     >
@@ -43,7 +43,7 @@ export function ChartProfileHero({
       />
       <div
         aria-hidden
-        className="pointer-events-none absolute -bottom-20 left-8 h-40 w-40 rounded-full bg-deep-burgundy/30 blur-3xl"
+        className="pointer-events-none absolute -bottom-20 left-8 h-40 w-40 rounded-full bg-[rgba(184,50,122,0.18)] blur-3xl"
       />
 
       <div className="relative flex flex-wrap items-start justify-between gap-4">
@@ -57,10 +57,7 @@ export function ChartProfileHero({
           </span>
 
           <div className="min-w-0 space-y-1.5">
-            <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-gold-deep">
-              My chart · {RELATION_LABEL[profile.relation]}
-            </p>
-            <h1 className="truncate font-serif text-[1.85rem] font-semibold leading-tight tracking-[-0.02em] text-ink sm:text-title-lg">
+            <h1 className="text-chrome truncate font-serif text-[1.85rem] font-semibold leading-tight tracking-[-0.02em] sm:text-title-lg">
               {profile.id === 'self' ? 'Your kundli' : profile.name}
             </h1>
             <p className="text-sm text-muted text-pretty">
@@ -87,19 +84,19 @@ export function ChartProfileHero({
       {(chart || moon) && (
         <div className="relative mt-5 flex flex-wrap gap-2">
           {chart && (
-            <span className="inline-flex items-center gap-2 rounded-full border border-copper/35 bg-copper/12 px-3 py-1.5">
-              <span className="font-mono text-[9px] font-semibold uppercase tracking-[0.14em] text-gold-deep">
+            <span className="btn-glass inline-flex items-center gap-2 rounded-full px-3 py-1.5">
+              <span className="font-mono text-[9px] font-semibold uppercase tracking-[0.14em] text-silver-400">
                 Lagna
               </span>
               <span className="text-sm font-semibold text-ink">{chart.lagna.rashi}</span>
             </span>
           )}
           {moon && (
-            <span className="inline-flex items-center gap-2 rounded-full border border-border/80 bg-surface/70 px-3 py-1.5">
-              <span className="font-mono text-[9px] font-semibold uppercase tracking-[0.14em] text-muted">
+            <span className="btn-glass inline-flex items-center gap-2 rounded-full px-3 py-1.5">
+              <span className="font-mono text-[9px] font-semibold uppercase tracking-[0.14em] text-silver-300">
                 Chandra
               </span>
-              <span className="text-sm font-semibold text-ink">
+              <span className="text-sm font-semibold text-silver-400">
                 {moon.rashi} · {moon.nakshatra.name}
               </span>
             </span>

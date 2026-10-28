@@ -45,7 +45,7 @@ export default function ReadingDetailPage() {
   return (
     <>
       {/* The question inside `ReadingDetail` is this page's <h1>. */}
-      <MobileHeader title="Reading" titleAs="p" showBack user={user} />
+      <MobileHeader title="Reading" titleAs="p" user={user} />
 
       <PageContainer width="content">
         {status === 'error' ? (

@@ -3,6 +3,7 @@ import {
   Calculator,
   CircleHelp,
   CircleUserRound,
+  Download,
   FileStack,
   Gift,
   HeartHandshake,
@@ -68,6 +69,8 @@ export interface AccountMenuItem {
   /** Not built yet — the menu reports this rather than looking dead. */
   pending?: boolean
   tone?: 'default' | 'critical'
+  /** Indent as a child row under the previous item (e.g. Add profile under Profile). */
+  nested?: boolean
 }
 
 /**
@@ -76,13 +79,14 @@ export interface AccountMenuItem {
  */
 export const accountMenu: AccountMenuItem[] = [
   { id: 'profile', label: 'Profile', icon: <CircleUserRound />, to: paths.profile },
-  { id: 'add-profile', label: 'Add profile', icon: <UserPlus /> },
-  { id: 'profiles', label: 'Saved profiles', icon: <Users />, pending: true },
+  { id: 'add-profile', label: 'Add profile', icon: <UserPlus />, nested: true },
+  { id: 'profiles', label: 'Saved profiles', icon: <Users />, to: paths.savedProfiles },
+  { id: 'downloads', label: 'Downloads', icon: <Download />, to: paths.downloads },
   { id: 'notifications', label: 'Notifications', icon: <Bell />, pending: true },
   { id: 'upgrade-plan', label: 'Upgrade plan', icon: <Sparkles />, panel: 'upgrade-plan' },
+  { id: 'settings', label: 'Settings', icon: <Settings2 />, panel: 'settings' },
   { id: 'referrals', label: 'Refer a friend', icon: <Gift />, pending: true },
   { id: 'languages', label: 'Languages', icon: <Languages />, panel: 'languages' },
-  { id: 'settings', label: 'Settings', icon: <Settings2 />, panel: 'settings' },
   { id: 'help', label: 'Get help', icon: <CircleHelp />, panel: 'help' },
 ]
 

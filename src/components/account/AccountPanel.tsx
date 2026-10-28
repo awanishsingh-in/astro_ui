@@ -281,7 +281,7 @@ export function AccountPanel({ panel, onClose, onOpenPanel }: AccountPanelProps)
                   >
                     <span
                       aria-hidden
-                      className="inline-flex size-9 shrink-0 items-center justify-center rounded-control border border-border bg-surface-sunken text-gold-deep"
+                      className="inline-flex size-9 shrink-0 items-center justify-center rounded-control border border-border bg-surface-sunken text-silver-400"
                     >
                       <Icon className="size-4" />
                     </span>
@@ -421,16 +421,6 @@ export function AccountPanel({ panel, onClose, onOpenPanel }: AccountPanelProps)
             >
               Open my chart
             </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => {
-                onClose()
-                navigate(paths.everything)
-              }}
-            >
-              See everything Cyklos does
-            </Button>
           </div>
         </div>
       )}
@@ -450,7 +440,7 @@ export function AccountPanel({ panel, onClose, onOpenPanel }: AccountPanelProps)
               'Every reading kept, indexed by bhava and period',
             ].map((item) => (
               <li key={item} className="flex gap-3 text-sm text-purple">
-                <Check aria-hidden className="mt-0.5 size-4 shrink-0 text-gold-deep" />
+                <Check aria-hidden className="mt-0.5 size-4 shrink-0 text-silver-400" />
                 <span className="text-pretty">{item}</span>
               </li>
             ))}
@@ -469,6 +459,7 @@ export function AccountPanel({ panel, onClose, onOpenPanel }: AccountPanelProps)
           </Button>
         </Card>
       )}
+
     </>
   )
 

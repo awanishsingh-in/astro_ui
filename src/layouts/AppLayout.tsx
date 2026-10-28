@@ -1,5 +1,6 @@
 import { useCallback, useState } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
+import { NebulaBackground } from '@/components/celestial/NebulaBackground'
 import { BottomNav } from '@/components/navigation/BottomNav'
 import { FullPageChrome } from '@/components/navigation/FullPageChrome'
 import { SideNav } from '@/components/navigation/SideNav'
@@ -32,12 +33,15 @@ function isImmersivePath(pathname: string): boolean {
   )
 }
 
+function CosmicAtmosphere() {
+  return <NebulaBackground />
+}
+
 /**
  * The signed-in shell.
  *
  * Desktop: vertical SideNav + page. Mobile: page + BottomNav.
- * Immersive routes (Matching, Calculator, Your Past, Profile, Horoscope) hide both and show a slim back + logo bar.
- * My Chart keeps the main sidebar so it matches Ask and other product tabs.
+ * Immersive routes hide both and show a slim back + logo bar.
  */
 export function AppLayout() {
   const { user } = useAuth()
@@ -61,21 +65,14 @@ export function AppLayout() {
 
   if (immersive) {
     return (
-      <div className="relative flex min-h-dvh flex-col bg-transparent lg:h-dvh lg:max-h-dvh lg:overflow-hidden">
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 -z-10 overflow-hidden"
-        >
-          <div className="absolute -left-24 top-[-10%] h-[55vmin] w-[55vmin] rounded-full bg-[#7c4dff]/25 blur-3xl" />
-          <div className="absolute -right-16 top-[20%] h-[42vmin] w-[42vmin] rounded-full bg-[#3a7bd5]/20 blur-3xl" />
-          <div className="absolute bottom-[-15%] left-[30%] h-[48vmin] w-[48vmin] rounded-full bg-[#5ed7f2]/12 blur-3xl" />
-        </div>
+      <div className="relative flex min-h-dvh min-w-0 flex-col bg-transparent lg:h-dvh lg:max-h-dvh lg:overflow-hidden">
+        <CosmicAtmosphere />
 
         <FullPageChrome user={user} />
 
         <main
           key={location.pathname}
-          className="min-h-0 flex-1 animate-fade-in overflow-y-auto overscroll-contain"
+          className="min-h-0 min-w-0 flex-1 animate-fade-in overflow-y-auto overscroll-contain"
         >
           <Outlet />
         </main>
@@ -84,23 +81,15 @@ export function AppLayout() {
   }
 
   return (
-    <div className="relative flex min-h-dvh bg-transparent lg:h-dvh lg:max-h-dvh lg:overflow-hidden">
-      {/* Ambient adventure wash behind the signed-in shell */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 -z-10 overflow-hidden"
-      >
-        <div className="absolute -left-24 top-[-10%] h-[55vmin] w-[55vmin] rounded-full bg-[#7c4dff]/25 blur-3xl" />
-        <div className="absolute -right-16 top-[20%] h-[42vmin] w-[42vmin] rounded-full bg-[#3a7bd5]/20 blur-3xl" />
-        <div className="absolute bottom-[-15%] left-[30%] h-[48vmin] w-[48vmin] rounded-full bg-[#5ed7f2]/12 blur-3xl" />
-      </div>
+    <div className="relative flex min-h-dvh min-w-0 bg-transparent lg:h-dvh lg:max-h-dvh lg:overflow-hidden">
+      <CosmicAtmosphere />
 
       <SideNav user={user} collapsed={collapsed} onToggleCollapse={toggleCollapse} />
 
       <div className="relative flex min-h-0 min-w-0 flex-1 flex-col">
         <main
           key={location.pathname}
-          className="min-h-0 flex-1 animate-fade-in overflow-y-auto overscroll-contain"
+          className="min-h-0 min-w-0 flex-1 animate-rise overflow-y-auto overscroll-contain"
         >
           <Outlet />
         </main>

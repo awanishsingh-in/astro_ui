@@ -46,15 +46,6 @@ export default function ChartDetailPayPage() {
   return (
     <PageContainer width="content" className="pb-16 pt-4 sm:pt-6">
       <article className="mx-auto max-w-lg animate-rise space-y-5">
-        <button
-          type="button"
-          onClick={() => navigate(paths.chartDetailUnlock)}
-          disabled={paying}
-          className="text-xs text-muted underline-offset-2 hover:text-ink hover:underline disabled:opacity-50"
-        >
-          ← Back
-        </button>
-
         <Card padding="lg" className="flex flex-col gap-4 border-border/80 p-6 sm:gap-5 sm:p-7">
           <h1 className="text-2xl font-semibold text-ink">Payment gateway</h1>
           <p className="text-sm text-muted text-pretty">
@@ -75,7 +66,7 @@ export default function ChartDetailPayPage() {
           </div>
 
           <div className="flex items-start gap-3 rounded-2xl border border-border/80 px-4 py-3">
-            <ShieldCheck className="mt-0.5 size-5 shrink-0 text-gold-deep" aria-hidden />
+            <ShieldCheck className="mt-0.5 size-5 shrink-0 text-silver-400" aria-hidden />
             <p className="text-sm text-muted text-pretty">
               Demo payment gateway · no real charge. Confirm to finish.
             </p>

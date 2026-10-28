@@ -1,12 +1,12 @@
 import {
   BookMarked,
   History,
-  LayoutGrid,
   SquarePen,
   WandSparkles,
   PanelLeftClose,
   PanelLeftOpen,
 } from 'lucide-react'
+import { useEffect, useState } from 'react'
 import { NavLink, useLocation, useNavigate } from 'react-router-dom'
 import { Logo, LogoMark } from '@/components/brand/Logo'
 import { AvatarMenu } from '@/components/navigation/AvatarMenu'
@@ -23,22 +23,19 @@ export interface SideNavProps {
   className?: string
 }
 
-function featureHref(to: string | undefined, slug: string) {
-  return to ?? paths.explore(slug)
+function featureHref(to: string | undefined) {
+  return to ?? paths.ask
 }
 
 function isFeatureActive(pathname: string, to: string | undefined, slug: string): boolean {
-  const href = featureHref(to, slug)
-  if (pathname === href || pathname.startsWith(`${href}/`)) return true
+  const href = featureHref(to)
+  if (to && (pathname === href || pathname.startsWith(`${href}/`))) return true
 
   if (slug === 'my-chart' || slug === 'kundli') {
     return pathname === paths.chart || pathname.startsWith(`${paths.chart}/`)
   }
   if (slug === 'matching') {
     return pathname === paths.matching || pathname.startsWith(`${paths.matching}/`)
-  }
-  if (slug === 'kundli-matching-profiles') {
-    return pathname === paths.compatibility || pathname.startsWith(`${paths.compatibility}/`)
   }
   if (slug === 'horoscope') {
     return pathname.startsWith('/horoscope')
@@ -55,7 +52,7 @@ function isFeatureActive(pathname: string, to: string | undefined, slug: string)
   if (slug === 'panchang') {
     return pathname === paths.panchang || pathname.startsWith(`${paths.panchang}/`)
   }
-  return pathname === paths.explore(slug)
+  return false
 }
 
 /**
@@ -70,18 +67,34 @@ export function SideNav({
 }: SideNavProps) {
   const location = useLocation()
   const navigate = useNavigate()
+  const [newChatGlow, setNewChatGlow] = useState(false)
   const onAsk =
     location.pathname === paths.ask ||
     (location.pathname.startsWith(`${paths.ask}/`) &&
       location.pathname !== paths.askHistory &&
       !location.pathname.startsWith(`${paths.askHistory}/`))
+  const askSearch = new URLSearchParams(location.search)
+  const onFreshAsk =
+    location.pathname === paths.ask && !askSearch.get('chat')
+  const newChatLit = newChatGlow || onFreshAsk
+
+  useEffect(() => {
+    if (!newChatGlow) return
+    const timer = window.setTimeout(() => setNewChatGlow(false), 2400)
+    return () => window.clearTimeout(timer)
+  }, [newChatGlow])
+
+  const startNewChat = () => {
+    setNewChatGlow(true)
+    navigate(`${paths.ask}?new=1`)
+  }
 
   if (collapsed) {
     return (
       <aside
         className={cn(
           'sticky top-0 z-30 hidden h-dvh w-14 shrink-0 flex-col items-center',
-          'border-r border-border/70 bg-surface/75 px-1.5 py-4 backdrop-blur-xl',
+          'border-r border-border/40 bg-bg-secondary/90 px-1.5 py-4 backdrop-blur-xl',
           'lg:flex',
           className,
         )}
@@ -115,7 +128,7 @@ export function SideNav({
             className={() =>
               cn(
                 'inline-flex size-9 items-center justify-center rounded-control transition-colors',
-                onAsk ? 'bg-[#7c4dff]/20 text-[#7c4dff]' : 'text-muted hover:bg-navy-soft/70 hover:text-ink',
+                onAsk ? 'bg-surface-raised text-silver-100' : 'text-silver-200 hover:bg-surface-raised/70 hover:text-text',
               )
             }
           >
@@ -126,8 +139,14 @@ export function SideNav({
             type="button"
             title="New chat"
             aria-label="New chat"
-            onClick={() => navigate(`${paths.ask}?new=1`)}
-            className="inline-flex size-9 items-center justify-center rounded-control text-[#7c4dff] transition-colors hover:bg-navy-soft/70"
+            aria-pressed={newChatLit}
+            onClick={startNewChat}
+            className={cn(
+              'inline-flex size-9 items-center justify-center rounded-control transition-[color,background-color,box-shadow] duration-300',
+              newChatLit
+                ? 'bg-surface-raised text-silver-100'
+                : 'text-silver-200 hover:bg-surface-raised/70 hover:text-text',
+            )}
           >
             <SquarePen className="size-4" aria-hidden />
           </button>
@@ -139,7 +158,7 @@ export function SideNav({
             className={({ isActive }) =>
               cn(
                 'inline-flex size-9 items-center justify-center rounded-control transition-colors',
-                isActive ? 'bg-navy-soft text-[#7c4dff]' : 'text-muted hover:bg-navy-soft/70 hover:text-ink',
+                isActive ? 'bg-surface-raised text-silver-100' : 'text-silver-200 hover:bg-surface-raised/70 hover:text-text',
               )
             }
           >
@@ -155,7 +174,7 @@ export function SideNav({
             className={({ isActive }) =>
               cn(
                 'inline-flex size-9 items-center justify-center rounded-control transition-colors',
-                isActive ? 'bg-navy-soft text-[#7c4dff]' : 'text-muted hover:bg-navy-soft/70 hover:text-ink',
+                isActive ? 'bg-surface-raised text-silver-100' : 'text-silver-200 hover:bg-surface-raised/70 hover:text-text',
               )
             }
           >
@@ -167,7 +186,7 @@ export function SideNav({
           <span className="my-2 h-px w-6 bg-border" aria-hidden />
 
           {livePrimaryFeatures.slice(0, 4).map((feature) => {
-            const href = featureHref(feature.to, feature.slug)
+            const href = featureHref(feature.to)
             const active = isFeatureActive(location.pathname, feature.to, feature.slug)
             const Icon = feature.icon
             return (
@@ -178,29 +197,13 @@ export function SideNav({
                 aria-label={feature.title}
                 className={cn(
                   'inline-flex size-9 items-center justify-center rounded-control transition-colors',
-                  active ? 'bg-navy-soft text-[#7c4dff]' : 'text-muted hover:bg-navy-soft/70 hover:text-ink',
+                  active ? 'bg-surface-raised text-silver-100' : 'text-silver-200 hover:bg-surface-raised/70 hover:text-text',
                 )}
               >
                 <Icon className="size-4" strokeWidth={active ? 2.25 : 1.75} aria-hidden />
               </NavLink>
             )
           })}
-
-          <NavLink
-            to={paths.everything}
-            title="All features"
-            aria-label="All features"
-            className={({ isActive }) =>
-              cn(
-                'inline-flex size-9 items-center justify-center rounded-control transition-colors',
-                isActive ? 'bg-navy-soft text-[#7c4dff]' : 'text-muted hover:bg-navy-soft/70 hover:text-ink',
-              )
-            }
-          >
-            {({ isActive }) => (
-              <LayoutGrid className="size-4" strokeWidth={isActive ? 2.25 : 1.75} aria-hidden />
-            )}
-          </NavLink>
         </nav>
 
         <div className="mt-3 flex flex-col items-center gap-1">
@@ -214,20 +217,12 @@ export function SideNav({
   return (
     <aside
       className={cn(
-        'sticky top-0 z-30 hidden h-dvh w-60 shrink-0 flex-col',
-        'border-r border-border/60 bg-surface/80 px-3.5 py-5 backdrop-blur-xl',
+        'relative sticky top-0 z-30 hidden h-dvh w-60 shrink-0 flex-col',
+        'border-r border-[color:var(--hairline)] bg-[var(--bg-elevated)] px-3.5 py-5 backdrop-blur-xl',
         'lg:flex xl:w-64',
-        'shadow-[inset_-1px_0_0_0_rgba(124,77,255,0.12)]',
         className,
       )}
     >
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 -z-10 overflow-hidden"
-      >
-        <div className="absolute -left-10 top-0 h-40 w-40 rounded-full bg-[#7c4dff]/10 blur-3xl" />
-        <div className="absolute -right-8 bottom-24 h-36 w-36 rounded-full bg-deep-burgundy/50 blur-3xl" />
-      </div>
 
       <div className="mb-5 flex items-center justify-between gap-2 px-1">
         <NavLink to={paths.ask} aria-label="Cyklos Ask" className="w-fit rounded-xs">
@@ -247,7 +242,7 @@ export function SideNav({
       </div>
 
       <nav aria-label="Primary" className="min-h-0 flex-1 overflow-y-auto no-scrollbar">
-        <div className="flex flex-col gap-1 rounded-card border border-border/50 bg-surface-sunken/35 p-1.5">
+        <div className="flex flex-col gap-1 rounded-card border border-border/50 bg-surface/40 p-1.5">
           <NavLink
             to={paths.ask}
             end
@@ -255,13 +250,14 @@ export function SideNav({
               cn(
                 'flex items-center gap-3 rounded-control px-3 py-2.5 transition-[background-color,color,box-shadow] duration-150',
                 onAsk
-                  ? 'bg-gradient-to-r from-[#7c4dff]/25 via-[#7c4dff]/10 to-transparent font-semibold text-ink shadow-[inset_3px_0_0_0_#7c4dff]'
-                  : 'font-medium text-purple hover:bg-navy-soft/70 hover:text-ink',
+                  ? 'rg-selected relative font-semibold text-text'
+                  : 'font-medium text-silver-200 hover:bg-white/[0.05] hover:text-text',
               )
             }
           >
+            {onAsk ? <span className="nav-active-bar" aria-hidden /> : null}
             <WandSparkles
-              className={cn('size-5 shrink-0', onAsk ? 'text-[#7c4dff]' : 'text-muted')}
+              className={cn('size-5 shrink-0', onAsk ? 'text-silver-100' : 'text-silver-300')}
               strokeWidth={onAsk ? 2.25 : 1.75}
               aria-hidden
             />
@@ -271,14 +267,23 @@ export function SideNav({
           <div className="flex flex-col gap-0.5 pl-2">
             <button
               type="button"
-              onClick={() => navigate(`${paths.ask}?new=1`)}
+              aria-pressed={newChatLit}
+              onClick={startNewChat}
               className={cn(
                 'flex items-center gap-2.5 rounded-control px-3 py-2 text-left',
-                'text-sm font-medium text-purple transition-colors',
-                'hover:bg-navy-soft/70 hover:text-ink',
+                'text-sm font-medium transition-[color,background-color,box-shadow] duration-300',
+                newChatLit
+                  ? 'bg-white/[0.05] font-semibold text-text'
+                  : 'text-silver-200 hover:bg-white/[0.05] hover:text-text',
               )}
             >
-              <SquarePen className="size-4 shrink-0 text-[#7c4dff]" aria-hidden />
+              <SquarePen
+                className={cn(
+                  'size-4 shrink-0 transition-colors duration-300',
+                  newChatLit ? 'text-silver-100' : 'text-silver-300',
+                )}
+                aria-hidden
+              />
               New chat
             </button>
           </div>
@@ -289,15 +294,16 @@ export function SideNav({
               cn(
                 'flex items-center gap-3 rounded-control px-3 py-2.5 transition-[background-color,color,box-shadow] duration-150',
                 isActive
-                  ? 'bg-gradient-to-r from-[#7c4dff]/25 via-[#7c4dff]/10 to-transparent font-semibold text-ink shadow-[inset_3px_0_0_0_#7c4dff]'
-                  : 'font-medium text-purple hover:bg-navy-soft/70 hover:text-ink',
+                  ? 'rg-selected relative font-semibold text-text'
+                  : 'font-medium text-silver-200 hover:bg-white/[0.05] hover:text-text',
               )
             }
           >
             {({ isActive }) => (
               <>
+                {isActive ? <span className="nav-active-bar" aria-hidden /> : null}
                 <History
-                  className={cn('size-5 shrink-0', isActive ? 'text-[#7c4dff]' : 'text-muted')}
+                  className={cn('size-5 shrink-0', isActive ? 'text-silver-100' : 'text-silver-300')}
                   strokeWidth={isActive ? 2.25 : 1.75}
                   aria-hidden
                 />
@@ -312,15 +318,16 @@ export function SideNav({
               cn(
                 'flex items-center gap-3 rounded-control px-3 py-2.5 transition-[background-color,color,box-shadow] duration-150',
                 isActive
-                  ? 'bg-gradient-to-r from-[#7c4dff]/25 via-[#7c4dff]/10 to-transparent font-semibold text-ink shadow-[inset_3px_0_0_0_#7c4dff]'
-                  : 'font-medium text-purple hover:bg-navy-soft/70 hover:text-ink',
+                  ? 'rg-selected relative font-semibold text-text'
+                  : 'font-medium text-silver-200 hover:bg-white/[0.05] hover:text-text',
               )
             }
           >
             {({ isActive }) => (
               <>
+                {isActive ? <span className="nav-active-bar" aria-hidden /> : null}
                 <BookMarked
-                  className={cn('size-5 shrink-0', isActive ? 'text-[#7c4dff]' : 'text-muted')}
+                  className={cn('size-5 shrink-0', isActive ? 'text-silver-100' : 'text-silver-300')}
                   strokeWidth={isActive ? 2.25 : 1.75}
                   aria-hidden
                 />
@@ -331,12 +338,12 @@ export function SideNav({
         </div>
 
         <div className="mt-5">
-          <p className="mb-2.5 px-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-faint">
+          <p className="mb-2.5 px-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-silver-300">
             Features
           </p>
           <ul className="flex flex-col gap-0.5">
             {livePrimaryFeatures.map((feature) => {
-              const href = featureHref(feature.to, feature.slug)
+              const href = featureHref(feature.to)
               const active = isFeatureActive(location.pathname, feature.to, feature.slug)
               const Icon = feature.icon
               return (
@@ -345,19 +352,20 @@ export function SideNav({
                     to={href}
                     title={feature.title}
                     className={cn(
-                      'group flex items-center gap-3 rounded-control px-3 py-2.5 transition-[background-color,color,box-shadow] duration-150',
+                      'group relative flex items-center gap-3 rounded-control px-3 py-2.5 transition-[background-color,color,box-shadow] duration-150',
                       active
-                        ? 'bg-gradient-to-r from-[#7c4dff]/22 via-[#7c4dff]/8 to-transparent font-semibold text-ink shadow-[inset_3px_0_0_0_#7c4dff]'
-                        : 'font-medium text-purple hover:bg-navy-soft/70 hover:text-ink',
+                        ? 'rg-selected font-semibold text-text'
+                        : 'font-medium text-silver-200 hover:bg-white/[0.05] hover:text-text',
                     )}
                   >
+                    {active ? <span className="nav-active-bar" aria-hidden /> : null}
                     <span
                       aria-hidden
                       className={cn(
-                        'inline-flex size-8 shrink-0 items-center justify-center rounded-control border transition-colors',
+                        'inline-flex size-8 shrink-0 items-center justify-center rounded-control transition-colors',
                         active
-                          ? 'border-[#7c4dff]/35 bg-[#7c4dff]/15 text-[#7c4dff]'
-                          : 'border-border/70 bg-surface-sunken/50 text-muted group-hover:border-border-strong group-hover:text-ink',
+                          ? 'rg-icon-tile text-silver-100'
+                          : 'border border-[rgba(237,230,239,0.14)] bg-transparent text-silver-300 group-hover:text-text',
                       )}
                     >
                       <Icon className="size-4" strokeWidth={active ? 2.25 : 1.75} />
@@ -368,40 +376,10 @@ export function SideNav({
               )
             })}
           </ul>
-
-          <NavLink
-            to={paths.everything}
-            end
-            className={({ isActive }) =>
-              cn(
-                'mt-2 flex items-center gap-3 rounded-control px-3 py-2.5 transition-[background-color,color,box-shadow] duration-150',
-                isActive
-                  ? 'bg-gradient-to-r from-[#7c4dff]/22 via-[#7c4dff]/8 to-transparent font-semibold text-ink shadow-[inset_3px_0_0_0_#7c4dff]'
-                  : 'font-medium text-purple hover:bg-navy-soft/70 hover:text-ink',
-              )
-            }
-          >
-            {({ isActive }) => (
-              <>
-                <span
-                  aria-hidden
-                  className={cn(
-                    'inline-flex size-8 shrink-0 items-center justify-center rounded-control border',
-                    isActive
-                      ? 'border-[#7c4dff]/35 bg-[#7c4dff]/15 text-[#7c4dff]'
-                      : 'border-border/70 bg-surface-sunken/50 text-muted',
-                  )}
-                >
-                  <LayoutGrid className="size-4" strokeWidth={isActive ? 2.25 : 1.75} />
-                </span>
-                <span className="truncate text-sm">All features</span>
-              </>
-            )}
-          </NavLink>
         </div>
       </nav>
 
-      <div className="mt-4 flex items-center gap-2 rounded-card border border-border/60 bg-surface-sunken/40 px-2 py-2">
+      <div className="mt-4 flex items-center gap-2 rounded-card border border-border/60 bg-surface/40 px-2 py-2">
         <AvatarMenu user={user} placement="up" />
         <ThemeQuickToggle />
       </div>

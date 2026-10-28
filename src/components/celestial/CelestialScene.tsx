@@ -1,6 +1,5 @@
 import { useMemo } from 'react'
 import type { GrahaCode } from '@/types/astrology'
-import { useTheme } from '@/theme/ThemeProvider'
 import { cn } from '@/utils/cn'
 import { useIsDesktop } from '@/hooks/useMediaQuery'
 import { StarField } from './StarField'
@@ -19,7 +18,7 @@ export interface CelestialSceneProps {
 
 /**
  * Background celestial layer for Ask: stars + living planetary system.
- * Dark mode only — light mode stays a clean canvas.
+ * Celestial night layer — always painted on the dark Cosmos canvas.
  */
 export function CelestialScene({
   placements,
@@ -29,7 +28,6 @@ export function CelestialScene({
   starSeed = 'ask-celestial',
 }: CelestialSceneProps) {
   const desktop = useIsDesktop()
-  const { resolved } = useTheme()
 
   const starsStyle = useMemo(
     () => ({ transform: `translate3d(${parallax.x * 3}px, ${parallax.y * 2}px, 0)` }),
@@ -39,8 +37,6 @@ export function CelestialScene({
     () => ({ transform: `translate3d(${parallax.x * 9}px, ${parallax.y * 6}px, 0)` }),
     [parallax.x, parallax.y],
   )
-
-  if (resolved === 'light') return null
 
   return (
     <div

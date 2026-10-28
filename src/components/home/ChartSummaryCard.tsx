@@ -63,7 +63,7 @@ export function ChartSummaryCard({
         contentClassName={cn('gap-5 p-5', stack ? 'flex flex-col' : 'flex flex-col sm:flex-row')}
       >
         <div className={cn('min-w-0', stack ? '' : 'sm:order-2 sm:flex-1')}>
-          <p className="font-mono text-label uppercase text-gold-soft-line">My chart</p>
+          <p className="font-mono text-label uppercase text-silver-300">My chart</p>
           <h2
             id="chart-card-title"
             className="mt-1.5 truncate text-heading font-semibold text-on-celestial"
@@ -132,7 +132,7 @@ export function ChartSummaryCard({
           to={paths.chart}
           className={cn(
             'flex items-center justify-between gap-3 rounded-control px-3 py-2.5',
-            'text-sub font-semibold text-navy transition-colors duration-150',
+            'text-sub font-semibold text-silver-300 transition-colors duration-150',
             'hover:bg-navy-soft active:bg-navy-soft',
           )}
         >
@@ -165,7 +165,7 @@ function Placement({
       <span
         aria-hidden
         className={cn(
-          'inline-flex shrink-0 items-center justify-center rounded-xs bg-navy-soft text-gold-deep',
+          'inline-flex shrink-0 items-center justify-center rounded-xs bg-navy-soft text-silver-400',
           glyph.length > 2 ? 'h-7 px-1.5 font-mono text-[9px] uppercase' : 'size-7 text-base',
         )}
       >

@@ -83,8 +83,8 @@ export function Tabs({ items, controller, variant = 'underline', label, classNam
       className={cn(
         'flex min-w-0 items-center',
         segmented
-          ? 'gap-1 rounded-control bg-surface-sunken p-1'
-          : 'no-scrollbar rail-bleed gap-1 overflow-x-auto border-b border-border',
+          ? 'gap-1 rounded-control bg-bg-secondary p-1 border border-border/25'
+          : 'no-scrollbar rail-bleed gap-1 overflow-x-auto border-b border-border/30',
         className,
       )}
     >
@@ -108,23 +108,34 @@ export function Tabs({ items, controller, variant = 'underline', label, classNam
                 ? cn(
                     'h-10 rounded-xs px-4 text-sm font-medium lg:h-9 lg:px-3.5',
                     'transition-[background-color,color,box-shadow] duration-200 ease-out-soft',
-                    active ? 'bg-surface text-ink shadow-card' : 'text-muted hover:text-purple',
+                    active
+                      ? 'bg-blue/25 text-text-highlight border border-blue shadow-card'
+                      : 'text-text-muted hover:text-text-secondary border border-transparent',
                   )
                 : cn(
-                    'h-11 px-3 text-sub',
-                    // The rule scales out from the centre — a 200ms move, not a snap.
-                    'after:absolute after:inset-x-3 after:-bottom-px after:h-0.5 after:bg-gold',
-                    'after:origin-center after:transition-transform after:duration-200',
+                    'h-11 min-h-11 px-3 text-sub',
+                    // Sliding gold underline on active
+                    'after:absolute after:inset-x-3 after:-bottom-px after:h-0.5 after:bg-primary',
+                    'after:origin-center after:transition-transform after:duration-250',
                     'after:ease-out-soft',
                     active
-                      ? 'font-semibold text-ink after:scale-x-100'
-                      : 'font-medium text-muted after:scale-x-0 hover:text-purple',
+                      ? 'font-semibold text-silver-300 after:scale-x-100'
+                      : 'font-medium text-text-muted after:scale-x-0 hover:text-text-highlight',
                   ),
             )}
           >
             {item.label}
             {item.count !== undefined && (
-              <span className={cn('font-mono text-label', active ? 'text-gold-deep' : 'text-muted')}>
+              <span
+                className={cn(
+                  'font-mono text-label',
+                  active
+                    ? segmented
+                      ? 'text-on-primary'
+                      : 'text-silver-300'
+                    : 'text-text-muted',
+                )}
+              >
                 {item.count}
               </span>
             )}

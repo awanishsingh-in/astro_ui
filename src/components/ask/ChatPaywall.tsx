@@ -68,7 +68,7 @@ export function ChatPaywall({
     >
       <div className="space-y-5">
         <div className="flex items-start gap-3 rounded-card border border-gold-border/60 bg-gold-soft/40 px-4 py-3">
-          <Crown className="mt-0.5 size-5 shrink-0 text-gold-deep" aria-hidden />
+          <Crown className="mt-0.5 size-5 shrink-0 text-silver-400" aria-hidden />
           <p className="text-sm text-ink text-pretty">{benefit}</p>
         </div>
 
@@ -91,7 +91,7 @@ export function ChatPaywall({
                 >
                   <span className="flex items-center justify-between gap-3">
                     <span className="font-semibold text-ink">{plan.name}</span>
-                    <span className="font-mono text-sm text-gold-deep">{plan.price}</span>
+                    <span className="font-mono text-sm text-silver-400">{plan.price}</span>
                   </span>
                   <span className="mt-1 text-sm text-muted">{plan.note}</span>
                 </button>

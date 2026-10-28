@@ -24,7 +24,11 @@ import { useProfiles } from '@/profiles/profiles-context'
 import { accountMenu, signOutItem, type AccountMenuItem } from '@/routes/navigation'
 import { paths } from '@/routes/paths'
 import type { User } from '@/types/user'
-import { consumeAvatarMenuReopen } from '@/utils/avatar-menu'
+import {
+  consumeAvatarMenuReopen,
+  OPEN_ACCOUNT_PANEL_EVENT,
+  type OpenableAccountPanel,
+} from '@/utils/avatar-menu'
 import { cn } from '@/utils/cn'
 import { formatPhone } from '@/utils/format'
 
@@ -70,10 +74,25 @@ export function AvatarMenu({
   const close = menu.close
   const open = menu.open
 
-  // Back from Profile should land with this menu open again.
   useEffect(() => {
     if (consumeAvatarMenuReopen()) open()
   }, [location.pathname, location.key, open])
+
+  // Open account panels from product screens; Downloads is a full page.
+  useEffect(() => {
+    const onOpenPanel = (event: Event) => {
+      const panel = (event as CustomEvent<{ panel?: OpenableAccountPanel }>).detail?.panel
+      if (!panel) return
+      close()
+      if (panel === 'downloads') {
+        navigate(paths.downloads)
+        return
+      }
+      setAccountPanel(panel)
+    }
+    window.addEventListener(OPEN_ACCOUNT_PANEL_EVENT, onOpenPanel)
+    return () => window.removeEventListener(OPEN_ACCOUNT_PANEL_EVENT, onOpenPanel)
+  }, [close, navigate])
 
   const openAddForRelation = useCallback(
     (relation: Exclude<ProfileRelation, 'self'>) => {
@@ -353,14 +372,16 @@ function MenuRow({
       role="menuitem"
       onClick={() => onSelect(item)}
       className={cn(
-        'flex min-h-11 w-full items-center gap-3 rounded-xs px-3 py-2.5 text-left text-sub',
+        'flex min-h-11 w-full items-center gap-3 rounded-xs py-2.5 text-left text-sub',
         'transition-colors duration-150 [&_svg]:size-4 [&_svg]:shrink-0',
+        item.nested ? 'ml-4 min-h-10 border-l border-border/70 pl-3 pr-3' : 'px-3',
         item.tone === 'critical'
           ? 'text-critical hover:bg-critical-soft'
           : 'text-purple hover:bg-navy-soft hover:text-ink',
+        item.nested && 'text-sm text-muted hover:text-ink',
       )}
     >
-      <span aria-hidden className="text-muted">
+      <span aria-hidden className={cn('text-muted', item.nested && 'opacity-80')}>
         {item.icon}
       </span>
       <span className="min-w-0 flex-1 truncate">{item.label}</span>
